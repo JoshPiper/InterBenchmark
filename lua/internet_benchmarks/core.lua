@@ -42,28 +42,28 @@ function INTERNET_BENCHMARK:Trial(trial)
 
 	assert(istable(functions), string.format("failed to get trial data for %s", trial))
 
-	local trialData = table.Merge({runs = 5, iterations = 50, title = self:Titalise(trial)}, functions.meta or {})
+	local trialData = table.Merge({runs = 100, iterations = 50000, title = self:Titalise(trial)}, functions.meta or {})
 	functions = istable(functions.functions) and functions.functions or functions
 
 	local results = {}
 	local details = {}
 	print(string.format("Benchmarking: %s", trialData.title))
-	-- print("\tWarming Up")
-	-- for idx, funct in ipairs(functions) do
-	-- 	self:Benchmark(trialData.runs / 4, trialData.iterations / 4, funct.func)
-	-- 	collectgarbage()
-	-- end
+	print("\tWarming Up")
+	for idx, funct in ipairs(functions) do
+		self:Benchmark(trialData.runs / 4, trialData.iterations / 4, funct.func)
+		collectgarbage()
+	end
 
-	-- print("\tWarm-up Complete: Disabling GC")
-	-- collectgarbage()
-	-- collectgarbage()
-	-- collectgarbage("stop")
-	-- local oldStep = collectgarbage("setstepmul", 10000)
-	-- collectgarbage()
-	-- collectgarbage()
+	print("\tDisabling GC")
+	collectgarbage()
+	collectgarbage()
+	collectgarbage("stop")
+	local oldStep = collectgarbage("setstepmul", 10000)
+	collectgarbage()
+	collectgarbage()
 
 
-	-- print("\tGC Disabled: Running Tests.")
+	print("\tRunning Tests.")
 	for idx, funct in ipairs(functions) do
 		local callFunc, title = funct.func, funct.title or string.format("Untitled Function: %s", idx)
 		funct.title = title
@@ -73,8 +73,8 @@ function INTERNET_BENCHMARK:Trial(trial)
 	end
 
 	print("\tTests Complete")
-	-- collectgarbage("restart")
-	-- collectgarbage("setstepmul", oldStep)
+	collectgarbage("restart")
+	collectgarbage("setstepmul", oldStep)
 
 	local dpTot = false
 	local min = false

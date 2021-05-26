@@ -37,6 +37,62 @@ function INTERNET_BENCHMARK:LookupGlobal(var, tbl, route, seen)
 	return false
 end
 
+function INTERNET_BENCHMARK:ReadSource(path, startLine, stopLine)
+	local data = file.Read(path, "LUA")
+	data = string.Explode("\n", data)
+	return table.concat(data, "\n", startLine, stopLine)
+end
+
+function INTERNET_BENCHMARK:GetTrialPredefines(trialData)
+	local manualPredefines = trialData.predefines
+	local donePredefines = false
+
+	for idx, funcData in ipairs(trialData.functions) do
+		local funcInfo = {}
+		local info = debug.getinfo(funcData.func, "flLnSu")
+
+		if info.what == "Lua" and info.short_src:find("/lua/") then
+			-- This is defined in a file, so we can get the source.
+			local path = info.short_src:match("/lua/(.*)")
+			if path then
+				if not donePredefines and manualPredefines then
+					donePredefines = true
+					for idx, predefine in ipairs(manualPredefines) do
+						manualPredefines[idx] = self:ReadSource(path, predefine[1], predefine[2])
+					end
+				end
+				local data = file.Read(path, "LUA")
+				data = string.Explode("\n", data)
+				funcInfo.source = table.concat(data, "\n", info.linedefined, info.lastlinedefined)
+			end
+
+			local vars = {}
+			local ups = info.nups
+			if ups and ups ~= 0 then
+				for i = 0, ups do
+					local k, v = debug.getupvalue(funcData.func, i)
+					if k ~= nil then
+						vars[k] = v
+					end
+				end
+			end
+			for k, v in pairs(vars) do
+				if isfunction(v) then
+					vars[k] = self:LookupGlobal(v) or v
+				elseif isnumber(v) or isstring(v) then
+					-- Todo, format this.
+					vars[k] = self:LookupGlobal(v) or v
+				else
+					vars[k] = nil
+				end
+			end
+			funcInfo.upvars = vars
+		end
+
+		funcData.info = funcInfo
+	end
+end
+
 function INTERNET_BENCHMARK:Report()
 	local results = self:TrialAll()
 
@@ -52,55 +108,7 @@ function INTERNET_BENCHMARK:Report()
 			medianIdx2 = (runs + 1) / 2
 		end
 
-		local manualPredefines = trialData.predefines
-		local donePredefines = false
-		for idx, funcData in ipairs(trialData.functions) do
-			local funcInfo = {}
-			local info = debug.getinfo(funcData.func, "flLnSu")
-
-			if info.what == "Lua" and info.short_src:find("/lua/") then
-				-- This is defined in a file, so we can get the source.
-				local path = info.short_src:match("/lua/(.*)")
-				if path then
-					if not donePredefines and manualPredefines then
-						donePredefines = true
-						for idx, predefine in ipairs(manualPredefines) do
-							local data = file.Read(path, "LUA")
-							data = string.Explode("\n", data)
-							manualPredefines[idx] = table.concat(data, "\n", predefine[1], predefine[2])
-						end
-					end
-					local data = file.Read(path, "LUA")
-					data = string.Explode("\n", data)
-					funcInfo.source = table.concat(data, "\n", info.linedefined, info.lastlinedefined)
-				end
-
-				local vars = {}
-				local ups = info.nups
-				if ups and ups ~= 0 then
-					for i = 0, ups do
-						local k, v = debug.getupvalue(funcData.func, i)
-						if k ~= nil then
-							vars[k] = v
-						end
-					end
-				end
-				for k, v in pairs(vars) do
-					if isfunction(v) then
-						vars[k] = self:LookupGlobal(v) or v
-					elseif isnumber(v) or isstring(v) then
-						-- Todo, format this.
-						vars[k] = self:LookupGlobal(v) or v
-					else
-						vars[k] = nil
-					end
-				end
-				funcInfo.upvars = vars
-			end
-
-			funcData.info = funcInfo
-		end
-
+		self:GetTrialPredefines(trialData)
 
 		local stats = {}
 		local minMean

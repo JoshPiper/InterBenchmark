@@ -1,6 +1,12 @@
 AddCSLuaFile()
 INTERNET_BENCHMARK = INTERNET_BENCHMARK or {}
 INTERNET_BENCHMARK.LookupCache = {}
+INTERNET_BENCHMARK.LookupBlacklist = {
+	"GCompute",
+	"GLib",
+	"EMVU",
+	"package.loaded"
+}
 
 function INTERNET_BENCHMARK:LookupGlobal(var, tbl, route, seen)
 	if self.LookupCache[var] then

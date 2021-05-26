@@ -24,7 +24,7 @@ function INTERNET_BENCHMARK:LookupGlobal(var, tbl, route, seen)
 			return false
 		end
 	end
-	print(string.format("Checking %s", cur))
+	-- print(string.format("Checking %s", cur))
 
 	local toDo = {}
 	for k, v in pairs(tbl) do
@@ -165,6 +165,7 @@ end
 
 function INTERNET_BENCHMARK:Report()
 	local results = self:TrialAll()
+	-- local results = {unpack = self:Trial("unpack.lua")}
 
 	for trial, trialData in pairs(results) do
 		print(string.format("Calculating Results for :%s", trialData.title))

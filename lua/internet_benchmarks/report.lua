@@ -281,6 +281,16 @@ function INTERNET_BENCHMARK:HTMLTab(name, data)
 		codes[funcIdx] = funcData.info.source
 	end
 
+	local seen = {}
+	local defines = {}
+	for _, define in ipairs(predefines) do
+		if not seen[define] then
+			seen[define] = true
+			table.insert(defines, define)
+		end
+	end
+	predefines = defines
+
 	print("\t\tGenerating HTML.")
 	table.insert(sections, string.format("<h2 id='%s'>%s</h2>", name, data.title))
 	if #predefines > 0 then

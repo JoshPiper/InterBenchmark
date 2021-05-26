@@ -24,6 +24,7 @@ function INTERNET_BENCHMARK:LookupGlobal(var, tbl, route, seen)
 			return false
 		end
 	end
+	print(string.format("Checking %s", cur))
 
 	local toDo = {}
 	for k, v in pairs(tbl) do

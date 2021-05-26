@@ -11,6 +11,7 @@ function INTERNET_BENCHMARK:LookupGlobal(var, tbl, route, seen)
 	if not route then route = {"_G"} end
 	if not tbl then tbl = _G end
 
+	local toDo = {}
 	for k, v in pairs(tbl) do
 		if v == var then
 			table.insert(route, k)
@@ -20,19 +21,22 @@ function INTERNET_BENCHMARK:LookupGlobal(var, tbl, route, seen)
 		end
 
 		if istable(v) and not seen[v] then
-			-- Prevent infinate loop.
-			seen[v] = true
-			table.insert(route, k)
-
-			local found = self:LookupGlobal(var, v, route, seen)
-			if found then
-				return found
-			end
-
-			seen[v] = false
-			table.remove(route)
+			toDo[k] = v
 		end
 	end
+
+	for k, v in pairs(toDo) do
+		-- Prevent infinate loop.
+		seen[v] = true
+		table.insert(route, k)
+
+		local found = self:LookupGlobal(var, v, route, seen)
+		if found then
+			return found
+		end
+
+		seen[v] = false
+		table.remove(route)
 
 	return false
 end

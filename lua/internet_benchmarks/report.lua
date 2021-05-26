@@ -223,20 +223,34 @@ function INTERNET_BENCHMARK:HTMLTab(name, data)
 
 	local i = 1
 	local minMean = data.stats.__minMean
-	for funcName, mean in pairs(data.results) do
+	local maxDigits = math.floor(math.log10(#data.functions)) + 1
+
+	local template = string.format([[
+		<tr>
+			<td>%%0%su</td>
+			<td>%%s</td>
+			<td>%%.4e</td>
+			<td>%%.4e</td>
+			<td>%%.4e</td>
+			<td>%%.4e</td>
+			<td>%%.4e</td>
+			<td>%%s%%%%</td>
+		</tr>
+	]], maxDigits)
+
+	for funcName, mean in SortedPairsByValue(data.results) do
 		local stats = data.stats[funcName]
-		table.insert(results, string.format([[
-			<tr>
-				<td>%s</td>
-				<td>%s</td>
-				<td>%s</td>
-				<td>%s</td>
-				<td>%s</td>
-				<td>%s</td>
-				<td>%s</td>
-				<td>%s</td>
-			</tr>
-		]], i, funcName, stats.median, stats.min, stats.max, stats.mean, stats.meanPC, (stats.mean / minMean) * 100))
+		table.insert(results, string.format(
+			template,
+			i,
+			funcName,
+			stats.median,
+			stats.min,
+			stats.max,
+			stats.mean,
+			stats.meanPC,
+			math.Round((stats.mean / minMean) * 100, 2)
+		))
 		i = i + 1
 	end
 	table.insert(sections, string.format("<h3>Benchmarking Results <small>(%s Runs / %s Iterations)</small></h3><table>%s</table>", data.runs, data.iterations, table.concat(results, "\n")))

@@ -13,7 +13,7 @@ function INTERNET_BENCHMARK:LookupGlobal(var, tbl, route, seen)
 		return self.LookupCache[var]
 	end
 
-	if not seen then seen = {} end
+	if not seen then seen = {[_G] = true} end
 	if not route then route = {} end
 	if not tbl then tbl = _G end
 

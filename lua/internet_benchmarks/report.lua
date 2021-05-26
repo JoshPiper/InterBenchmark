@@ -112,6 +112,7 @@ function INTERNET_BENCHMARK:Report()
 	local results = self:TrialAll()
 
 	for trial, trialData in pairs(results) do
+		print(string.format("Calculating Results for :%s", trialData.title))
 		local runs = trialData.runs
 
 		local medianIdx1, medianIdx2
@@ -123,17 +124,33 @@ function INTERNET_BENCHMARK:Report()
 			medianIdx2 = (runs + 1) / 2
 		end
 
+		print("\tGenerating Predefines / Function Source")
 		self:GetTrialPredefines(trialData)
 
 		local stats = {}
 		local minMean
+		print("\tGenerating Statistics")
 		for func, funcResults in pairs(trialData.details) do
 			local stat = {}
 			local total = 0
 			local median = 0
 
 			local i = 1
+			local min, max
+			print("\t\tCalculating Min/Max/Median")
 			for idx, result in SortedPairsByValue(funcResults) do
+				if min then
+					min = math.min(min, result)
+				else
+					min = result
+				end
+
+				if max then
+					max = math.max(max, result)
+				else
+					max = result
+				end
+
 				if i == medianIdx1 or i == medianIdx2 then
 					median = median + result
 				end
@@ -144,8 +161,8 @@ function INTERNET_BENCHMARK:Report()
 			stat.total = total
 			stat.median = median / 2
 			stat.mean = total / runs
-			stat.min = math.min(unpack(funcResults))
-			stat.max = math.max(unpack(funcResults))
+			stat.min = min
+			stat.max = max
 
 			if not minMean then
 				minMean = stat.mean
@@ -156,6 +173,7 @@ function INTERNET_BENCHMARK:Report()
 			stat.meanPC = stat.mean / trialData.iterations
 
 			local stdDevSum = 0
+			print("\t\tCalculating Standard Deviation")
 			for idx, result in ipairs(funcResults) do
 				stdDevSum = stdDevSum + math.pow(result - stat.mean, 2)
 			end
@@ -175,6 +193,7 @@ end
 function INTERNET_BENCHMARK:HTMLReport()
 	local results = self:Report()
 
+	print("Generating HTML")
 	local tabs = {}
 	for trial, trialData in SortedPairsByMemberValue(results, "order") do
 		table.insert(tabs, self:HTMLTab(trial, trialData))
@@ -198,14 +217,18 @@ function INTERNET_BENCHMARK:HTMLReport()
 end
 
 function INTERNET_BENCHMARK:HTMLTab(name, data)
+	print(string.format("\tGenerating Tab for :%s", name))
 	local sections = {}
 
 	local predefines = {}
 	local codes = {}
 
+	print("\t\tGenerating Pre-Definitions.")
 	for idx, predefine in pairs(data.predefines or {}) do
 		table.insert(predefines, predefine)
 	end
+
+	print("\t\tGenerating Upvalues.")
 	for funcIdx, funcData in ipairs(data.functions) do
 		for var, val in pairs(funcData.info.upvars) do
 			table.insert(predefines, string.format("local %s = %s", var, val))
@@ -214,6 +237,7 @@ function INTERNET_BENCHMARK:HTMLTab(name, data)
 		codes[funcIdx] = funcData.info.source
 	end
 
+	print("\t\tGenerating HTML.")
 	table.insert(sections, string.format("<h2 id='%s'>%s</h2>", name, data.title))
 	if #predefines > 0 then
 		table.insert(sections, string.format("<h3>Predefines</h3><code><pre>%s</pre></code>", table.concat(predefines, "\n")))

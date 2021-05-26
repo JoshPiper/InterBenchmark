@@ -37,6 +37,7 @@ function INTERNET_BENCHMARK:LookupGlobal(var, tbl, route, seen)
 
 		seen[v] = false
 		table.remove(route)
+	end
 
 	return false
 end

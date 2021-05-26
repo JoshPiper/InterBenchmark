@@ -1,6 +1,6 @@
 AddCSLuaFile()
 INTERNET_BENCHMARK = INTERNET_BENCHMARK or {}
-INTERNET_BENCHMARK.LookupCache = {}
+INTERNET_BENCHMARK.LookupCache = INTERNET_BENCHMARK.LookupCache or {}
 INTERNET_BENCHMARK.LookupBlacklist = {
 	"GCompute",
 	"GLib",

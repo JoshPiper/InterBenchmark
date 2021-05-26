@@ -5,6 +5,7 @@ INTERNET_BENCHMARK.LookupBlacklist = {
 	"GCompute",
 	"GLib",
 	"EMVU",
+	"Photon",
 	"package.loaded"
 }
 

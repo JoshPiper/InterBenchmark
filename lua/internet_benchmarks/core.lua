@@ -2,14 +2,16 @@ AddCSLuaFile()
 INTERNET_BENCHMARK = INTERNET_BENCHMARK or {}
 print("Reloaded Core")
 
-function INTERNET_BENCHMARK:Benchmark(avgCount, iterations, benchmarkFunc)
+function INTERNET_BENCHMARK:Benchmark(avgCount, iterations, benchmarkFunc, silent)
 	local time = 0
 	local results = {}
 	local clock = SysTime
 
 	local tmpl = string.format("\t\tRun %%0%dd of %%d", #tostring(avgCount))
 	for run = 1, avgCount do
-		print(string.format(tmpl, run, avgCount))
+		if not silent then
+			print(string.format(tmpl, run, avgCount))
+		end
 		local start, stop
 		start = clock()
 		for times = 1, iterations do
@@ -42,7 +44,7 @@ function INTERNET_BENCHMARK:Trial(trial)
 
 	assert(istable(functions), string.format("failed to get trial data for %s", trial))
 
-	local trialData = table.Merge({runs = 100, iterations = 50000, title = self:Titalise(trial)}, functions.meta or {})
+	local trialData = table.Merge({runs = 5, iterations = 50, title = self:Titalise(trial)}, functions.meta or {})
 	functions = istable(functions.functions) and functions.functions or functions
 
 	local results = {}
@@ -50,7 +52,7 @@ function INTERNET_BENCHMARK:Trial(trial)
 	print(string.format("Benchmarking: %s", trialData.title))
 	print("\tWarming Up")
 	for idx, funct in ipairs(functions) do
-		self:Benchmark(trialData.runs / 4, trialData.iterations / 4, funct.func)
+		self:Benchmark(trialData.runs / 4, trialData.iterations / 4, funct.func, true)
 		collectgarbage()
 	end
 

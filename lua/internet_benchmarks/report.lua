@@ -8,7 +8,7 @@ function INTERNET_BENCHMARK:LookupGlobal(var, tbl, route, seen)
 	end
 
 	if not seen then seen = {} end
-	if not route then route = {"_G"} end
+	if not route then route = {} end
 	if not tbl then tbl = _G end
 
 	local toDo = {}

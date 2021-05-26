@@ -17,6 +17,13 @@ function INTERNET_BENCHMARK:LookupGlobal(var, tbl, route, seen)
 	if not route then route = {} end
 	if not tbl then tbl = _G end
 
+	local cur = table.concat(route, ".")
+	for _, bl in ipairs(self.LookupBlacklist) do
+		if cur:StartWith(bl) then
+			return false
+		end
+	end
+
 	local toDo = {}
 	for k, v in pairs(tbl) do
 		if v == var then

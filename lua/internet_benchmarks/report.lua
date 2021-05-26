@@ -92,9 +92,10 @@ function INTERNET_BENCHMARK:GetTrialPredefines(trialData)
 			end
 			for k, v in pairs(vars) do
 				if isfunction(v) then
-					vars[k] = self:LookupGlobal(v) or v
-				elseif isnumber(v) or isstring(v) then
-					-- Todo, format this.
+					vars[k] = self:LookupGlobal(v) or self:ReadFunction(v) or v
+				elseif isstring(v) then
+					vars[k] = string.format("%q", v)
+				elseif isnumber(v) then
 					vars[k] = self:LookupGlobal(v) or v
 				else
 					vars[k] = nil

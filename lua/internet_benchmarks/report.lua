@@ -165,8 +165,21 @@ function INTERNET_BENCHMARK:HTMLReport()
 		table.insert(tabs, self:HTMLTab(trial, trialData))
 	end
 
+	local report = string.format([[
+		<!DOCTYPE html>
+		<html>
+			<head>
+				<title>Benchmarking Report</title>
+				<link rel="stylesheet" href="style.css">
+			</head>
+			<body>
+				%s
+			</body>
+		</html>
+	]], table.concat(tabs, "\n"))
+
 	file.CreateDir("internet_benchmarks")
-	file.Write("internet_benchmarks/report.html.txt", table.concat(tabs, "\n\n\n\n"))
+	file.Write("internet_benchmarks/report.html.txt", report)
 end
 
 function INTERNET_BENCHMARK:HTMLTab(name, data)

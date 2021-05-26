@@ -1,4 +1,4 @@
-local math = math.max
+local max = math.max
 local num = 100
 local y = 0
 

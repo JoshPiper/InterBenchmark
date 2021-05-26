@@ -43,6 +43,20 @@ function INTERNET_BENCHMARK:ReadSource(path, startLine, stopLine)
 	return table.concat(data, "\n", startLine, stopLine)
 end
 
+function INTERNET_BENCHMARK:ReadFunction(func)
+	local info = debug.getinfo(funcData.func, "flLnSu")
+	if info.what == "Lua" and info.short_src:find("/lua/") then
+		-- This is defined in a file, so we can get the source.
+		local path = info.short_src:match("/lua/(.*)")
+		if path then
+			return self:ReadSource(path, info.linedefined, info.lastlinedefined)
+		end
+	end
+
+	return self:LookupGlobal(func)
+end
+
+
 function INTERNET_BENCHMARK:GetTrialPredefines(trialData)
 	local manualPredefines = trialData.predefines
 	local donePredefines = false

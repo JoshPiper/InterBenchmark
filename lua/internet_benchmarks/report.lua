@@ -44,7 +44,7 @@ function INTERNET_BENCHMARK:ReadSource(path, startLine, stopLine)
 end
 
 function INTERNET_BENCHMARK:ReadFunction(func)
-	local info = debug.getinfo(funcData.func, "flLnSu")
+	local info = debug.getinfo(func, "flLnSu")
 	if info.what == "Lua" and info.short_src:find("/lua/") then
 		-- This is defined in a file, so we can get the source.
 		local path = info.short_src:match("/lua/(.*)")

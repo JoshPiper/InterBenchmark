@@ -134,9 +134,20 @@ function INTERNET_BENCHMARK:GetTrialPredefines(trialData)
 					end
 				end
 			end
+
 			for k, v in pairs(vars) do
 				if isfunction(v) then
-					vars[k] = self:LookupGlobal(v) or self:ReadFunction(v) or v
+					local gbl = self:LookupGlobal(v)
+					if gbl then
+						vars[k] = gbl
+					else
+						local src = self:ReadFunction(v)
+						if src then
+							vars[k] = {"raw", src}
+						else
+							vars[k] = v
+						end
+					end
 				elseif isstring(v) then
 					vars[k] = string.format("%q", v)
 				elseif isnumber(v) then
@@ -275,7 +286,14 @@ function INTERNET_BENCHMARK:HTMLTab(name, data)
 	print("\t\tGenerating Upvalues.")
 	for funcIdx, funcData in ipairs(data.functions) do
 		for var, val in pairs(funcData.info.upvars) do
-			table.insert(predefines, string.format("local %s = %s", var, val))
+			if isstring(val) then
+				table.insert(predefines, string.format("local %s = %s", var, val))
+			elseif istable(val) then
+				local typ, dt = val[1], val[2]
+				if typ == "raw" then
+					table.insert(predefines, dt)
+				end
+			end
 		end
 
 		codes[funcIdx] = funcData.info.source

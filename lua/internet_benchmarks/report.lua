@@ -68,7 +68,31 @@ function INTERNET_BENCHMARK:ReadFunction(func)
 		-- This is defined in a file, so we can get the source.
 		local path = info.short_src:match("/lua/(.*)")
 		if path then
-			return self:ReadSource(path, info.linedefined, info.lastlinedefined)
+			local body = self:ReadSource(path, info.linedefined, info.lastlinedefined)
+			body = body:Trim()
+			-- body = string.Explode("\n", body)
+
+			-- local first = body[1]
+			-- if first then
+			-- 	-- Strip the func prefix from anonymous functions.
+			-- 	first = first:gsub("^[%s%w]*function%(", "")
+			-- 	-- Ditto for named functions.
+			-- 	first = first:gsub("^[%s%w]*function [%w_]+%(", "")
+			-- 	if first:StartWith(")") then
+			-- 		first = first:sub(1)
+			-- 	end
+			-- 	body[1] = first
+			-- end
+
+			-- local last = body[#body]
+			-- if last then
+			-- 	last = last:gsub("end[%w%s,]-$", "")
+			-- 	body[#body] = last
+			-- end
+
+			-- Finally, make all functions anonymous.
+			-- return "function(" .. table.concat(body, "\n")
+			return body
 		end
 	end
 

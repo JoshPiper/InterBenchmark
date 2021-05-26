@@ -49,7 +49,7 @@ function INTERNET_BENCHMARK:LookupGlobal(var, tbl, route, seen)
 			return found
 		end
 
-		seen[v] = false
+		seen[v] = nil
 		table.remove(route)
 	end
 

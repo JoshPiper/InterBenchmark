@@ -1,4 +1,4 @@
-local mod = math.fmod
+local fmod = math.fmod
 local num = 1000
 
 local function jit_fmod(a, b)

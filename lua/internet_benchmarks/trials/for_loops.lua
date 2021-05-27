@@ -67,6 +67,9 @@ return {
 		order = 10,
 		predefines = {
 			{2, 7}
+		},
+		excludedVars = {
+			tab = true
 		}
 	},
 	functions = {

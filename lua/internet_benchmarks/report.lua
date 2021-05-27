@@ -295,6 +295,7 @@ function INTERNET_BENCHMARK:HTMLTab(name, data)
 
 	local predefines = {}
 	local codes = {}
+	local excluded = data.excludedVars or {}
 
 	print("\t\tGenerating Pre-Definitions.")
 	for idx, predefine in pairs(data.predefines or {}) do
@@ -304,12 +305,14 @@ function INTERNET_BENCHMARK:HTMLTab(name, data)
 	print("\t\tGenerating Upvalues.")
 	for funcIdx, funcData in ipairs(data.functions) do
 		for var, val in pairs(funcData.info.upvars) do
-			if isstring(val) then
-				table.insert(predefines, string.format("local %s = %s", var, val))
-			elseif istable(val) then
-				local typ, dt = val[1], val[2]
-				if typ == "raw" then
-					table.insert(predefines, dt)
+			if not excluded[var] then
+				if isstring(val) then
+					table.insert(predefines, string.format("local %s = %s", var, val))
+				elseif istable(val) then
+					local typ, dt = val[1], val[2]
+					if typ == "raw" then
+						table.insert(predefines, dt)
+					end
 				end
 			end
 		end

@@ -74,7 +74,8 @@ function INTERNET_BENCHMARK:Trial(trial)
 	print("\tRunning Tests.")
 	for idx, funct in ipairs(functions) do
 		funct.title = funct.title or string.format("Untitled Function: %s", idx)
-		print(string.format("\t%s", funct.title))
+		local title = funct.title
+		print(string.format("\t%s", title))
 		results[title], details[title] = self:Benchmark(trialData.runs, trialData.iterations, funct.func, funct.preRun, funct.postRun)
 		collectgarbage()
 	end

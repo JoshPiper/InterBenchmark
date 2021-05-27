@@ -287,6 +287,7 @@ function INTERNET_BENCHMARK:HTMLReport()
 
 	file.CreateDir("internet_benchmarks")
 	file.Write("internet_benchmarks/report.html.txt", report)
+	file.Write("internet_benchmarks/style.css.txt", file.Read("internet_benchmarks/style.css.lua", "LUA"))
 end
 
 function INTERNET_BENCHMARK:HTMLTab(name, data)

@@ -66,7 +66,7 @@ return {
 		title = "For Loops",
 		order = 10,
 		predefines = {
-			{2, 7}
+			{1, 7}
 		},
 		excludedVars = {
 			tab = true

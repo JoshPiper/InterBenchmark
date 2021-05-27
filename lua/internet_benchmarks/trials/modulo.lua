@@ -28,8 +28,8 @@ return {
 		order = 9
 	},
 	functions = {
-		{title = "x ^ 2", func = a},
-		{title = "x * x", func = b},
-		{title = "pow(x, 2)", func = c}
+		{title = "math.fmod", func = a},
+		{title = "% operator", func = b},
+		{title = "jit'd fmod", func = c}
 	}
 }

@@ -100,6 +100,36 @@ function INTERNET_BENCHMARK:ReadFunction(func)
 	return self:LookupGlobal(func)
 end
 
+function INTERNET_BENCHMARK:LookupVariable(var, excludeGlobals)
+	local val
+	if isfunction(var) then
+		if not val and not excludeGlobals then
+			val = self:LookupGlobal(var)
+		end
+
+		if not val then
+			local src = self:ReadFunction(var)
+			if src then
+				val = {"raw", src}
+			end
+		end
+
+		if not val then
+			val = string.format("function() end -- Unknown Function %p", var)
+		end
+	elseif isstring(v) then
+		val = string.format("%q", var)
+	elseif isnumber(v) then
+		val = var
+	else
+		-- This will need to be expanded, but for now it should work.
+		val = tostring(var)
+	end
+
+	if val then
+		return val
+	end
+end
 
 function INTERNET_BENCHMARK:GetTrialPredefines(trialData)
 	local manualPredefines = trialData.predefines
@@ -136,22 +166,9 @@ function INTERNET_BENCHMARK:GetTrialPredefines(trialData)
 			end
 
 			for k, v in pairs(vars) do
-				if isfunction(v) then
-					local gbl = self:LookupGlobal(v)
-					if gbl then
-						vars[k] = gbl
-					else
-						local src = self:ReadFunction(v)
-						if src then
-							vars[k] = {"raw", src}
-						else
-							vars[k] = v
-						end
-					end
-				elseif isstring(v) then
-					vars[k] = string.format("%q", v)
-				elseif isnumber(v) then
-					vars[k] = self:LookupGlobal(v) or v
+				local val = self:LookupVariable(v)
+				if val then
+					vars[k] = val
 				else
 					vars[k] = nil
 				end

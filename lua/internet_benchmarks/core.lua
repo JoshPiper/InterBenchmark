@@ -15,7 +15,7 @@ function INTERNET_BENCHMARK:Benchmark(avgCount, iterations, benchmarkFunc, silen
 		local start, stop
 		start = clock()
 		for times = 1, iterations do
-			benchmarkFunc()
+			benchmarkFunc(times)
 		end
 		stop = clock()
 		collectgarbage()

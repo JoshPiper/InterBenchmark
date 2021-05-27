@@ -13,11 +13,17 @@ function INTERNET_BENCHMARK:Benchmark(avgCount, iterations, benchmarkFunc, preRu
 			print(string.format(tmpl, run, avgCount))
 		end
 		local start, stop
+		if preRun then
+			preRun()
+		end
 		start = clock()
 		for times = 1, iterations do
 			benchmarkFunc(times)
 		end
 		stop = clock()
+		if postRun then
+			postRun()
+		end
 		collectgarbage()
 		results[run] = (stop - start)
 		time = time + results[run]

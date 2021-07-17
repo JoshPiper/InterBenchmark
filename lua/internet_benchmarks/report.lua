@@ -338,8 +338,9 @@ function INTERNET_BENCHMARK:HTMLTab(name, data)
 	if #predefines > 0 then
 		table.insert(sections, string.format("<h3>Predefines</h3><code><pre>%s</pre></code>", table.concat(predefines, "\n")))
 	end
-	for funcIdx, code in pairs(codes) do
-		table.insert(sections, string.format("<h3>Function %s</h3><code><pre>%s</pre></code>", funcIdx, code))
+	for funcIdx, code in ipairs(codes) do
+		local title = data.functions[funcIdx].title
+		table.insert(sections, string.format("<h3>Function %s</h3><code><pre>%s</pre></code>", title, code))
 	end
 
 	local results = {}

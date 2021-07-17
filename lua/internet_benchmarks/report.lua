@@ -265,6 +265,59 @@ function INTERNET_BENCHMARK:Report()
 	return results
 end
 
+INTERNET_BENCHMARK.Prefixes = {
+	[-24] = "y",
+	[-21] = "z",
+	[-18] = "a",
+	[-15] = "f",
+	[-12] = "p",
+	[-9] = "n",
+	[-6] = "µ",
+	[-3] = "m",
+	[-2] = "c",
+	[-1] = "d",
+	[0] = "",
+	[1] = "da",
+	[2] = "h",
+	[3] = "k",
+	[6] = "M",
+	[9] = "G",
+	[12] = "T",
+	[15] = "P",
+	[18] = "E",
+	[21] = "Z",
+	[24] = "Y"
+}
+
+INTERNET_BENCHMARK.Allowables = {
+	all = table.GetKeys(INTERNET_BENCHMARK.Prefixes),
+	norm = {-24, -21, -18, -15, -12, -9, -6, -3, 0, 3, 6, 9, 12, 15, 18, 21, 14}
+}
+
+function INTERNET_BENCHMARK:NumberToPrefix(num, allowed, sigFig, minBound, maxBound)
+	allowed = allowed or self.Allowables.norm
+	minBound = minBound or 0.01
+	maxBound = maxBound or 10
+	local formatterString = sigFig == nil and "%s%s" or string.format("%%.%sf%%s", sigFig)
+
+	for _, pow in ipairs(allowed) do
+		local pref = self.Prefixes[pow]
+		local calc = num * math.pow(10, -pow)
+
+		if num < 0 then
+			if calc >= minBound and calc < maxBound then
+				return string.format(formatterString, calc, pref)
+			end
+		else
+			if calc > minBound and calc <= maxBound then
+				return string.format(formatterString, calc, pref)
+			end
+		end
+	end
+
+	return num
+end
+
 function INTERNET_BENCHMARK:HTMLReport()
 	local results = self:Report()
 

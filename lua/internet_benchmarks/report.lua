@@ -121,6 +121,8 @@ function INTERNET_BENCHMARK:LookupVariable(var, excludeGlobals)
 		val = string.format("%q", var)
 	elseif isnumber(v) then
 		val = var
+	elseif IsColor(v) then
+		val = Format("Color(%s, %s, %s, %s)", v.r, v.g, v.b, v.a)
 	else
 		-- This will need to be expanded, but for now it should work.
 		val = tostring(var)
@@ -181,8 +183,8 @@ function INTERNET_BENCHMARK:GetTrialPredefines(trialData)
 end
 
 function INTERNET_BENCHMARK:Report()
-	local results = self:TrialAll()
-	-- local results = {unpack = self:Trial("unpack.lua")}
+	-- local results = self:TrialAll()
+	local results = {string_templating = self:Trial("string_templating.lua")}
 
 	for trial, trialData in pairs(results) do
 		print(string.format("Calculating Results for :%s", trialData.title))

@@ -418,11 +418,11 @@ function INTERNET_BENCHMARK:HTMLTab(name, data)
 		<tr>
 			<td>%%0%su</td>
 			<td>%%s</td>
-			<td>%%.4e</td>
-			<td>%%.4e</td>
-			<td>%%.4e</td>
-			<td>%%.4e</td>
-			<td>%%.4e</td>
+			<td>%%ss</td>
+			<td>%%ss</td>
+			<td>%%ss</td>
+			<td>%%ss</td>
+			<td>%%ss</td>
 			<td>%%s%%%%</td>
 		</tr>
 	]], maxDigits)
@@ -433,12 +433,12 @@ function INTERNET_BENCHMARK:HTMLTab(name, data)
 			template,
 			i,
 			funcName,
-			stats.median,
-			stats.min,
-			stats.max,
-			stats.mean,
-			stats.meanPC,
-			math.Round((stats.mean / minMean) * 100, 2)
+			self:NumberToPrefix(stats.median, nil, (stats.median < 10 and stats.median >= 1) and 3 or 2),
+			self:NumberToPrefix(stats.min, nil, (stats.min < 10 and stats.min >= 1) and 3 or 2),
+			self:NumberToPrefix(stats.max, nil, (stats.max < 10 and stats.max >= 1) and 3 or 2),
+			self:NumberToPrefix(stats.mean, nil, (stats.mean < 10 and stats.mean >= 1) and 3 or 2),
+			self:NumberToPrefix(stats.meanPC, nil, (stats.meanPC < 10 and stats.meanPC >= 1) and 3 or 2),
+			math.Round((stats.mean / minMean) * 100)
 		))
 		i = i + 1
 	end

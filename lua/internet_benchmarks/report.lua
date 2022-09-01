@@ -234,7 +234,7 @@ function INTERNET_BENCHMARK:Report()
 			end
 
 			stat.total = total
-			stat.median = median / 2
+			stat.median = i == 1 and median or (median / 2)
 			stat.mean = total / runs
 			stat.min = min
 			stat.max = max

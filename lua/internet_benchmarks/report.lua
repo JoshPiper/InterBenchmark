@@ -318,6 +318,25 @@ function INTERNET_BENCHMARK:NumberToPrefix(num, allowed, sigFig, minBound, maxBo
 	return num
 end
 
+function INTERNET_BENCHMARK:HTMLTemplate(template, variables)
+	if variables == nil then
+		variables = {}
+	end
+
+	return ({(file.Read(
+		string.format(
+			"internet_benchmarks/templates/html/%s.html.lua",
+			template
+		),
+		"LUA"
+	) or ""):gsub(
+		'%${(.-)}',
+		function(w)
+			return variables[w] or ("${" .. w .. "}")
+		end
+	)})[1]
+end
+
 function INTERNET_BENCHMARK:HTMLReport()
 	local results = self:Report()
 

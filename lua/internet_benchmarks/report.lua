@@ -196,8 +196,10 @@ function INTERNET_BENCHMARK:Report()
 			medianIdx2 = math.ceil((runs + 1) / 2)
 		else
 			medianIdx1 = (runs + 1) / 2
-			medianIdx2 = (runs + 1) / 2
+			medianIdx2 = medianIdx1
 		end
+
+		local medians = {}
 
 		print("\tGenerating Predefines / Function Source")
 		self:GetTrialPredefines(trialData)
@@ -208,7 +210,6 @@ function INTERNET_BENCHMARK:Report()
 		for func, funcResults in pairs(trialData.details) do
 			local stat = {}
 			local total = 0
-			local median = 0
 
 			local i = 1
 			local min, max
@@ -227,14 +228,20 @@ function INTERNET_BENCHMARK:Report()
 				end
 
 				if i == medianIdx1 or i == medianIdx2 then
-					median = median + result
+					table.insert(medians, result)
 				end
+
 				total = total + result
 				i = i + 1
 			end
 
+			local totalMedians = 0
+			for _, median in ipairs(medians) do
+				totalMedians = totalMedians + median
+			end
+
 			stat.total = total
-			stat.median = i == 1 and median or (median / 2)
+			stat.median = totalMedians / #medians
 			stat.mean = total / runs
 			stat.min = min
 			stat.max = max

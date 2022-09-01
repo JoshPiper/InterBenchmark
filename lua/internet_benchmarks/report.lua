@@ -323,18 +323,13 @@ function INTERNET_BENCHMARK:HTMLTemplate(template, variables)
 		variables = {}
 	end
 
-	return ({(file.Read(
-		string.format(
-			"internet_benchmarks/templates/html/%s.html.lua",
-			template
-		),
-		"LUA"
-	) or ""):gsub(
-		'%${(.-)}',
-		function(w)
-			return variables[w] or ("${" .. w .. "}")
-		end
-	)})[1]
+	template = string.format("internet_benchmarks/templates/html/%s.html.lua", template)
+	template = file.Read(template, "LUA") or ""
+	template = string.gsub(template, "%${(.-)}", function(w)
+		return variables[w] or ("${" .. w .. "}")
+	end)
+
+	return template
 end
 
 function INTERNET_BENCHMARK:HTMLReport()

@@ -47,7 +47,9 @@ function INTERNET_BENCHMARK:Trial(trial)
 	local functionFile = string.format("internet_benchmarks/trials/%s", trial)
 	local functions = include(functionFile)
 
-	assert(istable(functions), string.format("failed to get trial data for %s", trial))
+	if not istable(functions) then
+		return nil
+	end
 
 	local trialData = table.Merge({runs = 100, iterations = 100000, title = self:Titalise(trial)}, functions.meta or {})
 	functions = istable(functions.functions) and functions.functions or functions
@@ -139,7 +141,10 @@ function INTERNET_BENCHMARK:TrialAll()
 	local results = {}
 
 	for _, path in ipairs(files) do
-		results[path] = self:Trial(path)
+		local res = self:Trial(path)
+		if res then
+			results[path] = self:Trial(path)
+		end
 	end
 
 	return results

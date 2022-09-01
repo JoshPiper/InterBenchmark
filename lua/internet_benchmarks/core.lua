@@ -1,6 +1,5 @@
 AddCSLuaFile()
 INTERNET_BENCHMARK = INTERNET_BENCHMARK or {}
-print("Reloaded Core")
 
 function INTERNET_BENCHMARK:Benchmark(avgCount, iterations, benchmarkFunc, preRun, postRun, silent)
 	local time = 0
@@ -50,7 +49,7 @@ function INTERNET_BENCHMARK:Trial(trial)
 
 	assert(istable(functions), string.format("failed to get trial data for %s", trial))
 
-	local trialData = table.Merge({runs = 2, iterations = 20, title = self:Titalise(trial)}, functions.meta or {})
+	local trialData = table.Merge({runs = 100, iterations = 10000, title = self:Titalise(trial)}, functions.meta or {})
 	functions = istable(functions.functions) and functions.functions or functions
 
 	local results = {}

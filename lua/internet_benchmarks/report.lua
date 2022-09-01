@@ -339,25 +339,26 @@ end
 
 function INTERNET_BENCHMARK:HTMLReport()
 	local results = self:Report()
+	local tabHeaders, tabBodies = {}, {}
+	local first = true
 
 	print("Generating HTML")
-	local tabs = {}
 	for trial, trialData in SortedPairsByMemberValue(results, "order") do
-		table.insert(tabs, self:HTMLTab(trial, trialData))
+		table.insert(tabHeaders, self:HTMLTemplate("nav/tab", {
+			key = trial,
+			title = self:Titalise(trialData.title or trial)
+		}))
+		table.insert(tabBodies, self:HTMLTab(trial, trialData, first))
+
+		if first then
+			first = nil
+		end
 	end
 
-	local report = string.format([[
-		<!DOCTYPE html>
-		<html>
-			<head>
-				<title>Benchmarking Report</title>
-				<link rel="stylesheet" href="style.css">
-			</head>
-			<body>
-				%s
-			</body>
-		</html>
-	]], table.concat(tabs, "\n"))
+	local report = self:HTMLTemplate("document", {
+		nav = table.concat(tabHeaders, "\n"),
+		body = table.concat(tabBodies, "\n")
+	})
 
 	file.CreateDir("internet_benchmarks")
 	file.Write("internet_benchmarks/report.html.txt", report)
@@ -365,7 +366,7 @@ function INTERNET_BENCHMARK:HTMLReport()
 	file.Write("internet_benchmarks/script.js.txt", file.Read("internet_benchmarks/templates/html/script.js.lua", "LUA"))
 end
 
-function INTERNET_BENCHMARK:HTMLTab(name, data)
+function INTERNET_BENCHMARK:HTMLTab(name, data, first)
 	print(string.format("\tGenerating Tab for :%s", name))
 	local sections = {}
 
@@ -409,11 +410,13 @@ function INTERNET_BENCHMARK:HTMLTab(name, data)
 	print("\t\tGenerating HTML.")
 	table.insert(sections, string.format("<h2 id='%s'>%s</h2>", name, data.title))
 	if #predefines > 0 then
-		table.insert(sections, string.format("<h3>Predefines</h3><code><pre>%s</pre></code>", table.concat(predefines, "\n")))
+
 	end
+
+	local functions = {}
 	for funcIdx, code in ipairs(codes) do
 		local title = data.functions[funcIdx].title
-		table.insert(sections, string.format("<h3>Function %s</h3><code><pre>%s</pre></code>", title, code))
+		table.insert(functions, string.format("<h4>Function %s</h4><code><pre>%s</pre></code>", title, code))
 	end
 
 	local results = {}
@@ -462,7 +465,14 @@ function INTERNET_BENCHMARK:HTMLTab(name, data)
 		))
 		i = i + 1
 	end
-	table.insert(sections, string.format("<h3>Benchmarking Results <small>(%s Runs / %s Iterations)</small></h3><table>%s</table>", data.runs, data.iterations, table.concat(results, "\n")))
 
-	return table.concat(sections, "\n\n")
+	return self:HTMLTemplate("tab", {
+		content = table.concat(sections, "\n\n"),
+		key = name,
+		title = self:Titalise(data.title or name),
+		class = first and "active" or "",
+		predefines = string.format("<code><pre>%s</pre></code>", table.concat(predefines, "\n")),
+		tests = table.concat(functions, "\n"),
+		content = string.format("<h3>Benchmarking Results <small>(%s Runs / %s Iterations)</small></h3><table>%s</table>", data.runs, data.iterations, table.concat(results, "\n"))
+	})
 end

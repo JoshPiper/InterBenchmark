@@ -49,7 +49,7 @@ function INTERNET_BENCHMARK:Trial(trial)
 
 	assert(istable(functions), string.format("failed to get trial data for %s", trial))
 
-	local trialData = table.Merge({runs = 100, iterations = 10000, title = self:Titalise(trial)}, functions.meta or {})
+	local trialData = table.Merge({runs = 1, iterations = 1, title = self:Titalise(trial)}, functions.meta or {})
 	functions = istable(functions.functions) and functions.functions or functions
 
 	local results = {}

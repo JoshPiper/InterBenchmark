@@ -413,8 +413,10 @@ function INTERNET_BENCHMARK:HTMLTab(name, data, first)
 
 	local functions = {}
 	for funcIdx, code in ipairs(codes) do
-		local title = data.functions[funcIdx].title
-		table.insert(functions, string.format("<h4>Function %s</h4><code><pre>%s</pre></code>", title, code))
+		table.insert(functions, self:HTMLTemplate("partial/definition", {
+			title = data.functions[funcIdx].title,
+			content = self:HTMLTemplate("partial/predefine", code)
+		}))
 	end
 
 	local results = {}
@@ -435,42 +437,37 @@ function INTERNET_BENCHMARK:HTMLTab(name, data, first)
 	local minMean = data.stats.__minMean
 	local maxDigits = math.floor(math.log10(#data.functions)) + 1
 
-	local template = string.format([[
-		<tr>
-			<td>%%0%su</td>
-			<td>%%s</td>
-			<td>%%ss</td>
-			<td>%%ss</td>
-			<td>%%ss</td>
-			<td>%%ss</td>
-			<td>%%ss</td>
-			<td>%%s%%%%</td>
-		</tr>
-	]], maxDigits)
+	local template = string.format(self:HTMLTemplate("partial/row"), maxDigits)
 
+	local rows = {}
 	for funcName, mean in SortedPairsByValue(data.results) do
 		local stats = data.stats[funcName]
-		table.insert(results, string.format(
-			template,
-			i,
-			funcName,
-			self:NumberToPrefix(stats.median, nil, (stats.median < 10 and stats.median >= 1) and 3 or 2),
-			self:NumberToPrefix(stats.min, nil, (stats.min < 10 and stats.min >= 1) and 3 or 2),
-			self:NumberToPrefix(stats.max, nil, (stats.max < 10 and stats.max >= 1) and 3 or 2),
-			self:NumberToPrefix(stats.mean, nil, (stats.mean < 10 and stats.mean >= 1) and 3 or 2),
-			self:NumberToPrefix(stats.meanPC, nil, (stats.meanPC < 10 and stats.meanPC >= 1) and 3 or 2),
-			math.Round((stats.mean / minMean) * 100)
-		))
+		table.insert(rows, self:HTMLTemplate("partial/row", {
+			idx = string.format(string.format("%%0%su", maxDigits), i),
+			func = funcName,
+			median = self:NumberToPrefix(stats.median, nil, (stats.median < 10 and stats.median >= 1) and 3 or 2) .. "s",
+			min = self:NumberToPrefix(stats.min, nil, (stats.min < 10 and stats.min >= 1) and 3 or 2) .. "s",
+			max = self:NumberToPrefix(stats.max, nil, (stats.max < 10 and stats.max >= 1) and 3 or 2) .. "s",
+			mean = self:NumberToPrefix(stats.mean, nil, (stats.mean < 10 and stats.mean >= 1) and 3 or 2) .. "s",
+			meanPerCall = self:NumberToPrefix(stats.meanPC, nil, (stats.meanPC < 10 and stats.meanPC >= 1) and 3 or 2) .. "s",
+			percentage = math.Round((stats.mean / minMean) * 100) .. "%"
+		}))
 		i = i + 1
 	end
 
+	results = self:HTMLTemplate("partial/table", {
+		header = self:HTMLTemplate("partial/header"),
+		body = table.concat(rows, "\n")
+	})
+
 	return self:HTMLTemplate("tab", {
-		content = table.concat(sections, "\n\n"),
 		key = name,
+		runs = data.runs,
+		iterations = data.iterations,
 		title = self:Titalise(data.title or name),
 		class = first and "active" or "",
 		predefines = string.format("<code><pre>%s</pre></code>", table.concat(predefines, "\n")),
 		tests = table.concat(functions, "\n"),
-		content = string.format("<h3>Benchmarking Results <small>(%s Runs / %s Iterations)</small></h3><table>%s</table>", data.runs, data.iterations, table.concat(results, "\n"))
+		content = results
 	})
 end

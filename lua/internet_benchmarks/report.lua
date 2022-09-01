@@ -183,8 +183,8 @@ function INTERNET_BENCHMARK:GetTrialPredefines(trialData)
 end
 
 function INTERNET_BENCHMARK:Report()
-	local results = self:TrialAll()
-	-- local results = {string_templating = self:Trial("string_templating.lua")}
+	-- local results = self:TrialAll()
+	local results = {string_templating = self:Trial("string_templating.lua"), equals_false_vs_not = self:Trial("equals_false_vs_not.lua")}
 
 	for trial, trialData in pairs(results) do
 		print(string.format("Calculating Results for :%s", trialData.title))

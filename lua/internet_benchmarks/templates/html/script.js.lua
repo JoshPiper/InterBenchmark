@@ -27,4 +27,6 @@ $(document).ready(function(){
 	}
 
 	tabs.set(active.children().first().attr("x-tab"))
+
+	hljs.highlightAll();
 })

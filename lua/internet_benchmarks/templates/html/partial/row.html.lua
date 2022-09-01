@@ -1,0 +1,10 @@
+<tr>
+	<td>${idx}</td>
+	<td>${func}</td>
+	<td>${median}</td>
+	<td>${min}</td>
+	<td>${max}</td>
+	<td>${mean}</td>
+	<td>${meanPerCall}</td>
+	<td>${percentage}</td>
+</tr>

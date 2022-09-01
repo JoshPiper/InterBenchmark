@@ -322,6 +322,9 @@ function INTERNET_BENCHMARK:HTMLTemplate(template, variables)
 	if variables == nil then
 		variables = {}
 	end
+	if not istable(variables) then
+		variables = {content = tostring(variables)}
+	end
 
 	template = string.format("internet_benchmarks/templates/html/%s.html.lua", template)
 	template = file.Read(template, "LUA") or ""

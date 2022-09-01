@@ -17,8 +17,8 @@ return {
 	meta = {
 		title = "val == false vs not val",
 		order = 1000,
-		runs = 500,
-		iterations = 100000
+		-- runs = 500,
+		-- iterations = 100000
 	},
 	functions = {
 		{title = "== false", func = a},

@@ -1,7 +1,7 @@
 window.tabs = {
 	set: function(id){
-		$("article").hide()
-		$("#" + id).show()
+		$("article").removeClass("active")
+		$(document.getElementById(id)).addClass("active")
 	},
 
 	bind: function(){

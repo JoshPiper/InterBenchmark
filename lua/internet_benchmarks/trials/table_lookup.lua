@@ -19,9 +19,7 @@ end
 return {
 	meta = {
 		title = "HasValue vs Key Lookup in Table Construction vs Upvalues.",
-		order = 1000,
-		runs = 500,
-		iterations = 100000
+		order = 1000
 	},
 	functions = {
 		{title = "Constructed HasValue", func = a},

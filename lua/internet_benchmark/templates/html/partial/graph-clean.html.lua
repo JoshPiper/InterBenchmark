@@ -17,6 +17,11 @@
 			dataPoints: [
 				${data}
 			]
+		}, {
+			type: 'error',
+			dataPoints: [
+				${outliers}
+			]
 		}]
 	}))
 	charts.get("graph-clean-${key}").render()

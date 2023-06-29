@@ -210,6 +210,7 @@ function BENCH:HTMLTab(id, timing, stats, trial)
 	local rows = {}
 	local dataRows = {}
 	local outlierRows = {}
+	local meanRows = {}
 	for fnId, stat in ipairs(stats) do
 		local name = trial.labels[fnId] or ("Function #" .. fnId)
 		table.insert(dataRows, string.format(
@@ -225,6 +226,7 @@ function BENCH:HTMLTab(id, timing, stats, trial)
 		for _, outlier in ipairs(stat.outliers) do
 			table.insert(outlierRows, string.format([[{ x: %s, label: "%s", y: %s}]], fnId - 1, name, outlier))
 		end
+		table.insert(meanRows, string.format([[{ x: %s, label: "%s", y: [%s, %s]}]], fnId - 1, name, stat.mean, stat.mean))
 	end
 	for fnId, stat in SortedPairsByMemberValue(stats, "mean") do
 		local name = trial.labels[fnId] or ("Function #" .. fnId)
@@ -258,7 +260,8 @@ function BENCH:HTMLTab(id, timing, stats, trial)
 	local cleanGraph = t:Template("partial/graph-clean", {
 		key = id,
 		title = f.Title(trial.name or id),
-		data = table.concat(dataRows, ",\n")
+		data = table.concat(dataRows, ",\n"),
+		outliers = table.concat(meanRows, ",\n"),
 	})
 
 	return t:Template("tab", {

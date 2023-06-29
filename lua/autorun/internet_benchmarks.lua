@@ -3,7 +3,7 @@ AddCSLuaFile()
 INTERNET_BENCHMARK = INTERNET_BENCHMARK or {}
 local BENCH = INTERNET_BENCHMARK
 
-function BENCH:Include(path, isFull)
+function BENCH:Include(path, isFull, forceState)
 	if not isFull then
 		path = "internet_benchmark/" .. path
 		if not path:EndsWith(".lua") then
@@ -12,6 +12,9 @@ function BENCH:Include(path, isFull)
 	end
 
 	local prefix = path:match("/?(%w%w)[%w_]*.lua$") or "sh"
+	if forceState then
+		prefix = forceState
+	end
 	if self.Logging then
 		self.Logging.Debug("Prefix: ", prefix, ". Path: '", path, "'")
 	end
@@ -26,9 +29,9 @@ function BENCH:Include(path, isFull)
 	end
 end
 
-function BENCH:IncludeDir(path)
+function BENCH:IncludeDir(path, forceState)
 	path = "internet_benchmark/" .. path
-	if not path:EndWith("/") then
+	if not path:EndsWith("/") then
 		path = path .. "/"
 	end
 
@@ -36,10 +39,10 @@ function BENCH:IncludeDir(path)
 		self.Logging.Debug("Including Directory: '", path, "'")
 	end
 
-	local search = path:EndWith("*") and path or (path .. "*")
-	local files = file.Find(search)
+	local search = path:EndsWith("*") and path or (path .. "*")
+	local files = file.Find(search, "LUA")
 	for _, name in ipairs(files) do
-		self:Include(path .. name, true)
+		self:Include(path .. name, true, forceState)
 	end
 end
 

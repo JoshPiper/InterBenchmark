@@ -83,14 +83,14 @@ function BENCH:HTMLReport()
 
 	for i, data in SortedPairsByMemberValue(info, "order") do
 		local timing, statistics, trial = unpack(data)
+		local id = trial.id or i
 
 		local nav = t:Template("nav/tab", {
-			key = i,
-			title = f.Title(trial.title or trial.id or i)
+			key = id,
+			title = f.Title(trial.title or id)
 		})
-		print(nav)
 		table.insert(headers, nav)
-		table.insert(tabs, self:HTMLTab(i, timing, statistics, trial))
+		table.insert(tabs, self:HTMLTab(id, timing, statistics, trial))
 		first = nil
 	end
 

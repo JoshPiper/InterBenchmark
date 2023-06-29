@@ -6,14 +6,6 @@ local tab = {
 local insert = table.insert
 local count = 1
 
-local function preRun()
-	tab = {
-		[0] = 0,
-		n = 0
-	}
-	count = 1
-end
-
 local function a(times)
 	insert(tab, times)
 end

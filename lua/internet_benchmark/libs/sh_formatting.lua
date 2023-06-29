@@ -60,7 +60,6 @@ function FORMAT:Prefix(num, prefixes, minBound, maxBound)
 
 	for _, pow in ipairs(prefixes) do
 		local calc = math.abs(num * math.pow(10, -pow))
-		self.Logging.Debug("Checking prefix power ", pow, " if ", calc, " is within ", minBound, " and ", maxBound)
 		if calc >= minBound and calc < maxBound then
 			return pow
 		end

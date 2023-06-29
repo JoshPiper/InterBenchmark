@@ -86,7 +86,7 @@ function BENCH:HTMLReport()
 	for i, data in SortedPairsByMemberValue(info, "order") do
 		table.insert(headers, t:Template("nav/tab", {
 			key = i,
-			title = f:Title(data.title or name)
+			title = f:Title(data.title or data.id or i)
 		}))
 		table.insert(tabs, self:HTMLTab(i, data, first))
 		first = nil

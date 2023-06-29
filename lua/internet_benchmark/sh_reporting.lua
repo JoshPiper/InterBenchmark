@@ -75,7 +75,7 @@ function BENCH:HTMLReport()
 
 	local state, info = status(doAllTrials), nil
 	while state == "suspended" do
-		_, results, statistics, trial = resume(doAllTrials)
+		_, info = resume(doAllTrials)
 		l.Debug("Recieved Yield in HTMLReport from ReportAll")
 		if _yieldable then
 			yield()

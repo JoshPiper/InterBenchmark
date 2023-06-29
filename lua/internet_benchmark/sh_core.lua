@@ -37,6 +37,7 @@ function BENCH:Benchmark(func, iterationsPerRun, runs, preRun, postRun)
 
 	for run = 1, runs do
 		self.Logging.Debug("Preparing Run")
+		collectgarbage()
 		if preRun then preRun() end
 		results[run] = self:Time(func, iterationsPerRun)
 		if postRun then postRun() end
@@ -152,6 +153,9 @@ function BENCH:Trial(name, debug_timing)
 	end)
 
 	self.Logging.Info("Warming Up")
+	collectgarbage("stop")
+	local oldStep = collectgarbage("setstepmul", 10000)
+
 	local cnt, res
 	cnt = true
 	while cnt do
@@ -181,6 +185,9 @@ function BENCH:Trial(name, debug_timing)
 			yield()
 		end
 	end
+
+	collectgarbage("restart")
+	collectgarbage("setstepmul", oldStep)
 
 	return res, trial
 end

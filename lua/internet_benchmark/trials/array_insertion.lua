@@ -53,25 +53,6 @@ TRIAL
 		}
 		count = 1
 	end)
-
-return {
-	meta = {
-		order = 12,
-		predefines = {
-			{1, 4},
-			{9, 15}
-		},
-		excludedVars = {
-			tab = true,
-			preRun = true
-		}
-	},
-	functions = {
-		{title = "table.insert", func = a, preRun = preRun},
-		{title = "tab[times]", func = b, preRun = preRun},
-		{title = "tab[#tab + 1]", func = c, preRun = preRun},
-		{title = "tab[count]", func = d, preRun = preRun},
-		{title = "tab[tab.n]", func = e, preRun = preRun},
-		{title = "tab[tab[0]]", func = f, preRun = preRun},
-	}
-}
+	:ManualPredefine(1, 4)
+	:ManualPredefine(9, 15)
+	:Exclude("tab")

@@ -64,7 +64,6 @@ end
 
 function BENCH:HTMLReport()
 	local headers, tabs = {}, {}
-	local first = true
 	local _yieldable = yieldable()
 
 	local doAllTrials = coroutine.create(function()

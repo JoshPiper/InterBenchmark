@@ -11,9 +11,9 @@ function TEMPLATE:Replace(template, variables)
 		variables = {content = tostring(variables)}
 	end
 
-	return string.gsub(template, "%${(.-)}", function(w)
+	return (string.gsub(template, "%${(.-)}", function(w)
 		return variables[w] or ("${" .. w .. "}")
-	end)
+	end))
 end
 
 function TEMPLATE:Path(path, type)

@@ -13,7 +13,7 @@ function BENCH:ReportTrial(trial)
 
 	local state, results, trialInfo = status(doTrial), {}
 	while state == "suspended" do
-		_, results, trial = resume(doTrial)
+		_, results, trialInfo = resume(doTrial)
 		l.Debug("Recieved Yield in ReportTrial from Trial")
 		if _yieldable then
 			l.Debug("Deferring Yield")

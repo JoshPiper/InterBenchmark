@@ -78,6 +78,7 @@ function BENCH:HTMLReport()
 		_, info = resume(doAllTrials)
 		l.Debug("Recieved Yield in HTMLReport from ReportAll")
 		if _yieldable then
+			l.Debug("Deferring Yield")
 			yield()
 		end
 		state = status(doAllTrials)

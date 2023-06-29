@@ -216,26 +216,21 @@ function BENCH:HTMLTab(id, data, first)
 end
 
 function BENCH:ReportWithoutCrashing()
-	-- if self._ActiveReport and status(self._ActiveReport) ~= "dead" then
-	-- 	return
-	-- end
-
-	hook.Remove("Tick", "INTERNET_BENCHMARK.ProcessQueue")
-
-	self._ActiveReport = coroutine.create(function()
+	local report = coroutine.create(function()
 		self:HTMLReport()
-		hook.Remove("Tick", "INTERNET_BENCHMARK.ProcessQueue")
 		self._ActiveReport = nil
 	end)
+	local name = tostring(report)
+	local i = 0
+	timer.Create(name, 0.2, 0, function()
+		i = i + 1
+		self.Logging.Debug("Timer Tick ", i)
 
-	local waiting = false
-	hook.Add("Tick", "INTERNET_BENCHMARK.ProcessQueue", function()
-		if status(self._ActiveReport) == "suspended" then
-			waiting = true
-			timer.Simple(1, function()
-				waiting = false
-				resume(self._ActiveReport)
-			end)
+		local _status = status(report)
+		if _status == "suspended" then
+			resume(report)
+		elseif _status == "dead" then
+			timer.Remove(name)
 		end
 	end)
 end

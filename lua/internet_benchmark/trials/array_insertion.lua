@@ -54,6 +54,13 @@ TRIAL
 	:Label("tab[tab.n]")
 	:Function(f)
 	:Label("tab[0]")
+	:Before(function()
+		tab = {
+			[0] = 0,
+			n = 0
+		}
+		count = 1
+	end)
 
 return {
 	meta = {

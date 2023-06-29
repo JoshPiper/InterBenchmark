@@ -81,8 +81,6 @@ function BENCH:HTMLReport()
 		state = status(doAllTrials)
 	end
 
-	PrintTable(info)
-
 	for i, data in SortedPairsByMemberValue(info, "order") do
 		local timing, statistics, trial = unpack(data)
 

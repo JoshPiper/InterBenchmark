@@ -8,7 +8,7 @@ local t, f, l = BENCH.Templating, BENCH.Formatting, BENCH.Logging
 function BENCH:ReportTrial(trial)
 	local _yieldable = yieldable()
 	local doTrial = coroutine.create(function()
-		return self:Trial(trial, true)
+		return self:Trial(trial)
 	end)
 
 	local state, results, trialInfo = status(doTrial), {}

@@ -187,13 +187,15 @@ end
 
 function BENCH:Statistic(results)
 	local stats = {}
-	local min, max, total = math.huge, 0, 0
+	local total = 0
 	local count = #results
 	local median1, median2 = math.floor((count - 1) / 2) + 1, math.ceil((count - 1) / 2) + 1
+	local q11, q12 = math.floor((count - 1) / 4) + 1, math.ceil((count - 1) / 4) + 1
+	local q31, q32 = math.floor(((count - 1) / 4) * 3) + 1, math.ceil(((count - 1) / 4) * 3) + 1
 
-	for idx, result in SortedPairsByValue(results) do
-		min = math.min(min, result)
-		max = math.max(max, result)
+	local idx = 0
+	for _, result in SortedPairsByValue(results) do
+		idx = idx + 1
 
 		if idx == median1 then
 			median1 = result
@@ -201,14 +203,27 @@ function BENCH:Statistic(results)
 		if idx == median2 then
 			median2 = result
 		end
+		if idx == q11 then
+			q11 = result
+		end
+		if idx == q12 then
+			q12 = result
+		end
+		if idx == q31 then
+			q31 = result
+		end
+		if idx == q32 then
+			q32 = result
+		end
 
 		total = total + result
 	end
 
 	stats.total = total
-	stats.min = min
-	stats.max = max
 	stats.median = (median1 + median2) / 2
+	stats.q1 = (q11 + q12) / 2
+	stats.q3 = (q31 + q32) / 2
+	stats.iqr = stats.q3 - stats.q1
 	stats.mean = total / count
 	stats.count = count
 	stats.average = stats.mean / count
@@ -218,6 +233,23 @@ function BENCH:Statistic(results)
 		stdDev = stdDev + math.pow(result - stats.mean, 2)
 	end
 	stats.stdev = math.sqrt(stdDev / count)
+
+	stats.minbound = stats.q1 - (1.5 * stats.iqr)
+	stats.maxbound = stats.q3 + (1.5 * stats.iqr)
+
+	local min, max, outliers = math.huge, 0, {}
+	for _, result in ipairs(results) do
+		if result > stats.minbound and result < stats.maxbound then
+			min = math.min(min, result)
+			max = math.max(max, result)
+		else
+			table.insert(outliers, result)
+		end
+	end
+
+	stats.min = min
+	stats.max = max
+	stats.outliers = outliers
 
 	return stats
 end

@@ -248,12 +248,12 @@ function BENCH:HTMLTab(id, timing, stats, trial)
 		body = table.concat(rows, "\n")
 	})
 
-	local graph = t:Template("partial/graph", {
-		key = id,
-		title = f.Title(trial.name or id),
-		data = table.concat(dataRows, ",\n"),
-		outliers = table.concat(outlierRows, ",\n"),
-	})
+	-- local graph = t:Template("partial/graph", {
+	-- 	key = id,
+	-- 	title = f.Title(trial.name or id),
+	-- 	data = table.concat(dataRows, ",\n"),
+	-- 	outliers = table.concat(outlierRows, ",\n"),
+	-- })
 
 	local cleanGraph = t:Template("partial/graph-clean", {
 		key = id,
@@ -269,7 +269,7 @@ function BENCH:HTMLTab(id, timing, stats, trial)
 		class = first and "active" or "",
 		predefines = string.format("<code><pre>%s</pre></code>", table.concat(predefines, "\n")),
 		tests = table.concat(functions, "\n"),
-		content = results .. "\n" .. cleanGraph .. "\n" .. graph
+		content = results .. "\n" .. cleanGraph
 	})
 end
 

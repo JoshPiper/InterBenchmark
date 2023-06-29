@@ -48,3 +48,12 @@ end
 
 BENCH:Include("libs/sh_functional")
 BENCH:Include("libs/sh_logging")
+BENCH:Include("libs/sh_formatting")
+BENCH:Include("libs/sh_templating")
+BENCH:Include("classes/sh_trial")
+if SERVER then
+	-- Force all the trials to be added to the DL list.
+	BENCH:IncludeDir("trials", "cl")
+end
+BENCH:Include("sh_core")
+BENCH:Include("sh_reporting")

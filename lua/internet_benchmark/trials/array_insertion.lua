@@ -41,15 +41,19 @@ local function f(times)
 	tab[tab[0]] = times
 end
 
-print(TRIAL)
-
 TRIAL
 	:Function(a)
+	:Label("table.insert")
 	:Function(b)
+	:Label("tab[i]")
 	:Function(c)
+	:Label("tab[#tab + 1]")
 	:Function(d)
+	:Label("tab[count]")
 	:Function(e)
+	:Label("tab[tab.n]")
 	:Function(f)
+	:Label("tab[0]")
 
 return {
 	meta = {

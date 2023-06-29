@@ -81,7 +81,7 @@ function FORMAT:ModalPrefix(numbers, prefixes, minBound, maxBound)
 end
 
 function FORMAT:Number(num, prefix, sigFig)
-	local formatterString = sigFig == nil and "%s" or string.format("%%#.%sg", sigFig)
+	local formatterString = sigFig == nil and "%s" or string.format("%%#.%sf", sigFig)
 
 	local out = not prefix and
 		string.format(formatterString, num) or

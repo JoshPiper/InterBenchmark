@@ -120,6 +120,7 @@ function BENCH:Trial(name, debug_timing)
 		self.Logging.Debug("Functions Path Exists: ", fnPath)
 		self:Include(fnPath, nil, "sh")
 	end
+	trial.id = name
 	TRIAL = nil
 
 	if debug_timing then

@@ -63,8 +63,6 @@ function BENCH:ReportAll()
 end
 
 function BENCH:HTMLReport()
-	local t = self.Templating
-	local f = self.Formatting
 	local headers, tabs = {}, {}
 	local first = true
 	local _yieldable = yieldable()
@@ -84,12 +82,18 @@ function BENCH:HTMLReport()
 		state = status(doAllTrials)
 	end
 
+	PrintTable(info)
+
 	for i, data in SortedPairsByMemberValue(info, "order") do
-		table.insert(headers, t:Template("nav/tab", {
+		local timing, statistics, trial = unpack(data)
+
+		local nav = t:Template("nav/tab", {
 			key = i,
-			title = f:Title(data.title or data.id or i)
-		}))
-		table.insert(tabs, self:HTMLTab(i, data, first))
+			title = f.Title(trial.title or trial.id or i)
+		})
+		print(nav)
+		table.insert(headers, nav)
+		table.insert(tabs, self:HTMLTab(i, timing, statistics, trial))
 		first = nil
 	end
 
@@ -104,12 +108,9 @@ function BENCH:HTMLReport()
 	file.Write("internet_benchmarks/script.js.txt", file.Read("internet_benchmarks/templates/html/script.js.lua", "LUA"))
 end
 
-function BENCH:HTMLTab(id, data, first)
-	local t = self.Templating
-	local f = self.Formatting
-	local l = self.Logging
-
-	l.Debug("Generating tab for ", id)
+function BENCH:HTMLTab(i, timing, stats, trial)
+	local first = i == 1
+	l.Debug("Generating tab for ", i)
 
 	local sections = {}
 	local predefines = {}
@@ -121,47 +122,47 @@ function BENCH:HTMLTab(id, data, first)
 		table.insert(predefines, predefine)
 	end
 
-	l.Debug("Generating Upvalues.")
-	for fnId, fn in ipairs(data.functions) do
-		for var, val in pairs(fn.info.upvars) do
-			if not excluded[var] then
-				if isstring(val) then
-					table.insert(predefines, string.format("local %s = %s", var, val))
-				elseif istable(val) then
-					local typ, dt = val[1], val[2]
-					if typ == "raw" then
-						table.insert(predefines, dt)
-					end
-				end
-			end
-		end
+	-- l.Debug("Generating Upvalues.")
+	-- for fnId, fn in ipairs(data.functions) do
+	-- 	for var, val in pairs(fn.info.upvars) do
+	-- 		if not excluded[var] then
+	-- 			if isstring(val) then
+	-- 				table.insert(predefines, string.format("local %s = %s", var, val))
+	-- 			elseif istable(val) then
+	-- 				local typ, dt = val[1], val[2]
+	-- 				if typ == "raw" then
+	-- 					table.insert(predefines, dt)
+	-- 				end
+	-- 			end
+	-- 		end
+	-- 	end
 
-		codes[fnId] = fn.info.source
-	end
+	-- 	codes[fnId] = fn.info.source
+	-- end
 
-	local seen = {}
-	local defines = {}
-	for _, define in ipairs(predefines) do
-		if not seen[define] then
-			seen[define] = true
-			table.insert(defines, define)
-		end
-	end
-	predefines = defines
+	-- local seen = {}
+	-- local defines = {}
+	-- for _, define in ipairs(predefines) do
+	-- 	if not seen[define] then
+	-- 		seen[define] = true
+	-- 		table.insert(defines, define)
+	-- 	end
+	-- end
+	-- predefines = defines
 
 	print("\t\tGenerating HTML.")
-	table.insert(sections, string.format("<h2 id='%s'>%s</h2>", name, data.title))
-	if #predefines > 0 then
+	table.insert(sections, string.format("<h2 id='%s'>%s</h2>", data.id or i, f.Title(data.title or data.id or i)))
+	-- if #predefines > 0 then
 
-	end
+	-- end
 
-	local functions = {}
-	for funcIdx, code in ipairs(codes) do
-		table.insert(functions, t:Template("partial/definition", {
-			title = data.functions[funcIdx].title,
-			content = t:Template("partial/predefine", code)
-		}))
-	end
+	-- local functions = {}
+	-- for funcIdx, code in ipairs(codes) do
+	-- 	table.insert(functions, t:Template("partial/definition", {
+	-- 		title = data.functions[funcIdx].title,
+	-- 		content = t:Template("partial/predefine", code)
+	-- 	}))
+	-- end
 
 	local results = {}
 	table.insert(results, [[
@@ -178,14 +179,12 @@ function BENCH:HTMLTab(id, data, first)
 	]])
 
 	local i = 1
-	local minMean = data.stats.__minMean
-	local maxDigits = math.floor(math.log10(#data.functions)) + 1
-
-	local template = string.format(t:Template("partial/row"), maxDigits)
+	local minMean = statistics.__minMean
+	local maxDigits = math.floor(math.log10(#trial.functions)) + 1
 
 	local rows = {}
-	for funcName, mean in SortedPairsByValue(data.results) do
-		local stats = data.stats[funcName]
+	for funcName, mean in SortedPairsByValue(timing.results) do
+		local stats = statistics[funcName]
 		table.insert(rows, t:Template("partial/row", {
 			idx = string.format(string.format("%%0%su", maxDigits), i),
 			func = funcName,
@@ -222,6 +221,7 @@ function BENCH:ReportWithoutCrashing()
 		self._ActiveReport = nil
 	end)
 	local name = tostring(report)
+	local out = {}
 	local i = 0
 	timer.Create(name, 0.2, 0, function()
 		i = i + 1
@@ -229,9 +229,17 @@ function BENCH:ReportWithoutCrashing()
 
 		local _status = status(report)
 		if _status == "suspended" then
-			resume(report)
+			out = {resume(report)}
 		elseif _status == "dead" then
 			timer.Remove(name)
+
+			if not out[1] and isstring(out[2]) then
+				error(out[2])
+			end
+
+			print("done")
+			PrintTable(out)
+
 		end
 	end)
 end

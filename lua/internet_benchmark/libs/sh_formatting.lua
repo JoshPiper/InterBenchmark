@@ -111,7 +111,7 @@ function FORMAT:AutoNumbers(num, numbers, sigFig, prefixes, minBound, maxBound)
 	)
 end
 
-function FORMAT:Title(word)
+function FORMAT.Title(word)
 	if word:sub(-4) == ".lua" then
 		word = word:sub(0, -4)
 	end

@@ -95,8 +95,8 @@ function BENCH:HTMLReport()
 	end
 
 	local report = t:Template("document", {
-		nav = table.concat(tabHeaders, "\n"),
-		body = table.concat(tabBodies, "\n")
+		nav = table.concat(headers, "\n"),
+		body = table.concat(tabs, "\n")
 	})
 
 	file.CreateDir("internet_benchmarks")
@@ -105,22 +105,23 @@ function BENCH:HTMLReport()
 	file.Write("internet_benchmarks/script.js.txt", file.Read("internet_benchmarks/templates/html/script.js.lua", "LUA"))
 end
 
-function BENCH:HTMLTab(i, timing, stats, trial)
-	local first = i == 1
-	l.Debug("Generating tab for ", i)
+function BENCH:HTMLTab(id, timing, stats, trial)
+	local first = id == 1
+	l.Debug("Generating tab for ", id)
 
 	local sections = {}
 	local predefines = {}
 	local codes = {}
-	local excluded = data.excludedVars or {}
+	local excluded = trial.excludedVars or {}
 
 	l.Debug("Generating Pre-Definitions.")
-	for _, predefine in pairs(data.predefines or {}) do
+	for _, predefine in pairs(trial.predefines or {}) do
 		table.insert(predefines, predefine)
 	end
+	print(id)
 
 	-- l.Debug("Generating Upvalues.")
-	-- for fnId, fn in ipairs(data.functions) do
+	-- for fnId, fn in ipairs(trial.functions) do
 	-- 	for var, val in pairs(fn.info.upvars) do
 	-- 		if not excluded[var] then
 	-- 			if isstring(val) then
@@ -147,13 +148,14 @@ function BENCH:HTMLTab(i, timing, stats, trial)
 	-- end
 	-- predefines = defines
 
-	print("\t\tGenerating HTML.")
-	table.insert(sections, string.format("<h2 id='%s'>%s</h2>", data.id or i, f.Title(data.title or data.id or i)))
+	-- print("\t\tGenerating HTML.")
+	table.insert(sections, string.format("<h2 id='%s'>%s</h2>", id, f.Title(trial.title or id)))
+	print(id, string.format("<h2 id='%s'>%s</h2>", id, f.Title(trial.title or id)))
 	-- if #predefines > 0 then
 
 	-- end
 
-	-- local functions = {}
+	local functions = {}
 	-- for funcIdx, code in ipairs(codes) do
 	-- 	table.insert(functions, t:Template("partial/definition", {
 	-- 		title = data.functions[funcIdx].title,
@@ -175,23 +177,69 @@ function BENCH:HTMLTab(i, timing, stats, trial)
 		</tr>
 	]])
 
+	local timePairs = {
+		median = {},
+		min = {},
+		max = {},
+		mean = {},
+		average = {},
+		percentage = {}
+	}
+	local minMean = stats.minMean
+
+	-- print("hi")
+
+	for fnId, _ in ipairs(timing) do
+		local stat = stats[fnId]
+		table.insert(timePairs.median, stat.median)
+		table.insert(timePairs.min, stat.min)
+		table.insert(timePairs.max, stat.max)
+		table.insert(timePairs.mean, stat.mean)
+		table.insert(timePairs.average, stat.average)
+		stat.percentage = (stat.mean / minMean) * 100
+		table.insert(timePairs.percentage, stat.percentage)
+	end
+
 	local i = 1
-	local minMean = statistics.__minMean
 	local maxDigits = math.floor(math.log10(#trial.functions)) + 1
 
+	-- print("hi2")
+	-- PrintTable(timing)
+	stats.minMean = nil
+
 	local rows = {}
-	for funcName, mean in SortedPairsByValue(timing.results) do
-		local stats = statistics[funcName]
+	local dataRows = {}
+	local outlierRows = {}
+	for fnId, stat in ipairs(stats) do
+		local name = trial.labels[fnId] or ("Function #" .. fnId)
+		table.insert(dataRows, string.format(
+			[[{ x: %s, label: "%s",  y: [%s, %s, %s, %s, %s]}]],
+			fnId - 1,
+			name,
+			stat.min,
+			stat.q1,
+			stat.q3,
+			stat.max,
+			stat.median
+		))
+		for _, outlier in ipairs(stat.outliers) do
+			table.insert(outlierRows, string.format([[{ x: %s, label: "%s", y: %s}]], fnId - 1, name, outlier))
+		end
+	end
+	for fnId, stat in SortedPairsByMemberValue(stats, "mean") do
+		local name = trial.labels[fnId] or ("Function #" .. fnId)
+
 		table.insert(rows, t:Template("partial/row", {
 			idx = string.format(string.format("%%0%su", maxDigits), i),
-			func = funcName,
-			median = self:NumberToPrefix(stats.median, nil, (stats.median < 10 and stats.median >= 1) and 3 or 2) .. "s",
-			min = self:NumberToPrefix(stats.min, nil, (stats.min < 10 and stats.min >= 1) and 3 or 2) .. "s",
-			max = self:NumberToPrefix(stats.max, nil, (stats.max < 10 and stats.max >= 1) and 3 or 2) .. "s",
-			mean = self:NumberToPrefix(stats.mean, nil, (stats.mean < 10 and stats.mean >= 1) and 3 or 2) .. "s",
-			meanPerCall = self:NumberToPrefix(stats.meanPC, nil, (stats.meanPC < 10 and stats.meanPC >= 1) and 3 or 2) .. "s",
-			percentage = math.Round((stats.mean / minMean) * 100) .. "%"
+			func = name,
+			median = f:AutoNumbers(stat.median, timePairs.median, (stat.median < 10 and stat.median >= 1) and 3 or 2) .. "s",
+			min = f:AutoNumbers(stat.min, timePairs.min, (stat.min < 10 and stat.min >= 1) and 3 or 2) .. "s",
+			max = f:AutoNumbers(stat.max, timePairs.max, (stat.max < 10 and stat.max >= 1) and 3 or 2) .. "s",
+			mean = f:AutoNumbers(stat.mean, timePairs.mean, (stat.mean < 10 and stat.mean >= 1) and 3 or 2) .. "s",
+			meanPerCall = f:AutoNumbers(stat.average, timePairs.average, (stat.average < 10 and stat.average >= 1) and 3 or 2) .. "s",
+			percentage = math.Round(stat.percentage) .. "%"
 		}))
+
 		i = i + 1
 	end
 
@@ -200,15 +248,28 @@ function BENCH:HTMLTab(i, timing, stats, trial)
 		body = table.concat(rows, "\n")
 	})
 
+	local graph = t:Template("partial/graph", {
+		key = id,
+		title = f.Title(trial.name or id),
+		data = table.concat(dataRows, ",\n"),
+		outliers = table.concat(outlierRows, ",\n"),
+	})
+
+	local cleanGraph = t:Template("partial/graph-clean", {
+		key = id,
+		title = f.Title(trial.name or id),
+		data = table.concat(dataRows, ",\n")
+	})
+
 	return t:Template("tab", {
-		key = name,
-		runs = data.runs,
-		iterations = data.iterations,
-		title = self:Titalise(data.title or name),
+		key = id,
+		runs = trial.runs,
+		iterations = trial.iterations,
+		title = f.Title(trial.name or id),
 		class = first and "active" or "",
 		predefines = string.format("<code><pre>%s</pre></code>", table.concat(predefines, "\n")),
 		tests = table.concat(functions, "\n"),
-		content = results
+		content = results .. "\n" .. cleanGraph .. "\n" .. graph
 	})
 end
 
@@ -233,10 +294,6 @@ function BENCH:ReportWithoutCrashing()
 			if not out[1] and isstring(out[2]) then
 				error(out[2])
 			end
-
-			print("done")
-			PrintTable(out)
-
 		end
 	end)
 end

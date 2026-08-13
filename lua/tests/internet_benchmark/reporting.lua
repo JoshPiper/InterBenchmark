@@ -109,6 +109,19 @@ return {
 		},
 
 		{
+			name = "States the margin plainly when only two candidates are compared",
+			func = function(state)
+				local html = INTERNET_BENCHMARK:HTMLTab("example", state.timing, state.stats, state.trial)
+
+				local hasNote = string.find(html, "Beats the other option by 80%.", 1, true)
+				expect(hasNote).to.exist()
+
+				local hasOldPhrasing = string.find(html, "and the slowest by", 1, true)
+				expect(hasOldPhrasing).to.beNil()
+			end
+		},
+
+		{
 			name = "Includes the trial pre-definitions and configuration",
 			func = function(state)
 				local html = INTERNET_BENCHMARK:HTMLTab("example", state.timing, state.stats, state.trial)

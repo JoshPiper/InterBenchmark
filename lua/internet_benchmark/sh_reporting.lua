@@ -354,9 +354,16 @@ function BENCH:HTMLTab(id, timing, stats, trial)
 	local winnerLabel = f.EscapeHTML(labels[winnerFnId] or ("Function #" .. winnerFnId))
 	local winnerPerCall = f:AutoNumber(winnerStat.average, nil, 2) .. "s"
 
-	local winnerNote = secondPct <= 105
-		and string.format("Within %d%% of the next candidate — effectively a tie at this sample size.", secondPct - 100)
-		or string.format("Beats the next candidate by %d%%, and the slowest by %d%%.", secondPct - 100, worstPct - 100)
+	local winnerNote
+	if secondPct <= 105 then
+		winnerNote = string.format("Within %d%% of the next candidate — effectively a tie at this sample size.", secondPct - 100)
+	elseif #trial.functions <= 2 then
+		-- With only two candidates, "next" and "slowest" are the same
+		-- function - stating its percentage twice would just be noise.
+		winnerNote = string.format("Beats the other option by %d%%.", secondPct - 100)
+	else
+		winnerNote = string.format("Beats the next candidate by %d%%, and the slowest by %d%%.", secondPct - 100, worstPct - 100)
+	end
 
 	local html = t:Template("tab", {
 		key = id,

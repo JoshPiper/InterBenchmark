@@ -122,6 +122,7 @@ return {
 				expect(isSysInfo).to.beTrue()
 
 				expect(rowValue(details, "Physical Cores")).to.beGreaterThan(0)
+				expect(rowValue(details, "CPU Model")).to.beA("string")
 				expect(rowValue(details, "CPU Architecture")).to.beA("string")
 				expect(rowValue(details, "Kernel")).to.beA("string")
 				expect(rowValue(details, "OS Version")).to.beA("string")
@@ -152,6 +153,12 @@ return {
 					get_system_long_version = function() return "Ubuntu 24.04.3 LTS" end,
 					get_kernel_version = function() return "6.8.0-79-generic" end,
 					get_distro_id = function() return "ubuntu" end,
+					-- get_cpu_name deliberately returns something distinct
+					-- from get_cpu_brand, so a regression that swapped them
+					-- (surfacing the OS-internal id instead of the model)
+					-- would show up as a failing assertion below.
+					get_cpu_name = function() return "cpu0" end,
+					get_cpu_brand = function() return "Ryzen 9 5950X" end,
 					get_cpu_arch = function() return "x86_64" end,
 					get_core_count = function() return 8 end,
 					get_memory = function() return 16 * 1024 ^ 3 end,
@@ -165,6 +172,7 @@ return {
 
 				expect(rowValue(details, "System Info Module")).to.equal("gm_sysinfo 2.0.0")
 				expect(rowValue(details, "OS Version")).to.equal("Ubuntu 24.04.3 LTS")
+				expect(rowValue(details, "CPU Model")).to.equal("Ryzen 9 5950X")
 				expect(rowValue(details, "Physical Cores")).to.equal(8)
 				expect(rowValue(details, "Total Memory")).to.equal("16.00 GiB")
 				expect(rowValue(details, "Available Memory")).to.equal("512 MiB")

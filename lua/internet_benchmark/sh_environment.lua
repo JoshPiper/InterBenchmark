@@ -2,14 +2,14 @@
 -- Collects everything plain GLua exposes about the game and host, so every
 -- report can state the conditions it was generated under.
 --
--- When the optional gm_sysinfo binary module is installed
+-- When the optional gm_sysinfo binary module (3.1.0+) is installed
 -- (https://github.com/JoshPiper/gm_sysinfo), the statement is extended with
 -- host details plain GLua cannot see: precise OS and kernel versions, the
--- distribution, CPU architecture, physical core count, memory and swap
--- totals, load averages and uptime.
+-- distribution, CPU model and architecture, physical core count, memory and
+-- swap totals, load averages and uptime.
 --
 -- Even with the module, the following still need recording by hand:
---   * CPU model and clock speed (not yet exposed by gm_sysinfo).
+--   * CPU clock speed (not yet exposed by gm_sysinfo).
 --   * GPU model and driver version.
 -- @module environment
 
@@ -136,6 +136,10 @@ function ENV:Collect()
 		push(rows, "OS Version", try(si.get_system_long_version))
 		push(rows, "Kernel", try(si.get_kernel_version))
 		push(rows, "Distribution", try(si.get_distro_id))
+		-- get_cpu_name is deliberately not surfaced here: it is an
+		-- OS-internal identifier (e.g. "cpu0" on Linux), not a human-
+		-- readable model - get_cpu_brand is the one worth publishing.
+		push(rows, "CPU Model", try(si.get_cpu_brand))
 		push(rows, "CPU Architecture", try(si.get_cpu_arch))
 		push(rows, "Physical Cores", try(si.get_core_count))
 		push(rows, "Total Memory", try(si.get_memory, formatBytes))
@@ -162,14 +166,14 @@ function ENV:Format()
 	table.insert(lines, "")
 	if self:SysInfo() then
 		table.insert(lines, "Host details above are provided by the gm_sysinfo binary module.")
-		table.insert(lines, "CPU model, clock speed and GPU are not exposed by plain GLua or")
-		table.insert(lines, "the module; record those by hand alongside this statement.")
+		table.insert(lines, "CPU clock speed and GPU are not exposed by plain GLua or the")
+		table.insert(lines, "module; record those by hand alongside this statement.")
 	else
 		table.insert(lines, "Plain GLua cannot inspect the hardware itself. CPU model and clock")
 		table.insert(lines, "speed, core count, memory, GPU and precise OS version all need")
 		table.insert(lines, "a binary module, or recording by hand alongside this statement.")
 		table.insert(lines, "The optional gm_sysinfo module (github.com/JoshPiper/gm_sysinfo)")
-		table.insert(lines, "provides everything above except the CPU model, clock and GPU.")
+		table.insert(lines, "provides everything above except CPU clock speed and GPU.")
 	end
 
 	return table.concat(lines, "\n")

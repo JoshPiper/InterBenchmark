@@ -164,16 +164,16 @@ alongside the report:
 - Load from other processes on the machine.
 
 No binary module ships with this suite, but if the optional
-[gm_sysinfo](https://github.com/JoshPiper/gm_sysinfo) module is installed for
-the running realm, the suite detects it automatically and extends the statement
-with the precise OS version, kernel, distribution, CPU architecture, physical
-core count, memory and swap totals, 1/5/15-minute load averages and host
-uptime. The host name is deliberately never collected, since these statements
-are meant to be published.
+[gm_sysinfo](https://github.com/JoshPiper/gm_sysinfo) module (3.1.0+) is
+installed for the running realm, the suite detects it automatically and
+extends the statement with the precise OS version, kernel, distribution, CPU
+model and architecture, physical core count, memory and swap totals,
+1/5/15-minute load averages and host uptime. The host name is deliberately
+never collected, since these statements are meant to be published.
 
-Even with the module, the **CPU model and clock speed** (not yet exposed by
-gm_sysinfo) and the **GPU** still need noting by hand next to
-`environment.txt` when you publish results.
+Even with the module, the **CPU clock speed** (not yet exposed by gm_sysinfo)
+and the **GPU** still need noting by hand next to `environment.txt` when you
+publish results.
 
 ## Writing trials
 

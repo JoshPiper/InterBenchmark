@@ -52,10 +52,10 @@ jobs:
       # the real binary, not just the injected fakes.
       additional-setup: |
         mkdir -p garrysmod_override/lua/bin
-        base="https://github.com/JoshPiper/gm_sysinfo/releases/download/v3.0.1"
+        base="https://github.com/JoshPiper/gm_sysinfo/releases/download/v3.1.0"
         curl -sSLf -o garrysmod_override/lua/bin/gmsv_sysinfo_linux.dll "$base/gmsv_sysinfo_linux.dll"
         curl -sSLf -o garrysmod_override/lua/bin/gmsv_sysinfo_linux64.dll "$base/gmsv_sysinfo_linux64.dll"
         sha256sum -c - <<'SUMS'
-        10c1a6cd4643ff2fc6d808dbb2971dd87d71ef4e6d847982257198e524c56624  garrysmod_override/lua/bin/gmsv_sysinfo_linux.dll
-        d4fe0c933497edf6eaac2a0da90b55c7f1f6a40cdc6e6697121e519405dbd4f3  garrysmod_override/lua/bin/gmsv_sysinfo_linux64.dll
+        c531c3f5848dacaabc45e9d2669935f8aff046c80632ec969663ff09ec93d2e4  garrysmod_override/lua/bin/gmsv_sysinfo_linux.dll
+        cf2576bc1ce2755fcd580148fd97ec414d5ba762cece5212485032dfe6459e82  garrysmod_override/lua/bin/gmsv_sysinfo_linux64.dll
         SUMS

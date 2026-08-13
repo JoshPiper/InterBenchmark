@@ -1,0 +1,195 @@
+# Internet's Benchmark Suite
+
+[![CI](https://github.com/JoshPiper/InterBenchmark/actions/workflows/ci.yml/badge.svg)](https://github.com/JoshPiper/InterBenchmark/actions/workflows/ci.yml)
+
+A benchmarking suite for Garry's Mod Lua, built to put numbers behind (or against)
+the performance folklore that circulates in the GLua community: "always localise
+your globals", "never use `table.insert`", "`DrawRect` is faster than `RoundedBox`",
+and friends.
+
+Each claim lives in a small, self-contained **trial** comparing two or more
+implementations. The suite runs every trial under controlled conditions and
+produces a tabbed HTML report with summary statistics, box-and-whisker graphs, and
+the exact source code that was measured.
+
+## Installation
+
+Clone (or extract) the repository into your `garrysmod/addons` directory:
+
+```bash
+git clone https://github.com/JoshPiper/InterBenchmark.git
+```
+
+The suite loads on both the server and the client.
+
+## Usage
+
+| Command | Effect |
+| --- | --- |
+| `internet_benchmark_run` | Benchmark every trial and write the HTML report. |
+| `internet_benchmark_trial <name>` | Benchmark a single trial and print results to the console (autocompletes). |
+| `internet_benchmark_environment` | Print the environment statement. |
+| `internet_benchmark_logging_report` | Explain the logging levels and the current configuration. |
+
+Run them from the server console, or from the client console (`F10` / tilde) to
+benchmark the client realm — rendering trials such as `draw_rect` only run there.
+On dedicated servers, benchmark commands are restricted to the server console and
+superadmins.
+
+Benchmarks run in the background on a small per-tick time budget, so the game
+stays responsive while a full suite (several minutes of measuring) grinds away.
+Progress is logged as it goes; the `internet_benchmark_logging_level` convar
+(default `20`, INFO) controls how chatty that is.
+
+### Output
+
+The report is written to `garrysmod/data/internet_benchmarks/`:
+
+| File | Content |
+| --- | --- |
+| `report.html.txt` | The report itself. |
+| `style.css.txt` | Stylesheet referenced by the report. |
+| `script.js.txt` | Tab/highlighting behaviour referenced by the report. |
+| `environment.txt` | The environment statement for this run. |
+
+Garry's Mod can only write a limited set of file extensions, so everything gets a
+`.txt` suffix. To view the report, rename `report.html.txt` → `report.html`,
+`style.css.txt` → `style.css` and `script.js.txt` → `script.js`, then open
+`report.html` in a browser. (The page pulls Bootstrap, highlight.js, jQuery and
+CanvasJS from CDNs, so it needs an internet connection to render fully.)
+
+## Methodology
+
+For every trial, the suite:
+
+1. **Loads** the trial's meta file first (if present). A meta file can gate the
+   trial with `TRIAL:If(...)` — this is how client-only rendering trials and
+   gamemode-specific trials skip environments where they cannot run.
+2. **Snapshots sources** before anything executes: each benchmarked function's
+   source is read from disk, and its captured upvalues are serialised, so the
+   report shows the code and values exactly as they were measured — not whatever
+   state the runs left behind.
+3. **Warms up** every function with a quarter-scale pass (¼ of the runs, ¼ of the
+   iterations), giving LuaJIT a chance to compile hot traces before measurement.
+4. **Controls the garbage collector**: two full collections, then the collector is
+   stopped for the duration of the trial. A full manual collection runs before and
+   after every timed run, so allocation garbage from one run cannot bill the next.
+5. **Times each run** with `SysTime()` around a tight loop of `iterations` calls
+   (default: 100 runs × 100,000 iterations per function). `Before`/`After` hooks
+   run outside the timed window. The runner yields between runs so the game keeps
+   ticking.
+6. **Computes statistics** per function: mean, median, quartiles (rank-averaged),
+   IQR, population standard deviation, and a per-call average (mean ÷ iterations).
+   Outliers beyond 1.5 × IQR are excluded from the reported minimum/maximum and
+   drawn separately; the mean deliberately still includes them. Percentages
+   compare each mean against the fastest function in the trial.
+
+### Caveats
+
+These are microbenchmarks, with everything that implies. Results are specific to
+the machine, the game build, and whatever else the process was doing; treat them
+as *comparative* (A vs B on this box), never as absolute costs. Function-call
+overhead dominates tiny bodies, and LuaJIT may compile competing forms into very
+different (or occasionally identical) traces. Rendering trials execute outside a
+real render hook, so they measure call overhead rather than true draw cost. When
+a claim matters to you, benchmark it in your own context.
+
+## Environment statement
+
+Every report ships with an `environment.txt` stating the conditions it was
+generated under. **Plain GLua** can provide, and the suite records:
+
+| Field | Source |
+| --- | --- |
+| Suite version | `INTERNET_BENCHMARK.Version` |
+| Timestamp (UTC) | `os.date` |
+| Realm (server/client) | `SERVER` / `CLIENT` |
+| Hosting (dedicated/listen/singleplayer) | `game.IsDedicated`, `game.SinglePlayer` |
+| OS family | `system.IsWindows` / `IsLinux` / `IsOSX` |
+| Game branch | `BRANCH` |
+| Game version | `VERSION`, `VERSIONSTR` |
+| Lua runtime | `jit.version` |
+| Architecture | `jit.os`, `jit.arch` |
+| JIT compiler state | `jit.status` |
+| Map | `game.GetMap` |
+| Tick interval / tickrate | `engine.TickInterval` |
+| Player count | `player.GetCount` |
+
+The following **cannot** be read from plain GLua, and would need a binary module
+(a `require()`-able DLL/SO in `lua/bin`, using OS APIs) or manual recording
+alongside the report:
+
+- CPU model, core count, clock speed and thermal/boost state.
+- Total and available system memory.
+- GPU model and driver version.
+- Precise OS version and kernel, beyond the OS family.
+- Load from other processes on the machine.
+
+No binary module ships with this suite; if you publish results, note your
+hardware by hand next to `environment.txt`.
+
+## Writing trials
+
+Trials live in `lua/internet_benchmark/trials/`. Each trial is a Lua file which
+receives a fresh builder as the `TRIAL` global:
+
+```lua
+local tab = {1, 2, 3}
+
+local function viaLength(times)
+	tab[#tab + 1] = times
+end
+
+local function viaInsert(times)
+	table.insert(tab, times)
+end
+
+TRIAL
+	:Name("My Trial")
+	:Order(50)
+	:Function(viaLength)
+	:Label("tab[#tab + 1]")
+	:Function(viaInsert)
+	:Label("table.insert")
+	:Before(function() tab = {1, 2, 3} end)
+	:ManualPredefine(1, 1)
+	:Exclude("tab")
+```
+
+| Method | Purpose |
+| --- | --- |
+| `:Name(name)` | Display name in the report. |
+| `:Order(n)` | Tab position (unique per trial; omit the argument to auto-number). |
+| `:Function(fn)` | Add an implementation to measure. It receives the iteration index. |
+| `:Label(text)` | Label the most recently added function. |
+| `:Runs(n)` / `:Iterations(n)` | Override the 100 × 100,000 defaults. |
+| `:Before(fn)` / `:After(fn)` | Hooks around every timed run (outside the timing). |
+| `:If(boolOrFn)` | Gate the trial (meta files only — see below). |
+| `:Exclude(name)` | Hide a captured upvalue from the report's pre-definitions. |
+| `:ManualPredefine(first, last)` | Show these lines of the trial file as pre-definitions instead. |
+
+Captured upvalues are serialised automatically where possible (globals resolve to
+their names, locals defined in the file embed their source, plain values print as
+literals). Tables, entities and other unserialisable values should be `:Exclude`d
+and covered with a `:ManualPredefine` line range instead — the suite warns when a
+capture needs this.
+
+A sidecar meta file, `<trial>.meta.lua`, is included *before* the trial file and
+is the place for `:If(...)` gates. Because the gate runs first, the trial file
+itself may safely reference things that only exist in its intended environment —
+see `draw_rect.meta.lua` (client-only) and `ns_accessors.meta.lua`
+(gamemode-specific).
+
+## Development
+
+- **Tests**: `luajit tests/run.lua` from the repository root exercises the
+  statistics and formatting libraries under stock LuaJIT via a small GMod shim.
+- **Linting**: [glualint](https://github.com/FPtje/GLuaFixer) with the bundled
+  `.glualint.json`; templates under `lua/internet_benchmark/templates/` are
+  HTML/CSS/JS carried in `.lua` files (so they ride the client download list) and
+  are excluded from linting.
+- Both run in CI on every push and pull request.
+
+## Licence
+
+[MIT](LICENSE).

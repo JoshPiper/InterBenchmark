@@ -15,7 +15,14 @@ and the exact source code that was measured.
 
 ## Installation
 
-Clone (or extract) the repository into your `garrysmod/addons` directory:
+Grab the latest packaged build from the
+[releases page](https://github.com/JoshPiper/InterBenchmark/releases): drop the
+`.gma` into your `garrysmod/addons` directory as-is, or extract the `.zip`
+there (it unpacks to `addons/internet_benchmark/`). Release artifacts carry
+signed build provenance — see
+[Releases and provenance](#releases-and-provenance) to verify one.
+
+Alternatively, clone (or extract) the repository into `garrysmod/addons`:
 
 ```bash
 git clone https://github.com/JoshPiper/InterBenchmark.git
@@ -141,6 +148,7 @@ generated under. **Plain GLua** can provide, and the suite records:
 | Field | Source |
 | --- | --- |
 | Suite version | `INTERNET_BENCHMARK.Version` |
+| Suite build | `INTERNET_BENCHMARK.Build` |
 | Timestamp (UTC) | `os.date` |
 | Realm (server/client) | `SERVER` / `CLIENT` |
 | Hosting (dedicated/listen/singleplayer) | `game.IsDedicated`, `game.SinglePlayer` |
@@ -153,6 +161,11 @@ generated under. **Plain GLua** can provide, and the suite records:
 | Map | `game.GetMap` |
 | Tick interval / tickrate | `engine.TickInterval` |
 | Player count | `player.GetCount` |
+
+Packaged builds stamp `Build` with the short commit hash they were created
+from, so a published report names the exact code that was measured. Working
+copies — a git clone, or the repository mounted in CI — report `dev`, since
+plain GLua cannot see the checkout's actual commit.
 
 The following **cannot** be read from plain GLua, and needs a binary module
 (a `require()`-able DLL/SO in `lua/bin`, using OS APIs) or manual recording
@@ -251,6 +264,31 @@ verifying their timings still needs a manual client-side run.
 `.glualint.json`. Templates under `lua/internet_benchmark/templates/` are
 HTML/CSS/JS carried in `.lua` files (so they ride the client download list) and
 are excluded from linting.
+
+## Releases and provenance
+
+Releases are automated with
+[release-please](https://github.com/googleapis/release-please). Commits follow
+[Conventional Commits](https://www.conventionalcommits.org); `feat:` and
+`fix:` commits on `main` accumulate into a rolling release PR that carries the
+next version number and changelog. Merging that PR is the entire release
+checklist: it tags the release, packages the `.gma` and `.zip`, checksums them
+into a `SHA256SUMS` file, and attaches everything to the GitHub release —
+which stays a draft until its assets are in place, so a release is never
+visible half-published.
+
+Every artifact also carries signed
+[SLSA build provenance](https://docs.github.com/en/actions/security-for-github-actions/using-artifact-attestations):
+cryptographic proof of which workflow, commit and runner produced it. To
+verify a download:
+
+```bash
+gh attestation verify internet_benchmark-2.0.0.gma -R JoshPiper/InterBenchmark
+```
+
+Inside the artifact, the environment statement's `Suite Build` row carries the
+same commit, closing the loop from a published benchmark report back to the
+exact source that produced its numbers.
 
 ## Licence
 

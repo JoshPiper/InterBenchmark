@@ -27,7 +27,7 @@ return {
 			func = function()
 				local rendered = INTERNET_BENCHMARK.Templating:Template("nav/tab", {key = "example", title = "Example"})
 
-				local hasKey = string.find(rendered, 'data-view="trial:example"', 1, true)
+				local hasKey = string.find(rendered, "data-view=\"trial:example\"", 1, true)
 				expect(hasKey).to.exist()
 
 				local hasTitle = string.find(rendered, ">Example<", 1, true)
@@ -100,7 +100,7 @@ return {
 			func = function(state)
 				local html = INTERNET_BENCHMARK:HTMLTab("example", state.timing, state.stats, state.trial)
 
-				local hasDescription = string.find(html, '<p class="definition-description">Calls it directly.</p>', 1, true)
+				local hasDescription = string.find(html, "<p class=\"definition-description\">Calls it directly.</p>", 1, true)
 				expect(hasDescription).to.exist()
 
 				local _, count = string.gsub(html, "definition%-description", "")
@@ -142,7 +142,7 @@ return {
 				local hasTrack = string.find(html, "boxplot-track", 1, true)
 				expect(hasTrack).to.exist()
 
-				local hasLabel = string.find(html, 'boxplot-row-name">First Way<', 1, true)
+				local hasLabel = string.find(html, "boxplot-row-name\">First Way<", 1, true)
 				expect(hasLabel).to.exist()
 			end
 		},
@@ -152,7 +152,7 @@ return {
 			func = function(state)
 				local html = INTERNET_BENCHMARK:HTMLTab("example", state.timing, state.stats, state.trial)
 
-				local hasSection = string.find(html, 'data-view-section="trial:example"', 1, true)
+				local hasSection = string.find(html, "data-view-section=\"trial:example\"", 1, true)
 				expect(hasSection).to.exist()
 			end
 		},

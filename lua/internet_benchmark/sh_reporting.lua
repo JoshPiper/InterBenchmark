@@ -346,7 +346,7 @@ function BENCH:HTMLTab(id, timing, stats, trial)
 		table.insert(tests, t:Template("partial/definition", {
 			title = f.EscapeHTML(labels[fnId] or ("Function #" .. fnId)),
 			tag = fnId == winnerFnId and "<span class=\"tag tag-accent\">Fastest</span>" or "",
-			description = candidateDescription and string.format('<p class="definition-description">%s</p>', f.EscapeHTML(candidateDescription)) or "",
+			description = candidateDescription and string.format("<p class=\"definition-description\">%s</p>", f.EscapeHTML(candidateDescription)) or "",
 			content = t:Template("partial/predefine", f.EscapeHTML(source))
 		}))
 	end

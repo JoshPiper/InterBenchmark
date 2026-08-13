@@ -1,4 +1,4 @@
---- Photon Logging Module
+--- Levelled, coloured console logging.
 -- @module logging
 
 local BENCH = INTERNET_BENCHMARK
@@ -15,7 +15,7 @@ logging.Levels = {
 	DEBUG = 10,
 	ANY = 0
 }
-logging.Levels.DEFAULT = logging.Levels.WARNING
+logging.Levels.DEFAULT = logging.Levels.INFO
 logging.Levels._MAX = logging.Levels.NONE
 logging.Levels._MIN = logging.Levels.ANY
 
@@ -45,7 +45,7 @@ function logging.Parse(level)
 	end
 
 	if isnumber(level) then
-		return math.Clamp(level, logging.Levels.ANY, logging.Levels.FATAL)
+		return math.Clamp(level, logging.Levels._MIN, logging.Levels._MAX)
 	end
 
 	if logging.Levels[level] then
@@ -55,16 +55,15 @@ function logging.Parse(level)
 	return logging.Levels.DEFAULT
 end
 
+--- Describe the level enumeration, for the convar help text.
 function logging:EnumDescription()
 	local desc = "int[%0d <= X <= %0d]|string<%s>"
 	local levels = {}
 
-	for name, level in SortedPairsByValue(self.Levels, true) do
-		if name == "DEFAULT" or name:StartWith("_") then
-			continue
+	for name in SortedPairsByValue(self.Levels, true) do
+		if name ~= "DEFAULT" and not name:StartWith("_") then
+			table.insert(levels, name)
 		end
-
-		table.insert(levels, name)
 	end
 
 	return string.format(desc, self.Levels._MIN, self.Levels._MAX, table.concat(levels, ", "))
@@ -74,7 +73,7 @@ local level_cvar = CreateConVar(
 	"internet_benchmark_logging_level",
 	logging.Levels.DEFAULT,
 	FCVAR_ARCHIVE + FCVAR_ARCHIVE_XBOX + FCVAR_UNLOGGED,
-	string.format("Set the logging level for Internet Benchmarks Suite (%s)", logging:EnumDescription()),
+	string.format("Set the logging level for Internet's Benchmark Suite (%s)", logging:EnumDescription()),
 	logging.Levels._MIN,
 	logging.Levels._MAX
 )
@@ -85,8 +84,7 @@ cvars.AddChangeCallback(level_cvar:GetName(), function(_, _, val)
 	logging.Level = logging.Parse(val)
 end, "logging")
 
-
-
+--- Recursively flatten tables and callables into a list of MsgC arguments.
 local function flatten(...)
 	local out = {}
 	local n = select('#', ...)
@@ -103,7 +101,6 @@ local function flatten(...)
 
 	return out
 end
-
 
 --- Print a message with colour to console.
 -- @internal
@@ -134,7 +131,6 @@ function logging:Brand(wrapped, event)
 	if not event then
 		event = ""
 
-		local dt = os.date("%d-%m")
 		if os.date("%m") == "06" then
 			event = "Pride"
 		end
@@ -149,7 +145,8 @@ function logging:Brand(wrapped, event)
 end
 
 --- Build the message functions for a given level.
--- Adds the function to logging.<LEVEL>, ie logging.Warning
+-- Adds the function to logging.<LEVEL>, ie logging.Warning, along with a
+-- logging.Force<LEVEL> variant which prints regardless of the active level.
 -- @tparam string level Message level.
 function logging:Build(level)
 	local levelValue = isnumber(level) and level or self.Levels[level:upper()]
@@ -188,7 +185,7 @@ function logging:Build(level)
 	local _prt = self._print
 	local function prt(...)
 		if (select(1, ...)) == true then
-			_prt(select(2, ...))
+			return _prt(select(2, ...))
 		end
 
 		if self.Level > levelValue then
@@ -245,24 +242,22 @@ concommand.Add("internet_benchmark_logging_report", function()
 	MsgC(t, "Any logs below will be hidden.\n\n")
 
 	for name, level in SortedPairsByValue(l.Levels, true) do
-		if name == "DEFAULT" or name:StartWith("_") then
-			continue
-		end
+		if name ~= "DEFAULT" and not name:StartWith("_") then
+			if cur < last and cur > level then
+				MsgC(t, "--> Current Logging Level (" .. cur .. ")\n")
+			end
 
-		if cur < last and cur > level then
-			MsgC(t, "--> Current Logging Level (" .. cur .. ")\n")
-		end
+			local args = {}
+			local color = level < cur and c.Disabled or c[level] or nil
+			if color then
+				table.insert(args, color)
+			end
+			table.insert(args, name)
+			table.insert(args, "\n")
+			MsgC(t, cur == level and "--> " or "    ", unpack(args))
 
-		local args = {}
-		local color = level < cur and c.Disabled or c[level] or nil
-		if color then
-			table.insert(args, color)
+			last = level
 		end
-		table.insert(args, name)
-		table.insert(args, "\n")
-		MsgC(t, cur == level and "--> " or "    ", unpack(args))
-
-		last = level
 	end
 
 	MsgC("\n", t, "Below here, we'll print one of each log, in decending order of severity.\n\n")

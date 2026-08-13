@@ -1,97 +1,90 @@
+--- Report generation.
+-- Runs trials, computes their statistics and renders the HTML report.
+-- @module reporting
+
 INTERNET_BENCHMARK = INTERNET_BENCHMARK or {}
 local BENCH = INTERNET_BENCHMARK
 
-local yieldable, yield, resume, status = coroutine.isyieldable, coroutine.yield, coroutine.resume, coroutine.status
-
 local t, f, l = BENCH.Templating, BENCH.Formatting, BENCH.Logging
 
-function BENCH:ReportTrial(trial)
-	local _yieldable = yieldable()
-	local doTrial = coroutine.create(function()
-		return self:Trial(trial)
-	end)
-
-	local state, results, trialInfo = status(doTrial), {}
-	while state == "suspended" do
-		_, results, trialInfo = resume(doTrial)
-		l.Debug("Recieved Yield in ReportTrial from Trial")
-		if _yieldable then
-			l.Debug("Deferring Yield")
-			yield()
-		end
-		state = status(doTrial)
+--- Benchmark one trial and compute its statistics.
+-- @string name The trial's file name, without extension.
+-- @return results, statistics, trial — or nil when the trial did not run.
+function BENCH:ReportTrial(name)
+	local results, trial = self:Trial(name)
+	if not results then
+		return nil
 	end
 
-	local statistics = self:Statistics(results)
-	return results, statistics, trialInfo
+	return results, self:Statistics(results, trial.iterations), trial
 end
 
+--- Discover every trial on disk.
+-- @rtab A sorted list of trial names.
+function BENCH:TrialNames()
+	local names = {}
+	local files = file.Find("internet_benchmark/trials/*.lua", "LUA")
+	for _, name in ipairs(files) do
+		name = string.sub(name, 1, #name - 4)
+		if name:EndsWith(".meta") then
+			name = string.sub(name, 1, #name - 5)
+		end
+		names[name] = true
+	end
+
+	names = table.GetKeys(names)
+	table.sort(names)
+	return names
+end
+
+--- Benchmark every trial on disk.
+-- Trials which are missing, gated off or empty are skipped.
+-- @rtab A list of {results, statistics, trial, order = n} entries.
 function BENCH:ReportAll()
-	local _yieldable = yieldable()
+	local reports = {}
+	local names = self:TrialNames()
 
-	local trials = {}
-	local trialFiles = file.Find("internet_benchmark/trials/*", "LUA")
-	for _, trial in ipairs(trialFiles) do
-		trial = string.sub(trial, 1, #trial - 4)
-		if trial:EndsWith(".meta") then
-			trial = string.sub(trial, 1, #trial - 5)
-		end
-		trials[trial] = true
-	end
-
-	trials = table.GetKeys(trials)
-	for idx, trial in ipairs(trials) do
-		local doTrial = coroutine.create(function()
-			return self:ReportTrial(trial)
-		end)
-
-		local state, results, statistics = status(doTrial), nil, nil
-		while state == "suspended" do
-			_, results, statistics, trial = resume(doTrial)
-			l.Debug("Recieved Yield in ReportAll from ReportTrial")
-			if _yieldable then
-				l.Debug("Deferring Yield")
-				yield()
-			end
-			state = status(doTrial)
+	for idx, name in ipairs(names) do
+		l.ForceInfo(string.format("Trial '%s' (%d of %d)", name, idx, #names))
+		local results, statistics, trial = self:ReportTrial(name)
+		if results then
+			table.insert(reports, {results, statistics, trial, order = trial.order or 0})
 		end
 
-		trials[idx] = {results, statistics, trial, order = trial.order or 0}
+		self:Yield()
 	end
 
-	return trials
+	return reports
 end
 
+--- Generate the full HTML report.
+-- Writes report.html.txt, style.css.txt, script.js.txt and environment.txt
+-- to data/internet_benchmarks/.
 function BENCH:HTMLReport()
-	local headers, tabs = {}, {}
-	local _yieldable = yieldable()
+	self.Environment:Report()
 
-	local doAllTrials = coroutine.create(function()
-		return self:ReportAll()
-	end)
-
-	local state, info = status(doAllTrials), nil
-	while state == "suspended" do
-		_, info = resume(doAllTrials)
-		l.Debug("Recieved Yield in HTMLReport from ReportAll")
-		if _yieldable then
-			l.Debug("Deferring Yield")
-			yield()
-		end
-		state = status(doAllTrials)
+	local reports = self:ReportAll()
+	if #reports == 0 then
+		l.Warning("No trials produced results; the report was not written.")
+		return
 	end
 
-	for i, data in SortedPairsByMemberValue(info, "order") do
-		local timing, statistics, trial = unpack(data)
-		local id = trial.id or i
+	local headers, tabs = {}, {}
+	local first = true
 
-		local nav = t:Template("nav/tab", {
+	l.ForceInfo("Generating the HTML report.")
+	for _, data in SortedPairsByMemberValue(reports, "order") do
+		local timing, statistics, trial = data[1], data[2], data[3]
+		local id = trial.id
+
+		table.insert(headers, t:Template("nav/tab", {
 			key = id,
-			title = f.Title(trial.title or id)
-		})
-		table.insert(headers, nav)
-		table.insert(tabs, self:HTMLTab(id, timing, statistics, trial))
-		first = nil
+			title = f.EscapeHTML(f.Title(trial.name or id))
+		}))
+		table.insert(tabs, self:HTMLTab(id, timing, statistics, trial, first))
+		first = false
+
+		self:Yield()
 	end
 
 	local report = t:Template("document", {
@@ -101,139 +94,87 @@ function BENCH:HTMLReport()
 
 	file.CreateDir("internet_benchmarks")
 	file.Write("internet_benchmarks/report.html.txt", report)
-	file.Write("internet_benchmarks/style.css.txt", file.Read("internet_benchmarks/templates/html/style.css.lua", "LUA"))
-	file.Write("internet_benchmarks/script.js.txt", file.Read("internet_benchmarks/templates/html/script.js.lua", "LUA"))
+	self:WriteAsset("style.css")
+	self:WriteAsset("script.js")
+	self.Environment:Write()
+
+	l.ForceInfo("The report has been written to garrysmod/data/internet_benchmarks/.")
+	l.ForceInfo("To view it: rename report.html.txt to report.html, style.css.txt to style.css and script.js.txt to script.js, then open report.html in a browser.")
+	l.ForceInfo("(Garry's Mod can only write a limited set of file extensions, hence the .txt suffixes.)")
 end
 
-function BENCH:HTMLTab(id, timing, stats, trial)
-	local first = id == 1
-	l.Debug("Generating tab for ", id)
-
-	local sections = {}
-	local predefines = {}
-	local codes = {}
-	local excluded = trial.excludedVars or {}
-
-	l.Debug("Generating Pre-Definitions.")
-	for _, predefine in pairs(trial.predefines or {}) do
-		table.insert(predefines, predefine)
+--- Copy a static asset out of the templates directory, as a .txt file.
+-- @string name The asset's file name, without the .lua suffix.
+function BENCH:WriteAsset(name)
+	local content = file.Read("internet_benchmark/templates/html/" .. name .. ".lua", "LUA")
+	if not content then
+		l.Warning(string.format("Asset '%s' could not be read; an empty file was written.", name))
+		content = ""
 	end
-	print(id)
 
-	-- l.Debug("Generating Upvalues.")
-	-- for fnId, fn in ipairs(trial.functions) do
-	-- 	for var, val in pairs(fn.info.upvars) do
-	-- 		if not excluded[var] then
-	-- 			if isstring(val) then
-	-- 				table.insert(predefines, string.format("local %s = %s", var, val))
-	-- 			elseif istable(val) then
-	-- 				local typ, dt = val[1], val[2]
-	-- 				if typ == "raw" then
-	-- 					table.insert(predefines, dt)
-	-- 				end
-	-- 			end
-	-- 		end
-	-- 	end
+	file.Write("internet_benchmarks/" .. name .. ".txt", content)
+end
 
-	-- 	codes[fnId] = fn.info.source
-	-- end
+--- Generate a single trial's report tab.
+-- @string id The trial's identifier.
+-- @tab timing Per-function run-time tables.
+-- @tab stats Per-function statistics, with a minMean key.
+-- @tab trial The trial.
+-- @bool first Whether this is the report's initially active tab.
+-- @rstring The rendered tab.
+function BENCH:HTMLTab(id, timing, stats, trial, first)
+	l.Debug(string.format("Generating tab for '%s'.", id))
 
-	-- local seen = {}
-	-- local defines = {}
-	-- for _, define in ipairs(predefines) do
-	-- 	if not seen[define] then
-	-- 		seen[define] = true
-	-- 		table.insert(defines, define)
-	-- 	end
-	-- end
-	-- predefines = defines
+	local predefines = {}
+	for _, predefine in ipairs(trial.predefineSources or {}) do
+		table.insert(predefines, f.EscapeHTML(predefine))
+	end
 
-	-- print("\t\tGenerating HTML.")
-	table.insert(sections, string.format("<h2 id='%s'>%s</h2>", id, f.Title(trial.title or id)))
-	print(id, string.format("<h2 id='%s'>%s</h2>", id, f.Title(trial.title or id)))
-	-- if #predefines > 0 then
+	local labels = trial.labels or {}
+	local tests = {}
+	for fnId in ipairs(trial.functions) do
+		local source = trial.functionSources and trial.functionSources[fnId] or "-- Source unavailable."
+		table.insert(tests, t:Template("partial/definition", {
+			title = f.EscapeHTML(labels[fnId] or ("Function #" .. fnId)),
+			content = t:Template("partial/predefine", f.EscapeHTML(source))
+		}))
+	end
 
-	-- end
-
-	local functions = {}
-	-- for funcIdx, code in ipairs(codes) do
-	-- 	table.insert(functions, t:Template("partial/definition", {
-	-- 		title = data.functions[funcIdx].title,
-	-- 		content = t:Template("partial/predefine", code)
-	-- 	}))
-	-- end
-
-	local results = {}
-	table.insert(results, [[
-		<tr>
-			<th>#</th>
-			<th>Name</th>
-			<th>Median</th>
-			<th>Minimum</th>
-			<th>Maximum</th>
-			<th>Average</th>
-			<th>Average/Call</th>
-			<th>Percentage</th>
-		</tr>
-	]])
-
-	local timePairs = {
-		median = {},
-		min = {},
-		max = {},
-		mean = {},
-		average = {},
-		percentage = {}
-	}
 	local minMean = stats.minMean
+	stats.minMean = nil
 
-	-- print("hi")
-
-	for fnId, _ in ipairs(timing) do
-		local stat = stats[fnId]
+	local timePairs = {median = {}, min = {}, max = {}, mean = {}, average = {}}
+	for _, stat in ipairs(stats) do
 		table.insert(timePairs.median, stat.median)
 		table.insert(timePairs.min, stat.min)
 		table.insert(timePairs.max, stat.max)
 		table.insert(timePairs.mean, stat.mean)
 		table.insert(timePairs.average, stat.average)
 		stat.percentage = (stat.mean / minMean) * 100
-		table.insert(timePairs.percentage, stat.percentage)
 	end
 
-	local i = 1
-	local maxDigits = math.floor(math.log10(#trial.functions)) + 1
+	local dataRows, meanRows = {}, {}
+	for fnId, stat in ipairs(stats) do
+		local name = labels[fnId] or ("Function #" .. fnId)
+		table.insert(dataRows, string.format(
+			[[{ x: %s, label: %q, y: [%s, %s, %s, %s, %s]}]],
+			fnId - 1, name, stat.min, stat.q1, stat.q3, stat.max, stat.median
+		))
+		table.insert(meanRows, string.format(
+			[[{ x: %s, label: %q, y: [%s, %s]}]],
+			fnId - 1, name, stat.mean, stat.mean
+		))
+	end
 
-	-- print("hi2")
-	-- PrintTable(timing)
-	stats.minMean = nil
+	local maxDigits = math.floor(math.log10(#trial.functions)) + 1
+	local idxFormat = string.format("%%0%du", maxDigits)
 
 	local rows = {}
-	local dataRows = {}
-	local outlierRows = {}
-	local meanRows = {}
-	for fnId, stat in ipairs(stats) do
-		local name = trial.labels[fnId] or ("Function #" .. fnId)
-		table.insert(dataRows, string.format(
-			[[{ x: %s, label: "%s",  y: [%s, %s, %s, %s, %s]}]],
-			fnId - 1,
-			name,
-			stat.min,
-			stat.q1,
-			stat.q3,
-			stat.max,
-			stat.median
-		))
-		for _, outlier in ipairs(stat.outliers) do
-			table.insert(outlierRows, string.format([[{ x: %s, label: "%s", y: %s}]], fnId - 1, name, outlier))
-		end
-		table.insert(meanRows, string.format([[{ x: %s, label: "%s", y: [%s, %s]}]], fnId - 1, name, stat.mean, stat.mean))
-	end
+	local i = 1
 	for fnId, stat in SortedPairsByMemberValue(stats, "mean") do
-		local name = trial.labels[fnId] or ("Function #" .. fnId)
-
 		table.insert(rows, t:Template("partial/row", {
-			idx = string.format(string.format("%%0%su", maxDigits), i),
-			func = name,
+			idx = string.format(idxFormat, i),
+			func = f.EscapeHTML(labels[fnId] or ("Function #" .. fnId)),
 			median = f:AutoNumbers(stat.median, timePairs.median, (stat.median < 10 and stat.median >= 1) and 3 or 2) .. "s",
 			min = f:AutoNumbers(stat.min, timePairs.min, (stat.min < 10 and stat.min >= 1) and 3 or 2) .. "s",
 			max = f:AutoNumbers(stat.max, timePairs.max, (stat.max < 10 and stat.max >= 1) and 3 or 2) .. "s",
@@ -241,23 +182,15 @@ function BENCH:HTMLTab(id, timing, stats, trial)
 			meanPerCall = f:AutoNumbers(stat.average, timePairs.average, (stat.average < 10 and stat.average >= 1) and 3 or 2) .. "s",
 			percentage = math.Round(stat.percentage) .. "%"
 		}))
-
 		i = i + 1
 	end
 
-	results = t:Template("partial/table", {
+	local results = t:Template("partial/table", {
 		header = t:Template("partial/header"),
 		body = table.concat(rows, "\n")
 	})
 
-	-- local graph = t:Template("partial/graph", {
-	-- 	key = id,
-	-- 	title = f.Title(trial.name or id),
-	-- 	data = table.concat(dataRows, ",\n"),
-	-- 	outliers = table.concat(outlierRows, ",\n"),
-	-- })
-
-	local cleanGraph = t:Template("partial/graph-clean", {
+	local graph = t:Template("partial/graph-clean", {
 		key = id,
 		title = f.Title(trial.name or id),
 		data = table.concat(dataRows, ",\n"),
@@ -268,35 +201,51 @@ function BENCH:HTMLTab(id, timing, stats, trial)
 		key = id,
 		runs = trial.runs,
 		iterations = trial.iterations,
-		title = f.Title(trial.name or id),
+		title = f.EscapeHTML(f.Title(trial.name or id)),
 		class = first and "active" or "",
 		predefines = string.format("<code><pre>%s</pre></code>", table.concat(predefines, "\n")),
-		tests = table.concat(functions, "\n"),
-		content = results .. "\n" .. cleanGraph
+		tests = table.concat(tests, "\n"),
+		content = results .. "\n" .. graph
 	})
 end
 
-function BENCH:ReportWithoutCrashing()
-	local report = coroutine.create(function()
-		self:HTMLReport()
-		self._ActiveReport = nil
-	end)
-	local name = tostring(report)
-	local out = {}
-	local i = 0
-	timer.Create(name, 0.2, 0, function()
+--- Benchmark a single trial and print its results to the console.
+-- @string name The trial's file name, without extension.
+function BENCH:ConsoleReport(name)
+	local results, statistics, trial = self:ReportTrial(name)
+	if not results then
+		l.ForceWarning(string.format("Trial '%s' did not run (missing, gated off, or empty).", name))
+		return
+	end
+
+	local minMean = statistics.minMean
+	statistics.minMean = nil
+
+	local labels = trial.labels or {}
+	l.ForceInfo(string.format(
+		"Results for '%s' (%d runs of %d iterations):",
+		trial.name or name, trial.runs, trial.iterations
+	))
+
+	local i = 1
+	for fnId, stat in SortedPairsByMemberValue(statistics, "mean") do
+		l.ForceInfo(string.format(
+			"%2d. %s: median %ss, mean %ss (%ss/call), %d%%",
+			i,
+			labels[fnId] or ("Function #" .. fnId),
+			f:AutoNumber(stat.median, nil, 3),
+			f:AutoNumber(stat.mean, nil, 3),
+			f:AutoNumber(stat.average, nil, 3),
+			math.Round((stat.mean / minMean) * 100)
+		))
 		i = i + 1
-		self.Logging.Debug("Timer Tick ", i)
+	end
+end
 
-		local _status = status(report)
-		if _status == "suspended" then
-			out = {resume(report)}
-		elseif _status == "dead" then
-			timer.Remove(name)
-
-			if not out[1] and isstring(out[2]) then
-				error(out[2])
-			end
-		end
+--- Generate the HTML report in the background.
+-- @rbool Whether the job was started.
+function BENCH:ReportWithoutCrashing()
+	return self:Async(function()
+		self:HTMLReport()
 	end)
 end

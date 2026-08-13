@@ -1,8 +1,12 @@
+--- Number and text formatting helpers.
+-- @module formatting
+
 INTERNET_BENCHMARK = INTERNET_BENCHMARK or {}
 local BENCH = INTERNET_BENCHMARK
 BENCH.Formatting = setmetatable({}, {__index = INTERNET_BENCHMARK})
 local FORMAT = BENCH.Formatting
 
+--- Metric prefixes, indexed by their power of ten.
 FORMAT.Prefixes = {
 	[-24] = "y",
 	[-21] = "z",
@@ -27,20 +31,14 @@ FORMAT.Prefixes = {
 	[24] = "Y"
 }
 
+--- Named sets of allowed prefixes.
 FORMAT.AllowedPrefixes = {
 	all = table.GetKeys(FORMAT.Prefixes),
-	standard = {-24, -21, -18, -15, -12, -9, -6, -3, 0, 3, 6, 9, 12, 15, 18, 21}
+	standard = {-24, -21, -18, -15, -12, -9, -6, -3, 0, 3, 6, 9, 12, 15, 18, 21, 24}
 }
 
-FORMAT.DontLookup = {
-	"GCompute",
-	"GLib",
-	"EMVU",
-	"Photon",
-	"package.loaded",
-}
-FORMAT.Lookedup = {}
-
+--- Resolve a prefix specification into a list of allowed powers.
+-- Accepts a named set, a list of powers, or a single power.
 function FORMAT:GetAllowedPrefixes(name)
 	if isstring(name) then
 		return self.AllowedPrefixes[name] or self.AllowedPrefixes.standard
@@ -57,8 +55,9 @@ function FORMAT:GetAllowedPrefixes(name)
 	return self.AllowedPrefixes.standard
 end
 
+--- Find the first allowed prefix which scales num into the given bounds.
+-- @rnumber The prefix's power of ten, or nil when none fit (or num is 0).
 function FORMAT:Prefix(num, prefixes, minBound, maxBound)
-	self.Logging.Debug("Getting prefix for ", num)
 	prefixes = self:GetAllowedPrefixes(prefixes)
 	minBound = minBound or 0
 	maxBound = maxBound or 1000
@@ -68,13 +67,15 @@ function FORMAT:Prefix(num, prefixes, minBound, maxBound)
 	end
 
 	for _, pow in ipairs(prefixes) do
-		local calc = math.abs(num * math.pow(10, -pow))
+		local calc = math.abs(num * 10 ^ (-pow))
 		if calc >= minBound and calc < maxBound then
 			return pow
 		end
 	end
 end
 
+--- Find the most common prefix across a set of numbers.
+-- @rnumber The modal prefix's power of ten, or nil for an empty set.
 function FORMAT:ModalPrefix(numbers, prefixes, minBound, maxBound)
 	local calc = {}
 
@@ -88,21 +89,23 @@ function FORMAT:ModalPrefix(numbers, prefixes, minBound, maxBound)
 	return table.GetWinningKey(calc)
 end
 
+--- Format a number against a specific prefix.
+-- A nil prefix formats the number without scaling or suffix.
 function FORMAT:Number(num, prefix, sigFig)
 	local formatterString = sigFig == nil and "%s" or string.format("%%#.%sf", sigFig)
 
 	local out = not prefix and
 		string.format(formatterString, num) or
-		string.format(formatterString, num * math.pow(10, -prefix))
+		string.format(formatterString, num * 10 ^ (-prefix))
 
 	if out:EndsWith(".") then
 		out = string.sub(out, 1, #out - 1)
 	end
-	out = out .. self.Prefixes[prefix]
 
-	return out
+	return out .. (prefix and self.Prefixes[prefix] or "")
 end
 
+--- Format a number with an automatically selected prefix.
 function FORMAT:AutoNumber(num, prefixes, sigFig, minBound, maxBound)
 	return self:Number(
 		num,
@@ -111,6 +114,8 @@ function FORMAT:AutoNumber(num, prefixes, sigFig, minBound, maxBound)
 	)
 end
 
+--- Format a number with the prefix most common across a set of numbers.
+-- Keeps a column of related values in a single, comparable unit.
 function FORMAT:AutoNumbers(num, numbers, sigFig, prefixes, minBound, maxBound)
 	return self:Number(
 		num,
@@ -119,9 +124,10 @@ function FORMAT:AutoNumbers(num, numbers, sigFig, prefixes, minBound, maxBound)
 	)
 end
 
+--- Convert a file name into a title-cased display name.
 function FORMAT.Title(word)
 	if word:sub(-4) == ".lua" then
-		word = word:sub(0, -4)
+		word = word:sub(1, -5)
 	end
 
 	word = word:Replace("_", " ")
@@ -130,124 +136,10 @@ function FORMAT.Title(word)
 	return word
 end
 
-function FORMAT.Source(path, start, stop)
-	local data = file.Read(path, "LUA")
-	data = string.Explode("\n", data)
-	return table.concat(data, "\n", start, stop)
-end
-
-function FORMAT:Function(fn)
-	local info = debug.getinfo(fn, "flLnSu")
-	if info.what == "Lua" and info.short_src:find("/lua/") then
-		local body = self:ReadSource(path, info.linedefined, info.lastlinedefined)
-		body = body:Trim()
-
-		-- body = string.Explode("\n", body)
-
-		-- local first = body[1]
-		-- if first then
-		-- 	-- Strip the func prefix from anonymous functions.
-		-- 	first = first:gsub("^[%s%w]*function%(", "")
-		-- 	-- Ditto for named functions.
-		-- 	first = first:gsub("^[%s%w]*function [%w_]+%(", "")
-		-- 	if first:StartWith(")") then
-		-- 		first = first:sub(1)
-		-- 	end
-		-- 	body[1] = first
-		-- end
-
-		-- local last = body[#body]
-		-- if last then
-		-- 	last = last:gsub("end[%w%s,]-$", "")
-		-- 	body[#body] = last
-		-- end
-
-		-- Finally, make all functions anonymous.
-		-- return "function(" .. table.concat(body, "\n")
-
-
-		return body
-	end
-
-	return self:Lookup(fn)
-end
-
-function FORMAT:Lookup(var, inTable, route, seen)
-	if self.Lookedup[var] then
-		return self.Lookedup[var]
-	end
-
-	if not seen then seen = {[_G] = true} end
-	if not route then route = {} end
-	if not inTable then inTable = _G end
-
-	local cur = table.concat(route, ".")
-	for _, bl in ipairs(self.LookupBlacklist) do
-		if cur:StartWith(bl) then
-			return false
-		end
-	end
-
-	local toDo = {}
-	for k, v in pairs(inTable) do
-		if v == var then
-			table.insert(route, k)
-			route = table.concat(route, ".")
-			self.LookupCache[var] = route
-			return route
-		end
-
-		if istable(v) and not seen[v] then
-			toDo[k] = v
-		end
-	end
-
-	for k, v in pairs(toDo) do
-		-- Prevent infinate loop.
-		seen[v] = true
-		table.insert(route, k)
-
-		local found = self:Lookup(var, v, route, seen)
-		if found then
-			return found
-		end
-
-		seen[v] = nil
-		table.remove(route)
-	end
-
-	return false
-end
-
-function FORMAT:Local(var, excludeGlobals)
-	local val
-	if isfunction(var) then
-		if not val and not excludeGlobals then
-			val = self:LookupGlobal(var)
-		end
-
-		if not val then
-			local src = self:ReadFunction(var)
-			if src then
-				val = {"raw", src}
-			end
-		end
-
-		if not val then
-			val = string.format("function() end -- Unknown Function %p", var)
-		end
-	elseif isstring(v) then
-		val = string.format("%q", var)
-	elseif isnumber(v) then
-		val = var
-	elseif IsColor(v) then
-		val = Format("Color(%s, %s, %s, %s)", v.r, v.g, v.b, v.a)
-	else
-		-- This will need to be expanded, but for now it should work.
-		val = tostring(var)
-	end
-
-	if val then
-		return val
-	end
+--- Escape a string for embedding into HTML text content.
+function FORMAT.EscapeHTML(text)
+	text = string.gsub(text, "&", "&amp;")
+	text = string.gsub(text, "<", "&lt;")
+	text = string.gsub(text, ">", "&gt;")
+	return text
 end

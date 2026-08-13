@@ -115,7 +115,7 @@ generated under. **Plain GLua** can provide, and the suite records:
 | Tick interval / tickrate | `engine.TickInterval` |
 | Player count | `player.GetCount` |
 
-The following **cannot** be read from plain GLua, and would need a binary module
+The following **cannot** be read from plain GLua, and needs a binary module
 (a `require()`-able DLL/SO in `lua/bin`, using OS APIs) or manual recording
 alongside the report:
 
@@ -125,8 +125,17 @@ alongside the report:
 - Precise OS version and kernel, beyond the OS family.
 - Load from other processes on the machine.
 
-No binary module ships with this suite; if you publish results, note your
-hardware by hand next to `environment.txt`.
+No binary module ships with this suite, but if the optional
+[gm_sysinfo](https://github.com/JoshPiper/gm_sysinfo) module is installed for
+the running realm, the suite detects it automatically and extends the statement
+with the precise OS version, kernel, distribution, CPU architecture, physical
+core count, memory and swap totals, 1/5/15-minute load averages and host
+uptime. The host name is deliberately never collected, since these statements
+are meant to be published.
+
+Even with the module, the **CPU model and clock speed** (not yet exposed by
+gm_sysinfo) and the **GPU** still need noting by hand next to
+`environment.txt` when you publish results.
 
 ## Writing trials
 

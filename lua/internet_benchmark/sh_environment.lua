@@ -2,13 +2,15 @@
 -- Collects everything plain GLua exposes about the game and host, so every
 -- report can state the conditions it was generated under.
 --
--- Plain GLua cannot see the hardware itself. The following details would
--- require a binary module (require()), or filling in by hand:
---   * CPU model, core count, clock speed and thermal state.
---   * Total and available system memory.
+-- When the optional gm_sysinfo binary module is installed
+-- (https://github.com/JoshPiper/gm_sysinfo), the statement is extended with
+-- host details plain GLua cannot see: precise OS and kernel versions, the
+-- distribution, CPU architecture, physical core count, memory and swap
+-- totals, load averages and uptime.
+--
+-- Even with the module, the following still need recording by hand:
+--   * CPU model and clock speed (not yet exposed by gm_sysinfo).
 --   * GPU model and driver version.
---   * Operating system version and kernel, beyond the OS family.
---   * System load from other processes.
 -- @module environment
 
 INTERNET_BENCHMARK = INTERNET_BENCHMARK or {}
@@ -16,7 +18,80 @@ local BENCH = INTERNET_BENCHMARK
 BENCH.Environment = setmetatable({}, {__index = INTERNET_BENCHMARK})
 local ENV = BENCH.Environment
 
---- Collect the environment details available to plain GLua.
+local attemptedRequire = false
+
+--- Fetch the optional gm_sysinfo binary module, loading it on first use.
+-- @rtab The module's function table, or nil when it is not installed.
+function ENV:SysInfo()
+	if not istable(sysinfo) and not attemptedRequire then
+		attemptedRequire = true
+		pcall(require, "sysinfo")
+	end
+
+	return istable(sysinfo) and sysinfo or nil
+end
+
+--- Format a byte count as mebibytes or gibibytes.
+local function formatBytes(bytes)
+	if bytes >= 1024 ^ 3 then
+		return string.format("%.2f GiB", bytes / 1024 ^ 3)
+	end
+
+	return string.format("%.0f MiB", bytes / 1024 ^ 2)
+end
+
+--- Format a load average table's named fields.
+local function formatLoad(average)
+	return string.format(
+		"%.2f / %.2f / %.2f (1/5/15 min)",
+		average.one, average.five, average.fifteen
+	)
+end
+
+--- Format an uptime in seconds as days, hours and minutes.
+local function formatUptime(seconds)
+	local days = math.floor(seconds / 86400)
+	local hours = math.floor((seconds % 86400) / 3600)
+	local minutes = math.floor((seconds % 3600) / 60)
+	return string.format("%dd %dh %dm", days, hours, minutes)
+end
+
+--- Append a {label, value} row, skipping nil values.
+local function push(rows, label, value)
+	if value ~= nil then
+		table.insert(rows, {label, value})
+	end
+end
+
+--- Call an optional getter, applying a transform to its result.
+-- gm_sysinfo getters raise on values they cannot read, and future module
+-- versions may add or remove functions, so nothing here is trusted to exist
+-- or succeed. Any failure simply omits the row.
+local function try(getter, transform)
+	if not isfunction(getter) then
+		return nil
+	end
+
+	local ok, value = pcall(getter)
+	if not ok then
+		return nil
+	end
+
+	if transform then
+		ok, value = pcall(transform, value)
+		if not ok then
+			return nil
+		end
+	end
+
+	return value
+end
+
+--- Collect the environment details.
+-- Rows available to plain GLua always come first, in a fixed order; rows
+-- provided by gm_sysinfo are appended after them when the module is present.
+-- The host name is deliberately never collected - these statements are meant
+-- to be published next to benchmark results.
 -- @rtab An ordered list of {label, value} pairs.
 function ENV:Collect()
 	local osName = "Unknown"
@@ -37,7 +112,7 @@ function ENV:Collect()
 
 	local tickInterval = engine.TickInterval()
 
-	return {
+	local rows = {
 		{"Suite Version", self.Version},
 		{"Generated", os.date("!%Y-%m-%d %H:%M:%S UTC")},
 		{"Realm", SERVER and "Server" or "Client"},
@@ -52,6 +127,25 @@ function ENV:Collect()
 		{"Tick Interval", string.format("%.4fs (%s ticks/s)", tickInterval, math.Round(1 / tickInterval))},
 		{"Players", player.GetCount()},
 	}
+
+	local si = self:SysInfo()
+	if si then
+		push(rows, "System Info Module", try(si.get_version, function(version)
+			return "gm_sysinfo " .. version
+		end))
+		push(rows, "OS Version", try(si.get_system_long_version))
+		push(rows, "Kernel", try(si.get_kernel_version))
+		push(rows, "Distribution", try(si.get_distro_id))
+		push(rows, "CPU Architecture", try(si.get_cpu_arch))
+		push(rows, "Physical Cores", try(si.get_core_count))
+		push(rows, "Total Memory", try(si.get_memory, formatBytes))
+		push(rows, "Available Memory", try(si.get_available_memory, formatBytes))
+		push(rows, "Total Swap", try(si.get_swap, formatBytes))
+		push(rows, "Load Average", try(si.get_load_average, formatLoad))
+		push(rows, "Host Uptime", try(si.get_uptime, formatUptime))
+	end
+
+	return rows
 end
 
 --- Render the environment statement as plain text.
@@ -66,9 +160,17 @@ function ENV:Format()
 	end
 
 	table.insert(lines, "")
-	table.insert(lines, "Plain GLua cannot inspect the hardware itself. CPU model and clock")
-	table.insert(lines, "speed, core count, memory, GPU and precise OS version all need")
-	table.insert(lines, "a binary module, or recording by hand alongside this statement.")
+	if self:SysInfo() then
+		table.insert(lines, "Host details above are provided by the gm_sysinfo binary module.")
+		table.insert(lines, "CPU model, clock speed and GPU are not exposed by plain GLua or")
+		table.insert(lines, "the module; record those by hand alongside this statement.")
+	else
+		table.insert(lines, "Plain GLua cannot inspect the hardware itself. CPU model and clock")
+		table.insert(lines, "speed, core count, memory, GPU and precise OS version all need")
+		table.insert(lines, "a binary module, or recording by hand alongside this statement.")
+		table.insert(lines, "The optional gm_sysinfo module (github.com/JoshPiper/gm_sysinfo)")
+		table.insert(lines, "provides everything above except the CPU model, clock and GPU.")
+	end
 
 	return table.concat(lines, "\n")
 end

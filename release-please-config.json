@@ -1,0 +1,15 @@
+{
+	"$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+	"release-type": "simple",
+	"draft": true,
+	"packages": {
+		".": {
+			"extra-files": [
+				{
+					"type": "generic",
+					"path": "lua/autorun/internet_benchmarks.lua"
+				}
+			]
+		}
+	}
+}

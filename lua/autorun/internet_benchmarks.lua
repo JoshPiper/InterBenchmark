@@ -4,7 +4,9 @@ INTERNET_BENCHMARK = INTERNET_BENCHMARK or {}
 local BENCH = INTERNET_BENCHMARK
 
 --- The suite's semantic version.
-BENCH.Version = "2.0.0"
+-- The trailing annotation lets release-please rewrite the number when it
+-- cuts a release; keep it on this line.
+BENCH.Version = "2.0.0" -- x-release-please-version
 
 --- The short commit hash this copy was packaged from.
 -- Stamped into the staged copy by the release packaging workflow. A working

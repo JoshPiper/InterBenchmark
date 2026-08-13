@@ -1,0 +1,100 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: >-
+          Existing release tag to (re)publish assets for, e.g. v2.0.0.
+          Rebuilds and republishes without waiting for a new version --
+          the recovery path when publish-assets fails after the tag and
+          release already exist (its steps are individually safe to
+          repeat: --clobber on upload, draft=false is idempotent).
+        required: true
+        type: string
+
+concurrency:
+  group: release-please-${{ github.ref }}
+
+jobs:
+  # Maintains a rolling release PR from conventional commits; on merge of that
+  # PR, tags the commit and creates a draft GitHub release. Nothing releases
+  # until the PR is merged, so "not ready" is simply "don't merge it yet".
+  release-please:
+    name: Release PR or release
+    if: github.event_name == 'push' && github.repository_owner == 'JoshPiper'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    outputs:
+      release_created: ${{ steps.release-please.outputs.release_created }}
+      tag_name: ${{ steps.release-please.outputs.tag_name }}
+    steps:
+      - name: Run release-please
+        id: release-please
+        uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
+        with:
+          # With the default GITHUB_TOKEN, CI will not run on the release PR
+          # (GitHub suppresses recursive workflow triggers). Add a
+          # RELEASE_PLEASE_TOKEN PAT secret to get CI runs on release PRs.
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN || secrets.GITHUB_TOKEN }}
+
+  # The release is created as a draft, and a draft only materialises its git
+  # tag once published, so assets are built from the release commit itself.
+  # Building in the same run also avoids the GitHub quirk where tags pushed
+  # with GITHUB_TOKEN don't trigger tag-push workflows.
+  build-assets:
+    name: Build release assets
+    needs: release-please
+    if: always() && (needs.release-please.outputs.release_created == 'true' || github.event_name == 'workflow_dispatch')
+    uses: ./.github/workflows/build.yml
+    with:
+      ref: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.tag || github.sha }}
+
+  publish-assets:
+    name: Provenance and publish
+    needs: [release-please, build-assets]
+    if: always() && needs.build-assets.result == 'success' && (needs.release-please.outputs.release_created == 'true' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # upload release assets, undraft the release
+      id-token: write # sign the provenance attestation (OIDC)
+      attestations: write # publish the attestation to the repo
+      actions: read # download artifacts produced by build-assets
+    steps:
+      - name: Determine tag
+        id: tag
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "tag=${{ github.event.inputs.tag }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag=${{ needs.release-please.outputs.tag_name }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          path: assets
+          merge-multiple: true
+
+      - name: Checksum assets
+        run: |
+          cd assets
+          sha256sum -- * > SHA256SUMS
+
+      # Signed SLSA build provenance, queryable later with:
+      #   gh attestation verify <file> -R JoshPiper/InterBenchmark
+      - name: Attest provenance
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: assets/*
+
+      - name: Upload assets and undraft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release upload "${{ steps.tag.outputs.tag }}" assets/* --clobber -R "${GITHUB_REPOSITORY}"
+          gh release edit "${{ steps.tag.outputs.tag }}" --draft=false -R "${GITHUB_REPOSITORY}"

@@ -34,6 +34,8 @@ local function f(times)
 end
 
 TRIAL
+	:Name("Array Insertion")
+	:Order(11)
 	:Function(a)
 	:Label("table.insert")
 	:Function(b)
@@ -54,5 +56,4 @@ TRIAL
 		count = 1
 	end)
 	:ManualPredefine(1, 4)
-	:ManualPredefine(9, 15)
 	:Exclude("tab")

@@ -2,6 +2,7 @@ local vector1, vector2 = Vector(), Vector()
 
 TRIAL
 	:Name("Distance vs DistToSqr")
+	:Order(12)
 	:Before(function()
 		vector1.x = math.random(-1000, 1000)
 		vector1.y = math.random(-1000, 1000)
@@ -19,3 +20,6 @@ TRIAL
 		return vector1:DistToSqr(vector2)
 	end)
 	:Label("DistToSqr")
+	:ManualPredefine(1, 1)
+	:Exclude("vector1")
+	:Exclude("vector2")

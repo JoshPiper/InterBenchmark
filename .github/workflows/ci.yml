@@ -12,10 +12,13 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install glualint
+        env:
+          # Pinned so a new release cannot fail this branch's lint overnight.
+          # The runner is x86-64; the release also ships an aarch64 build.
+          GLUALINT_VERSION: "1.29.0"
         run: |
-          url="$(curl -sL https://api.github.com/repos/FPtje/GLuaFixer/releases/latest | grep -oP '"browser_download_url":\s*"\K[^"]*linux[^"]*\.zip' | head -1)"
-          test -n "$url"
-          curl -sL "$url" -o glualint.zip
+          curl -sSLf -o glualint.zip \
+            "https://github.com/FPtje/GLuaFixer/releases/download/${GLUALINT_VERSION}/glualint-${GLUALINT_VERSION}-x86_64-linux.zip"
           unzip -o glualint.zip
           chmod +x glualint
 
@@ -35,3 +38,12 @@ jobs:
 
       - name: Run tests
         run: luajit tests/run.lua
+
+  ingame:
+    name: In-Game Tests
+    # Boots a real Garry's Mod server and runs lua/tests/internet_benchmark/.
+    # Pinned so a GLuaTest release cannot change what this branch tests.
+    uses: CFC-Servers/GLuaTest/.github/workflows/run_tests.yml@0.35.2
+    with:
+      gluatest-ref: "0.35.2"
+      timeout: "3"

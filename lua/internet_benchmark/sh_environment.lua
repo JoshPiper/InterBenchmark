@@ -66,9 +66,9 @@ function ENV:Format()
 	end
 
 	table.insert(lines, "")
-	table.insert(lines, "Plain GLua cannot inspect the hardware itself. CPU model and clock,")
-	table.insert(lines, "core count, memory, GPU and precise OS version would need a binary")
-	table.insert(lines, "module or to be recorded by hand alongside this statement.")
+	table.insert(lines, "Plain GLua cannot inspect the hardware itself. CPU model and clock")
+	table.insert(lines, "speed, core count, memory, GPU and precise OS version all need")
+	table.insert(lines, "a binary module, or recording by hand alongside this statement.")
 
 	return table.concat(lines, "\n")
 end

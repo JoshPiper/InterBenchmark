@@ -182,13 +182,25 @@ see `draw_rect.meta.lua` (client-only) and `ns_accessors.meta.lua`
 
 ## Development
 
-- **Tests**: `luajit tests/run.lua` from the repository root exercises the
-  statistics and formatting libraries under stock LuaJIT via a small GMod shim.
-- **Linting**: [glualint](https://github.com/FPtje/GLuaFixer) with the bundled
-  `.glualint.json`; templates under `lua/internet_benchmark/templates/` are
-  HTML/CSS/JS carried in `.lua` files (so they ride the client download list) and
-  are excluded from linting.
-- Both run in CI on every push and pull request.
+Testing runs in two tiers, both in CI on every push and pull request:
+
+| Tier | Location | Runs | Covers |
+| --- | --- | --- | --- |
+| Unit | `tests/` | `luajit tests/run.lua` | Statistics and formatting maths, under stock LuaJIT via a small GMod shim. Fast, no game needed. |
+| Integration | `lua/tests/internet_benchmark/` | [GLuaTest](https://github.com/CFC-Servers/GLuaTest), in a real GMod server | Trial discovery and realm gating, source introspection, the timing loop, the background job pump, report rendering, file output, and the console commands. |
+
+To run the integration tier locally, clone GLuaTest into `addons/` alongside this
+addon and start a server with `gluatest_enable 1`. In CI it runs automatically in
+a containerised server via GLuaTest's reusable workflow.
+
+Integration tests run **serverside**, so the client-only trials (`draw_rect`,
+`set_draw_color`) are covered only to the extent that they are correctly skipped;
+verifying their timings still needs a manual client-side run.
+
+**Linting**: [glualint](https://github.com/FPtje/GLuaFixer) with the bundled
+`.glualint.json`. Templates under `lua/internet_benchmark/templates/` are
+HTML/CSS/JS carried in `.lua` files (so they ride the client download list) and
+are excluded from linting.
 
 ## Licence
 

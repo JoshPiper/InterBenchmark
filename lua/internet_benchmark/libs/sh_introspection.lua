@@ -32,6 +32,9 @@ function INTROSPECT:ReadSource(path, startLine, stopLine)
 		return nil
 	end
 
+	-- Files authored on Windows arrive with CRLF endings, which would
+	-- otherwise leave a stray carriage return on the end of every line.
+	data = string.gsub(data, "\r\n", "\n")
 	data = string.Explode("\n", data)
 	return table.concat(data, "\n", startLine, stopLine)
 end

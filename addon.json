@@ -10,6 +10,7 @@
 		"LICENSE",
 		"README.md",
 		"addon.json",
-		"tests/*"
+		"tests/*",
+		"lua/tests/*"
 	]
 }

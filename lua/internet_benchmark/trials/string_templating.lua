@@ -3,17 +3,17 @@ local testTab = {name = "Billster", cash = "$1337"}
 
 -- Code from Monolith, via DevulTJ.
 local function a(s, tab)
-	return (s:gsub("($%b{})", function(w) return tab[w:sub(3, -2)] or w end))
+	return s:gsub("($%b{})", function(w) return tab[w:sub(3, -2)] or w end)
 end
 
 -- Code from Billy
 local function b(s, tab)
-	return (s:gsub("%${(.-)}", function(w) return tab[w] or ("${%s}"):format(w) end))
+	return s:gsub("%${(.-)}", function(w) return tab[w] or ("${%s}"):format(w) end)
 end
 
 -- Code from Billy
 local function c(s, tab)
-	return (s:gsub("%${(.-)}", function(w) return tab[w] or ("${" .. w .. "}") end))
+	return s:gsub("%${(.-)}", function(w) return tab[w] or ("${" .. w .. "}") end)
 end
 
 local function testA()

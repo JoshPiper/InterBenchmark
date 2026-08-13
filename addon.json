@@ -1,0 +1,16 @@
+{
+	"title": "Internet's Benchmark Suite",
+	"type": "tool",
+	"tags": ["build"],
+	"ignore": [
+		".editorconfig",
+		".git/*",
+		".github/*",
+		".glualint.json",
+		"LICENSE",
+		"README.md",
+		"addon.json",
+		"tests/*",
+		"lua/tests/*"
+	]
+}

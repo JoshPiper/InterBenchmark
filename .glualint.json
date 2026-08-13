@@ -1,0 +1,6 @@
+{
+	"lint_unusedVars": false,
+	"lint_shadowing": false,
+	"lint_deprecated": false,
+	"lint_ignoreFiles": ["lua/internet_benchmark/templates/**"]
+}

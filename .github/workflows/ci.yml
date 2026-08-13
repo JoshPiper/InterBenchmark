@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  lint:
+    name: GLua Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install glualint
+        env:
+          # Pinned so a new release cannot fail this branch's lint overnight.
+          # The runner is x86-64; the release also ships an aarch64 build.
+          GLUALINT_VERSION: "1.29.0"
+        run: |
+          curl -sSLf -o glualint.zip \
+            "https://github.com/FPtje/GLuaFixer/releases/download/${GLUALINT_VERSION}/glualint-${GLUALINT_VERSION}-x86_64-linux.zip"
+          unzip -o glualint.zip
+          chmod +x glualint
+
+      - name: Lint
+        run: |
+          # Templates are HTML/CSS/JS carried in .lua files; they are not Lua.
+          find lua -name '*.lua' -not -path '*/templates/*' -print0 | xargs -0 ./glualint lint
+
+  test:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install LuaJIT
+        run: sudo apt-get update && sudo apt-get install -y luajit
+
+      - name: Run tests
+        run: luajit tests/run.lua
+
+  ingame:
+    name: In-Game Tests
+    # Boots a real Garry's Mod server and runs lua/tests/internet_benchmark/.
+    # Pinned so a GLuaTest release cannot change what this branch tests.
+    uses: CFC-Servers/GLuaTest/.github/workflows/run_tests.yml@0.35.2
+    with:
+      gluatest-ref: "0.35.2"
+      timeout: "3"
+      # Install the released gm_sysinfo module (both server architectures,
+      # checksum-pinned) so the environment integration is exercised against
+      # the real binary, not just the injected fakes.
+      additional-setup: |
+        mkdir -p garrysmod_override/lua/bin
+        base="https://github.com/JoshPiper/gm_sysinfo/releases/download/v3.1.0"
+        curl -sSLf -o garrysmod_override/lua/bin/gmsv_sysinfo_linux.dll "$base/gmsv_sysinfo_linux.dll"
+        curl -sSLf -o garrysmod_override/lua/bin/gmsv_sysinfo_linux64.dll "$base/gmsv_sysinfo_linux64.dll"
+        sha256sum -c - <<'SUMS'
+        c531c3f5848dacaabc45e9d2669935f8aff046c80632ec969663ff09ec93d2e4  garrysmod_override/lua/bin/gmsv_sysinfo_linux.dll
+        cf2576bc1ce2755fcd580148fd97ec414d5ba762cece5212485032dfe6459e82  garrysmod_override/lua/bin/gmsv_sysinfo_linux64.dll
+        SUMS

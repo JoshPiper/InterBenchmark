@@ -200,7 +200,9 @@ Testing runs in two tiers, both in CI on every push and pull request:
 
 To run the integration tier locally, clone GLuaTest into `addons/` alongside this
 addon and start a server with `gluatest_enable 1`. In CI it runs automatically in
-a containerised server via GLuaTest's reusable workflow.
+a containerised server via GLuaTest's reusable workflow, which also installs the
+released, checksum-pinned gm_sysinfo module so the environment integration is
+exercised against the real binary as well as injected fakes.
 
 Integration tests run **serverside**, so the client-only trials (`draw_rect`,
 `set_draw_color`) are covered only to the extent that they are correctly skipped;

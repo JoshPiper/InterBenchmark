@@ -89,7 +89,9 @@ return {
 
 		{
 			name = "Omits host detail rows when gm_sysinfo is not installed",
-			when = function() return sysinfo == nil end,
+			when = function()
+				return not util.IsBinaryModuleInstalled("sysinfo") and sysinfo == nil
+			end,
 			func = function()
 				local details = INTERNET_BENCHMARK.Environment:Collect()
 
@@ -99,6 +101,46 @@ return {
 				local statement = INTERNET_BENCHMARK.Environment:Format()
 				local hasHint = string.find(statement, "gm_sysinfo", 1, true)
 				expect(hasHint).to.exist()
+			end
+		},
+
+		{
+			name = "Collects real host details from an installed gm_sysinfo",
+			when = function()
+				return util.IsBinaryModuleInstalled("sysinfo")
+			end,
+			func = function()
+				local si = INTERNET_BENCHMARK.Environment:SysInfo()
+				expect(si).to.beA("table")
+
+				local details = INTERNET_BENCHMARK.Environment:Collect()
+
+				local moduleRow = rowValue(details, "System Info Module")
+				expect(moduleRow).to.beA("string")
+
+				local isSysInfo = string.StartWith(moduleRow, "gm_sysinfo ")
+				expect(isSysInfo).to.beTrue()
+
+				expect(rowValue(details, "Physical Cores")).to.beGreaterThan(0)
+				expect(rowValue(details, "CPU Architecture")).to.beA("string")
+				expect(rowValue(details, "Kernel")).to.beA("string")
+				expect(rowValue(details, "OS Version")).to.beA("string")
+
+				local memory = rowValue(details, "Total Memory")
+				expect(memory).to.beA("string")
+
+				local hasUnit = string.find(memory, "iB", 1, true)
+				expect(hasUnit).to.exist()
+
+				local load = rowValue(details, "Load Average")
+				expect(load).to.beA("string")
+
+				local hasWindow = string.find(load, "(1/5/15 min)", 1, true)
+				expect(hasWindow).to.exist()
+
+				local statement = INTERNET_BENCHMARK.Environment:Format()
+				local hasCredit = string.find(statement, "provided by the gm_sysinfo binary module", 1, true)
+				expect(hasCredit).to.exist()
 			end
 		},
 

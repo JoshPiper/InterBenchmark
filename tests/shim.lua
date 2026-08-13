@@ -15,6 +15,10 @@ coroutine.isyieldable = nil
 function AddCSLuaFile() end
 SysTime = os.clock
 
+util = {
+	IsBinaryModuleInstalled = function() return false end,
+}
+
 -- Console, convar and message surface, enough to load the logging library.
 FCVAR_ARCHIVE, FCVAR_ARCHIVE_XBOX, FCVAR_UNLOGGED = 0, 0, 0
 

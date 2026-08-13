@@ -25,7 +25,7 @@ return {
 			func = function()
 				local rendered = INTERNET_BENCHMARK.Templating:Template("nav/tab", {key = "example", title = "Example"})
 
-				local hasKey = string.find(rendered, "x-tab='example'", 1, true)
+				local hasKey = string.find(rendered, 'data-view="trial:example"', 1, true)
 				expect(hasKey).to.exist()
 
 				local hasTitle = string.find(rendered, ">Example<", 1, true)
@@ -60,7 +60,7 @@ return {
 		{
 			name = "Escapes source code rendered into the report",
 			func = function(state)
-				local html = INTERNET_BENCHMARK:HTMLTab("example", state.timing, state.stats, state.trial, true)
+				local html = INTERNET_BENCHMARK:HTMLTab("example", state.timing, state.stats, state.trial)
 
 				local escaped = string.find(html, "1 &lt; 2", 1, true)
 				expect(escaped).to.exist()
@@ -73,7 +73,7 @@ return {
 		{
 			name = "Names every benchmarked function in the results table",
 			func = function(state)
-				local html = INTERNET_BENCHMARK:HTMLTab("example", state.timing, state.stats, state.trial, true)
+				local html = INTERNET_BENCHMARK:HTMLTab("example", state.timing, state.stats, state.trial)
 
 				local hasFirst = string.find(html, "First Way", 1, true)
 				expect(hasFirst).to.exist()
@@ -86,40 +86,47 @@ return {
 		{
 			name = "Includes the trial pre-definitions and configuration",
 			func = function(state)
-				local html = INTERNET_BENCHMARK:HTMLTab("example", state.timing, state.stats, state.trial, true)
+				local html = INTERNET_BENCHMARK:HTMLTab("example", state.timing, state.stats, state.trial)
 
 				local hasPredefine = string.find(html, "local threshold = 5", 1, true)
 				expect(hasPredefine).to.exist()
 
-				local hasIterations = string.find(html, "<td>10</td>", 1, true)
+				local hasIterations = string.find(html, "Iterations / run 10", 1, true)
 				expect(hasIterations).to.exist()
 			end
 		},
 
 		{
-			name = "Plots the measured timings into the graph",
+			name = "Plots the measured timings into the box plot",
 			func = function(state)
-				local html = INTERNET_BENCHMARK:HTMLTab("example", state.timing, state.stats, state.trial, true)
+				local html = INTERNET_BENCHMARK:HTMLTab("example", state.timing, state.stats, state.trial)
 
-				local hasGraph = string.find(html, "boxAndWhisker", 1, true)
-				expect(hasGraph).to.exist()
+				local hasTrack = string.find(html, "boxplot-track", 1, true)
+				expect(hasTrack).to.exist()
 
-				local hasQuotedLabel = string.find(html, "label: \"First Way\"", 1, true)
-				expect(hasQuotedLabel).to.exist()
+				local hasLabel = string.find(html, 'boxplot-row-name">First Way<', 1, true)
+				expect(hasLabel).to.exist()
 			end
 		},
 
 		{
-			name = "Marks only the first tab as active",
+			name = "Tags each trial's view section for client-side routing",
 			func = function(state)
-				local firstTab = INTERNET_BENCHMARK:HTMLTab("example", state.timing, state.stats, state.trial, true)
-				local activeFirst = string.find(firstTab, "class='active'", 1, true)
-				expect(activeFirst).to.exist()
+				local html = INTERNET_BENCHMARK:HTMLTab("example", state.timing, state.stats, state.trial)
 
-				local laterStats = INTERNET_BENCHMARK:Statistics(state.timing, 10)
-				local laterTab = INTERNET_BENCHMARK:HTMLTab("example", state.timing, laterStats, state.trial, false)
-				local activeLater = string.find(laterTab, "class='active'", 1, true)
-				expect(activeLater).to.beNil()
+				local hasSection = string.find(html, 'data-view-section="trial:example"', 1, true)
+				expect(hasSection).to.exist()
+			end
+		},
+
+		{
+			name = "Returns an overview summary alongside the rendered view",
+			func = function(state)
+				local _, summary = INTERNET_BENCHMARK:HTMLTab("example", state.timing, state.stats, state.trial)
+
+				expect(summary.id).to.equal("example")
+				expect(summary.candidateCount).to.equal(2)
+				expect(summary.winnerLabel).to.exist()
 			end
 		},
 

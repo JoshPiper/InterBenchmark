@@ -71,6 +71,59 @@ function BENCH:ReportAll(dynamic)
 	return reports
 end
 
+--- A row's severity class, driving its accent colour.
+-- @number pct The row's percentage of the trial's fastest mean.
+-- @bool[opt=false] twoTier Skip the intermediate "notable" tier, for spots
+-- (like the sidebar) that only distinguish "fine" from "critical".
+-- @rstring A CSS class, or "" for the default (muted) tier.
+function BENCH:SeverityClass(pct, twoTier)
+	if pct >= 200 then
+		return "sev-critical"
+	end
+
+	if not twoTier and pct >= 105 then
+		return "sev-warn"
+	end
+
+	return ""
+end
+
+--- Render the environment page's summary tiles.
+-- @rstring The concatenated tile markup.
+function BENCH:HTMLEnvironmentHighlights()
+	local tiles = {}
+	for _, pair in ipairs(self.Environment:Highlights()) do
+		table.insert(tiles, t:Template("partial/env-highlight", {
+			label = f.EscapeHTML(pair[1]),
+			value = f.EscapeHTML(tostring(pair[2]))
+		}))
+	end
+
+	return table.concat(tiles, "\n")
+end
+
+--- Render the environment page's grouped detail sections.
+-- @rstring The concatenated group markup.
+function BENCH:HTMLEnvironmentGroups()
+	local groups = {}
+	for _, group in ipairs(self.Environment:Groups()) do
+		local rows = {}
+		for _, pair in ipairs(group[2]) do
+			table.insert(rows, t:Template("partial/env-row", {
+				label = f.EscapeHTML(pair[1]),
+				value = f.EscapeHTML(tostring(pair[2]))
+			}))
+		end
+
+		table.insert(groups, t:Template("partial/env-group", {
+			title = f.EscapeHTML(group[1]),
+			rows = table.concat(rows, "\n")
+		}))
+	end
+
+	return table.concat(groups, "\n")
+end
+
 --- Generate the full HTML report.
 -- Writes report.html.txt, style.css.txt, script.js.txt and environment.txt
 -- to data/internet_benchmarks/.
@@ -85,27 +138,75 @@ function BENCH:HTMLReport(dynamic)
 		return
 	end
 
-	local headers, tabs = {}, {}
-	local first = true
-
 	l.ForceInfo("Generating the HTML report.")
+
+	local tabs, summaries = {}, {}
+	local totalCandidates = 0
+
 	for _, data in SortedPairsByMemberValue(reports, "order") do
 		local timing, statistics, trial = data[1], data[2], data[3]
-		local id = trial.id
 
-		table.insert(headers, t:Template("nav/tab", {
-			key = id,
-			title = f.EscapeHTML(f.Title(trial.name or id))
-		}))
-		table.insert(tabs, self:HTMLTab(id, timing, statistics, trial, first))
-		first = false
+		local html, summary = self:HTMLTab(trial.id, timing, statistics, trial)
+		table.insert(tabs, html)
+		table.insert(summaries, summary)
+		totalCandidates = totalCandidates + summary.candidateCount
 
 		self:Yield()
 	end
 
+	local maxWorst, widestName, tieCount = 0, "-", 0
+	for _, summary in ipairs(summaries) do
+		if summary.worstPct > maxWorst then
+			maxWorst = summary.worstPct
+			widestName = summary.title
+		end
+
+		if summary.worstPct <= 105 then
+			tieCount = tieCount + 1
+		end
+	end
+
+	local headers, overviewRows = {}, {}
+	for _, summary in ipairs(summaries) do
+		table.insert(headers, t:Template("nav/tab", {
+			key = summary.id,
+			title = summary.title,
+			spread = summary.worstPct .. "%",
+			spreadClass = self:SeverityClass(summary.worstPct, true)
+		}))
+
+		table.insert(overviewRows, t:Template("partial/overview-row", {
+			key = summary.id,
+			name = summary.title,
+			countLabel = summary.candidateCount .. " candidates",
+			winner = summary.winnerLabel,
+			winnerPerCall = summary.winnerPerCall,
+			spread = summary.worstPct .. "%",
+			spreadClass = self:SeverityClass(summary.worstPct, false),
+			barW = math.max(3, summary.worstPct / maxWorst * 100)
+		}))
+	end
+
+	local overview = t:Template("overview", {
+		totalTrials = #summaries,
+		totalCandidates = totalCandidates,
+		widestSpread = maxWorst .. "%",
+		widestName = widestName,
+		tieCount = tieCount,
+		rows = table.concat(overviewRows, "\n")
+	})
+
+	local environment = t:Template("environment", {
+		highlights = self:HTMLEnvironmentHighlights(),
+		groups = self:HTMLEnvironmentGroups()
+	})
+
 	local report = t:Template("document", {
-		nav = table.concat(headers, "\n"),
-		body = table.concat(tabs, "\n")
+		summary = string.format("%d trials &middot; %d candidates", #summaries, totalCandidates),
+		navTrials = table.concat(headers, "\n"),
+		overview = overview,
+		environment = environment,
+		trials = table.concat(tabs, "\n")
 	})
 
 	self:WriteOutput("report.html.txt", report)
@@ -130,35 +231,25 @@ function BENCH:WriteAsset(name)
 	self:WriteOutput(name .. ".txt", content)
 end
 
---- Generate a single trial's report tab.
+--- Generate a single trial's report view.
 -- @string id The trial's identifier.
 -- @tab timing Per-function run-time tables.
 -- @tab stats Per-function statistics, with a minMean key.
 -- @tab trial The trial.
--- @bool first Whether this is the report's initially active tab.
--- @rstring The rendered tab.
-function BENCH:HTMLTab(id, timing, stats, trial, first)
+-- @rstring The rendered view.
+-- @rtab A summary for the overview page and sidebar: id, title, worstPct,
+-- candidateCount, winnerLabel, winnerPerCall.
+function BENCH:HTMLTab(id, timing, stats, trial)
 	l.Debug(string.format("Generating tab for '%s'.", id))
 
-	local predefines = {}
-	for _, predefine in ipairs(trial.predefineSources or {}) do
-		table.insert(predefines, f.EscapeHTML(predefine))
-	end
-
 	local labels = trial.labels or {}
-	local tests = {}
-	for fnId in ipairs(trial.functions) do
-		local source = trial.functionSources and trial.functionSources[fnId] or "-- Source unavailable."
-		table.insert(tests, t:Template("partial/definition", {
-			title = f.EscapeHTML(labels[fnId] or ("Function #" .. fnId)),
-			content = t:Template("partial/predefine", f.EscapeHTML(source))
-		}))
-	end
+	local title = f.EscapeHTML(f.Title(trial.name or id))
 
 	local minMean = stats.minMean
 	stats.minMean = nil
 
 	local timePairs = {median = {}, min = {}, max = {}, mean = {}, average = {}}
+	local lo, hi = math.huge, -math.huge
 	for _, stat in ipairs(stats) do
 		table.insert(timePairs.median, stat.median)
 		table.insert(timePairs.min, stat.min)
@@ -166,62 +257,114 @@ function BENCH:HTMLTab(id, timing, stats, trial, first)
 		table.insert(timePairs.mean, stat.mean)
 		table.insert(timePairs.average, stat.average)
 		stat.percentage = percentageOf(stat.mean, minMean)
+
+		lo = math.min(lo, stat.min)
+		hi = math.max(hi, stat.max)
 	end
 
-	local dataRows, meanRows = {}, {}
-	for fnId, stat in ipairs(stats) do
-		local name = labels[fnId] or ("Function #" .. fnId)
-		table.insert(dataRows, string.format(
-			[[{ x: %s, label: %q, y: [%s, %s, %s, %s, %s]}]],
-			fnId - 1, name, stat.min, stat.q1, stat.q3, stat.max, stat.median
-		))
-		table.insert(meanRows, string.format(
-			[[{ x: %s, label: %q, y: [%s, %s]}]],
-			fnId - 1, name, stat.mean, stat.mean
-		))
+	-- Timings span orders of magnitude within a trial, so bars and the box
+	-- plot share one log domain, padded either side of the data.
+	lo = lo / 1.35
+	hi = hi * 1.1
+	local span = math.log(hi / lo)
+	local function pos(v)
+		return math.Clamp(math.log(v / lo) / span * 100, 0, 100)
 	end
 
-	local maxDigits = math.floor(math.log10(#trial.functions)) + 1
-	local idxFormat = string.format("%%0%du", maxDigits)
-
-	local rows = {}
+	local resultRows, boxRows = {}, {}
+	local winnerFnId, winnerStat
+	local worstPct, secondPct = 0, 100
 	local i = 1
+
 	for fnId, stat in SortedPairsByMemberValue(stats, "mean") do
-		table.insert(rows, t:Template("partial/row", {
-			idx = string.format(idxFormat, i),
-			func = f.EscapeHTML(labels[fnId] or ("Function #" .. fnId)),
+		if i == 1 then
+			winnerFnId, winnerStat = fnId, stat
+		elseif i == 2 then
+			secondPct = math.Round(stat.percentage)
+		end
+		worstPct = math.max(worstPct, stat.percentage)
+
+		local name = f.EscapeHTML(labels[fnId] or ("Function #" .. fnId))
+		local severity = i == 1 and "sev-warn" or self:SeverityClass(stat.percentage, false)
+
+		table.insert(resultRows, t:Template("partial/result-row", {
+			rank = i,
+			func = name,
+			severity = severity,
 			median = f:AutoNumbers(stat.median, timePairs.median, (stat.median < 10 and stat.median >= 1) and 3 or 2) .. "s",
 			min = f:AutoNumbers(stat.min, timePairs.min, (stat.min < 10 and stat.min >= 1) and 3 or 2) .. "s",
 			max = f:AutoNumbers(stat.max, timePairs.max, (stat.max < 10 and stat.max >= 1) and 3 or 2) .. "s",
 			mean = f:AutoNumbers(stat.mean, timePairs.mean, (stat.mean < 10 and stat.mean >= 1) and 3 or 2) .. "s",
 			meanPerCall = f:AutoNumbers(stat.average, timePairs.average, (stat.average < 10 and stat.average >= 1) and 3 or 2) .. "s",
-			percentage = math.Round(stat.percentage) .. "%"
+			percentage = math.Round(stat.percentage) .. "%",
+			barW = math.max(4, pos(stat.mean))
 		}))
+
+		table.insert(boxRows, t:Template("partial/boxplot-row", {
+			func = name,
+			whiskerLeft = pos(stat.min),
+			whiskerW = pos(stat.max) - pos(stat.min),
+			maxLeft = pos(stat.max),
+			boxLeft = pos(stat.q1),
+			boxW = pos(stat.q3) - pos(stat.q1),
+			medLeft = pos(stat.median),
+			avgLeft = pos(stat.mean),
+			range = f:AutoNumber(stat.min, nil, 2) .. "s – " .. f:AutoNumber(stat.max, nil, 2) .. "s"
+		}))
+
 		i = i + 1
 	end
+	worstPct = math.Round(worstPct)
 
-	local results = t:Template("partial/table", {
-		header = t:Template("partial/header"),
-		body = table.concat(rows, "\n")
-	})
+	local predefines = {}
+	for _, predefine in ipairs(trial.predefineSources or {}) do
+		table.insert(predefines, f.EscapeHTML(predefine))
+	end
 
-	local graph = t:Template("partial/graph-clean", {
-		key = id,
-		title = f.Title(trial.name or id),
-		data = table.concat(dataRows, ",\n"),
-		outliers = table.concat(meanRows, ",\n"),
-	})
+	local tests = {}
+	for fnId in ipairs(trial.functions) do
+		local source = trial.functionSources and trial.functionSources[fnId] or "-- Source unavailable."
+		table.insert(tests, t:Template("partial/definition", {
+			title = f.EscapeHTML(labels[fnId] or ("Function #" .. fnId)),
+			tag = fnId == winnerFnId and "<span class=\"tag tag-accent\">Fastest</span>" or "",
+			content = t:Template("partial/predefine", f.EscapeHTML(source))
+		}))
+	end
 
-	return t:Template("tab", {
+	local winnerLabel = f.EscapeHTML(labels[winnerFnId] or ("Function #" .. winnerFnId))
+	local winnerPerCall = f:AutoNumber(winnerStat.average, nil, 2) .. "s"
+
+	local winnerNote = secondPct <= 105
+		and string.format("Within %d%% of the next candidate — effectively a tie at this sample size.", secondPct - 100)
+		or string.format("Beats the next candidate by %d%%, and the slowest by %d%%.", secondPct - 100, worstPct - 100)
+
+	local html = t:Template("tab", {
 		key = id,
 		runs = trial.runs,
 		iterations = trial.iterations,
-		title = f.EscapeHTML(f.Title(trial.name or id)),
-		class = first and "active" or "",
-		predefines = string.format("<code><pre>%s</pre></code>", table.concat(predefines, "\n")),
+		title = title,
+		candidateLabel = #trial.functions .. " candidates",
+		winnerName = winnerLabel,
+		winnerAvg = f:AutoNumber(winnerStat.mean, nil, 2) .. "s",
+		winnerPerCall = winnerPerCall,
+		trialSpread = worstPct .. "%",
+		winnerNote = winnerNote,
+		results = table.concat(resultRows, "\n"),
+		boxplot = table.concat(boxRows, "\n"),
+		axisMin = f:AutoNumber(lo, nil, 2) .. "s",
+		axisMax = f:AutoNumber(hi, nil, 2) .. "s",
 		tests = table.concat(tests, "\n"),
-		content = results .. "\n" .. graph
+		predefines = t:Template("partial/predefine", table.concat(predefines, "\n"))
 	})
+
+	return html, {
+		id = id,
+		title = title,
+		worstPct = worstPct,
+		candidateCount = #trial.functions,
+		winnerLabel = winnerLabel,
+		winnerPerCall = winnerPerCall
+	}
 end
 
 --- Benchmark a single trial and print its results to the console.

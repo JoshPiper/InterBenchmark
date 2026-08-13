@@ -53,14 +53,15 @@ The report is written to `garrysmod/data/internet_benchmarks/`:
 | --- | --- |
 | `report.html.txt` | The report itself. |
 | `style.css.txt` | Stylesheet referenced by the report. |
-| `script.js.txt` | Tab/highlighting behaviour referenced by the report. |
+| `script.js.txt` | View-switching and theme-toggle behaviour referenced by the report. |
 | `environment.txt` | The environment statement for this run. |
 
 Garry's Mod can only write a limited set of file extensions, so everything gets a
 `.txt` suffix. To view the report, rename `report.html.txt` → `report.html`,
 `style.css.txt` → `style.css` and `script.js.txt` → `script.js`, then open
-`report.html` in a browser. (The page pulls Bootstrap, highlight.js, jQuery and
-CanvasJS from CDNs, so it needs an internet connection to render fully.)
+`report.html` in a browser. The page is entirely self-contained (no CDN
+dependencies), with an Overview, an Environment page and one page per trial,
+navigable from the sidebar, and a light/dark theme toggle.
 
 ## Methodology
 

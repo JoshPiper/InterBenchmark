@@ -114,6 +114,7 @@ function ENV:Collect()
 
 	local rows = {
 		{"Suite Version", self.Version},
+		{"Suite Build", self.Build},
 		{"Generated", os.date("!%Y-%m-%d %H:%M:%S UTC")},
 		{"Realm", SERVER and "Server" or "Client"},
 		{"Hosting", hosting},
@@ -185,6 +186,7 @@ end
 ENV.GroupOrder = {"Suite", "Game", "Lua runtime", "Operating system", "Processor", "Memory & host"}
 ENV.GroupsByLabel = {
 	["Suite Version"] = "Suite",
+	["Suite Build"] = "Suite",
 	["Generated"] = "Suite",
 	["Realm"] = "Suite",
 	["Hosting"] = "Suite",

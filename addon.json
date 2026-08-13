@@ -3,13 +3,18 @@
 	"type": "tool",
 	"tags": ["build"],
 	"ignore": [
+		".claude/*",
 		".editorconfig",
 		".git/*",
 		".github/*",
 		".glualint.json",
+		".release-please-manifest.json",
+		"CHANGELOG.md",
 		"LICENSE",
 		"README.md",
 		"addon.json",
+		"release-please-config.json",
+		"version.txt",
 		"tests/*",
 		"lua/tests/*"
 	]

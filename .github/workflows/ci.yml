@@ -2,23 +2,39 @@ name: CI
 
 on:
   push:
+    branches: [main]
   pull_request:
+  schedule:
+    # Weekly run to catch drift while the repo is quiet: a new Garry's Mod
+    # server build or runner image can break the suite without any commit
+    # here changing.
+    - cron: "0 6 * * 1"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   lint:
     name: GLua Lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Install glualint
         env:
-          # Pinned so a new release cannot fail this branch's lint overnight.
-          # The runner is x86-64; the release also ships an aarch64 build.
+          # Pinned so a new release cannot fail this branch's lint overnight,
+          # and checksummed so a re-uploaded release asset cannot change what
+          # runs. The runner is x86-64; the release also ships aarch64.
           GLUALINT_VERSION: "1.29.0"
+          GLUALINT_SHA256: "d6f962c224e8c89c186430656ed438415625524a34e3c42cd3d788d36d441e1e"
         run: |
           curl -sSLf -o glualint.zip \
             "https://github.com/FPtje/GLuaFixer/releases/download/${GLUALINT_VERSION}/glualint-${GLUALINT_VERSION}-x86_64-linux.zip"
+          echo "${GLUALINT_SHA256}  glualint.zip" | sha256sum -c -
           unzip -o glualint.zip
           chmod +x glualint
 
@@ -31,7 +47,7 @@ jobs:
     name: Unit Tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Install LuaJIT
         run: sudo apt-get update && sudo apt-get install -y luajit
@@ -39,11 +55,18 @@ jobs:
       - name: Run tests
         run: luajit tests/run.lua
 
+  package:
+    name: Package
+    # Proves every change still packs cleanly: gmad's whitelist rejects stray
+    # files loudly, so breakage surfaces in the PR rather than the release.
+    uses: ./.github/workflows/build.yml
+
   ingame:
     name: In-Game Tests
     # Boots a real Garry's Mod server and runs lua/tests/internet_benchmark/.
-    # Pinned so a GLuaTest release cannot change what this branch tests.
-    uses: CFC-Servers/GLuaTest/.github/workflows/run_tests.yml@0.35.2
+    # SHA-pinned (tag 0.35.2) so neither a new GLuaTest release nor a moved
+    # tag can change what this branch tests.
+    uses: CFC-Servers/GLuaTest/.github/workflows/run_tests.yml@d0644af6c7c273362d51951cca882c32dcd1134b # 0.35.2
     with:
       gluatest-ref: "0.35.2"
       timeout: "3"

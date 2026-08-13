@@ -34,6 +34,8 @@ return {
 				expect(#details).to.beGreaterThan(9)
 				expect(details[1][1]).to.equal("Suite Version")
 				expect(details[1][2]).to.equal(INTERNET_BENCHMARK.Version)
+				expect(details[2][1]).to.equal("Suite Build")
+				expect(details[2][2]).to.equal(INTERNET_BENCHMARK.Build)
 			end
 		},
 
@@ -42,8 +44,8 @@ return {
 			func = function()
 				local details = INTERNET_BENCHMARK.Environment:Collect()
 
-				expect(details[3][1]).to.equal("Realm")
-				expect(details[3][2]).to.equal("Server")
+				expect(details[4][1]).to.equal("Realm")
+				expect(details[4][2]).to.equal("Server")
 			end
 		},
 
@@ -195,8 +197,8 @@ return {
 				local details = INTERNET_BENCHMARK.Environment:Collect()
 
 				expect(details[1][1]).to.equal("Suite Version")
-				expect(details[3][1]).to.equal("Realm")
-				expect(details[13][1]).to.equal("Players")
+				expect(details[4][1]).to.equal("Realm")
+				expect(details[14][1]).to.equal("Players")
 			end,
 
 			cleanup = function(state)

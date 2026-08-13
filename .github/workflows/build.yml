@@ -1,0 +1,88 @@
+name: Build
+
+on:
+  workflow_call:
+    inputs:
+      ref:
+        description: Git ref to package. Defaults to the ref that triggered this run.
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    name: Package gma and zip
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.ref || github.sha }}
+
+      - name: Install fastgmad
+        env:
+          # Pinned and checksummed like every other third-party binary here;
+          # Dependabot cannot see curl downloads, so bumps are deliberate.
+          FASTGMAD_VERSION: "v0.2.1"
+          FASTGMAD_SHA256: "eaf617664a2c534b7e9a0238a94156e692313334ff92d2695b6c5445d49b9d04"
+        run: |
+          curl -sSLf -o fastgmad.zip \
+            "https://github.com/WilliamVenner/fastgmad/releases/download/${FASTGMAD_VERSION}/fastgmad_linux.zip"
+          echo "${FASTGMAD_SHA256}  fastgmad.zip" | sha256sum -c -
+          # The zip also carries Workshop-publishing libraries; only the
+          # packer itself is needed.
+          unzip -o fastgmad.zip fastgmad
+          chmod +x fastgmad
+
+      - name: Stage the addon
+        run: |
+          # Stage only the shipped content: manifest, licence and addon code.
+          # Tests, CI and repo housekeeping never enter the staging tree, so
+          # they cannot leak into an artifact regardless of ignore lists.
+          mkdir -p dist/staging/internet_benchmark
+          cp addon.json LICENSE dist/staging/internet_benchmark/
+          cp -r lua dist/staging/internet_benchmark/lua
+          rm -rf dist/staging/internet_benchmark/lua/tests
+
+      - name: Stamp the build
+        run: |
+          # Packaged copies state the exact commit they were built from in the
+          # environment statement; working copies keep the "dev" marker.
+          commit="$(git rev-parse --short HEAD)"
+          autorun="dist/staging/internet_benchmark/lua/autorun/internet_benchmarks.lua"
+          sed -i "s/^BENCH\.Build = \"dev\"$/BENCH.Build = \"${commit}\"/" "$autorun"
+          grep -Fq "BENCH.Build = \"${commit}\"" "$autorun"
+
+      - name: Determine version
+        id: version
+        run: |
+          version="$(sed -n 's/^BENCH\.Version = "\([^"]*\)".*$/\1/p' \
+            dist/staging/internet_benchmark/lua/autorun/internet_benchmarks.lua)"
+          test -n "$version"
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+
+      - name: Pack the gma
+        run: |
+          # addon.json's ignore list keeps the licence out of the archive, and
+          # gmad's path whitelist rejects any unexpected file loudly.
+          ./fastgmad create \
+            -folder dist/staging/internet_benchmark \
+            -out "dist/internet_benchmark-${{ steps.version.outputs.version }}.gma"
+
+      - name: Zip for addons-folder deploys
+        run: |
+          # Extracting the zip into garrysmod/addons/ yields the same layout
+          # as a git clone, minus the development files.
+          cd dist/staging
+          zip -qr "../internet_benchmark-${{ steps.version.outputs.version }}.zip" internet_benchmark
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: packages
+          path: |
+            dist/*.gma
+            dist/*.zip
+          if-no-files-found: error

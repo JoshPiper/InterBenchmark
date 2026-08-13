@@ -1,1 +1,0 @@
-<li><a class="nav-link px-2 link-dark" x-tab='${key}' href="#">${title}</a></li>

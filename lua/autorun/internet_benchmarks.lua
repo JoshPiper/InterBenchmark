@@ -6,6 +6,12 @@ local BENCH = INTERNET_BENCHMARK
 --- The suite's semantic version.
 BENCH.Version = "2.0.0"
 
+--- The short commit hash this copy was packaged from.
+-- Stamped into the staged copy by the release packaging workflow. A working
+-- copy (a git clone, or the repo mounted in CI) always reports "dev",
+-- because plain GLua cannot see the checkout's actual commit.
+BENCH.Build = "dev"
+
 --- Include a file, obeying the sh/sv/cl realm prefix of its file name.
 -- Files without a recognised prefix are treated as shared.
 -- @string path Path to the file, relative to lua/internet_benchmark unless isFull is set.

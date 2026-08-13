@@ -29,6 +29,7 @@ return {
 			func = function()
 				expect(INTERNET_BENCHMARK).to.beA("table")
 				expect(INTERNET_BENCHMARK.Version).to.beA("string")
+				expect(INTERNET_BENCHMARK.Build).to.beA("string")
 				expect(INTERNET_BENCHMARK.Classes.Trial).to.beA("table")
 			end
 		},

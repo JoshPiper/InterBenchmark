@@ -3,6 +3,7 @@
 		<header class="page-header">
 			<span><button type="button" class="btn" data-view="overview">&larr; All trials</button></span>
 			<h1>${title}</h1>
+			${description}
 			<div class="tag-row">
 				<span class="tag">Run count ${runs}</span>
 				<span class="tag">Iterations / run ${iterations}</span>

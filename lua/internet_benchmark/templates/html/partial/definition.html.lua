@@ -3,5 +3,6 @@
 		<span class="definition-head-name">${title}</span>
 		${tag}
 	</div>
+	${description}
 	${content}
 </div>

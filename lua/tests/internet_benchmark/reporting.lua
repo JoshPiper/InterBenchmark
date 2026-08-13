@@ -7,10 +7,12 @@ return {
 		state.trial = {
 			id = "example",
 			name = "Example Trial",
+			description = "Whether caching matters for a single call.",
 			runs = 2,
 			iterations = 10,
 			functions = {function() end, function() end},
 			labels = {"First Way", "Second Way"},
+			descriptions = {"Calls it directly."},
 			functionSources = {"local function a() return 1 < 2 end", "local function b() end"},
 			predefineSources = {"local threshold = 5"}
 		}
@@ -80,6 +82,29 @@ return {
 
 				local hasSecond = string.find(html, "Second Way", 1, true)
 				expect(hasSecond).to.exist()
+			end
+		},
+
+		{
+			name = "Renders the trial's description beneath its title",
+			func = function(state)
+				local html = INTERNET_BENCHMARK:HTMLTab("example", state.timing, state.stats, state.trial)
+
+				local hasDescription = string.find(html, "<p>Whether caching matters for a single call.</p>", 1, true)
+				expect(hasDescription).to.exist()
+			end
+		},
+
+		{
+			name = "Renders a candidate's description, only where one was given",
+			func = function(state)
+				local html = INTERNET_BENCHMARK:HTMLTab("example", state.timing, state.stats, state.trial)
+
+				local hasDescription = string.find(html, '<p class="definition-description">Calls it directly.</p>', 1, true)
+				expect(hasDescription).to.exist()
+
+				local _, count = string.gsub(html, "definition%-description", "")
+				expect(count).to.equal(1)
 			end
 		},
 

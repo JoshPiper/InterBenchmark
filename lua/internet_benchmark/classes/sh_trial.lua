@@ -20,6 +20,7 @@ function TRIAL:New()
 
 		excludedVars = {},
 		labels = {},
+		descriptions = {},
 		preDefines = {},
 		functions = {}
 	}, self)
@@ -32,6 +33,12 @@ end
 --- Set the trial's display name.
 function TRIAL:Name(name)
 	self.name = name
+	return self
+end
+
+--- Set the trial's description, shown beneath its title in the report.
+function TRIAL:Description(text)
+	self.description = text
 	return self
 end
 
@@ -81,6 +88,13 @@ end
 --- Label the most recently added function.
 function TRIAL:Label(label)
 	self.labels[#self.functions] = label
+	return self
+end
+
+--- Describe the most recently added function, shown beneath its source in
+-- the report.
+function TRIAL:Describe(text)
+	self.descriptions[#self.functions] = text
 	return self
 end
 

@@ -872,6 +872,15 @@ main {
 	word-break: break-word;
 }
 
+.definition-description {
+	margin: 0;
+	padding: 12px 16px;
+	border-bottom: 1px solid var(--border);
+	font-size: 12.5px;
+	line-height: 1.6;
+	color: var(--muted);
+}
+
 .predefines {
 	display: flex;
 	flex-direction: column;

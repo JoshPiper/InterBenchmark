@@ -259,7 +259,9 @@ function BENCH:HTMLTab(id, timing, stats, trial)
 	l.Debug(string.format("Generating tab for '%s'.", id))
 
 	local labels = trial.labels or {}
+	local descriptions = trial.descriptions or {}
 	local title = f.EscapeHTML(f.Title(trial.name or id))
+	local description = trial.description and string.format("<p>%s</p>", f.EscapeHTML(trial.description)) or ""
 
 	local minMean = stats.minMean
 	stats.minMean = nil
@@ -340,9 +342,11 @@ function BENCH:HTMLTab(id, timing, stats, trial)
 	local tests = {}
 	for fnId in ipairs(trial.functions) do
 		local source = trial.functionSources and trial.functionSources[fnId] or "-- Source unavailable."
+		local candidateDescription = descriptions[fnId]
 		table.insert(tests, t:Template("partial/definition", {
 			title = f.EscapeHTML(labels[fnId] or ("Function #" .. fnId)),
 			tag = fnId == winnerFnId and "<span class=\"tag tag-accent\">Fastest</span>" or "",
+			description = candidateDescription and string.format('<p class="definition-description">%s</p>', f.EscapeHTML(candidateDescription)) or "",
 			content = t:Template("partial/predefine", f.EscapeHTML(source))
 		}))
 	end
@@ -359,6 +363,7 @@ function BENCH:HTMLTab(id, timing, stats, trial)
 		runs = trial.runs,
 		iterations = trial.iterations,
 		title = title,
+		description = description,
 		candidateLabel = #trial.functions .. " candidates",
 		winnerName = winnerLabel,
 		winnerAvg = f:AutoNumber(winnerStat.mean, nil, 2) .. "s",

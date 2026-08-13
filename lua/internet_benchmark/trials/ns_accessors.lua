@@ -31,7 +31,7 @@ end
 TRIAL
 	:Function(direct)
 	:Label("direct access")
-	:Describe("Reaches into the gamemode's internal per-player table directly, bypassing its accessor layer entirely - the fastest possible path, but only correct as long as that internal structure doesn't change.")
+	:Describe("Reaches into the gamemode's internal per-player table directly, bypassing its accessor layer entirely - only correct as long as that internal structure doesn't change.")
 	:Function(nsViaMeta)
 	:Label("getnsvar via pmeta")
 	:Describe("Calls the metatable's function directly via the captured pMeta upvalue, skipping the __index lookup that ply:GetNSVar(...) has to perform on every call to find the method.")

@@ -19,7 +19,7 @@ TRIAL
 	:Order(8)
 	:Function(a)
 	:Label("x ^ 2")
-	:Describe("A general power operator, good for any exponent - x*x only wins below because the exponent here happens to be the literal 2.")
+	:Describe("A general power operator, good for any exponent - x*x below only applies because the exponent here happens to be the literal 2.")
 	:Function(b)
 	:Label("x * x")
 	:Function(c)

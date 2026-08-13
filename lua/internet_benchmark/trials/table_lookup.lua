@@ -22,7 +22,7 @@ TRIAL
 	:Order(1001)
 	:Function(a)
 	:Label("Constructed HasValue")
-	:Describe("Rebuilds the table AND does a linear scan through it on every call - the worst of both costs, and the one most people write by accident.")
+	:Describe("Rebuilds the table AND does a linear scan through it on every call - combines both costs, and is the one most people write by accident.")
 	:Function(b)
 	:Label("Constructed Key Lookup")
 	:Describe("Still rebuilds the table on every call, but replaces the scan with a hash lookup - isolates the cost of construction from the cost of table.HasValue's scan.")

@@ -76,8 +76,9 @@ For every trial, the suite:
    after every timed run, so allocation garbage from one run cannot bill the next.
 5. **Times each run** with `SysTime()` around a tight loop of `iterations` calls
    (default: 100 runs × 100,000 iterations per function). `Before`/`After` hooks
-   run outside the timed window. The runner yields between runs so the game keeps
-   ticking.
+   run outside the timed window. The runner yields around each run's garbage
+   collections and its measurement so the game keeps ticking, even when a full
+   collection against a large live heap takes a while.
 6. **Computes statistics** per function: mean, median, quartiles (rank-averaged),
    IQR, population standard deviation, and a per-call average (mean ÷ iterations).
    Outliers beyond 1.5 × IQR are excluded from the reported minimum/maximum and

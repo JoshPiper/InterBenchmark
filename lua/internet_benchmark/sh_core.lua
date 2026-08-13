@@ -1,7 +1,8 @@
 --- Core benchmarking pipeline.
 -- Every long-running function here is coroutine aware: run inside a
--- coroutine (see BENCH:Async) it yields between timed runs, so the game
--- keeps ticking while a benchmark grinds away in the background.
+-- coroutine (see BENCH:Async) it yields around each run's garbage
+-- collections and its timed measurement, so the game keeps ticking while a
+-- benchmark grinds away in the background.
 -- @module core
 
 INTERNET_BENCHMARK = INTERNET_BENCHMARK or {}
@@ -34,6 +35,15 @@ function BENCH:Yield()
 	end
 end
 
+--- Per-tick time budget for background jobs, in seconds.
+-- A fixed, small cap rather than a fraction of the tick interval: on a
+-- low-tickrate server a fraction of TickInterval() could itself be tens of
+-- milliseconds, defeating the point of chunking work at all. This bounds
+-- how much extra work the pump piles into one tick once it is already
+-- running - it does not bound the length of a single yield-to-yield
+-- segment (see Benchmark's per-run yields for that).
+BENCH.AsyncBudget = 0.002
+
 --- Run a job in the background without freezing the game.
 -- The job runs inside a coroutine, pumped from a tick timer with a small
 -- per-tick time budget. Errors are logged and re-raised with a traceback.
@@ -49,7 +59,7 @@ function BENCH:Async(func)
 	local name = "internet_benchmark_" .. tostring(job)
 	self._ActiveJob = name
 
-	local budget = engine.TickInterval() / 2
+	local budget = self.AsyncBudget
 	timer.Create(name, 0, 0, function()
 		local finish = SysTime() + budget
 		repeat
@@ -92,6 +102,14 @@ end
 --- Benchmark a single function.
 -- Performs runs timed runs of iterationsPerRun iterations each, with a
 -- garbage collection either side of every run.
+--
+-- Each full collectgarbage() call is its own yield-to-yield segment, kept
+-- apart from the timed run and from each other: on a live server with a
+-- large heap, a single full collection can itself take a meaningful slice
+-- of a frame, and stacking two of them plus the timed run into one
+-- uninterruptible segment (as this used to) is what causes multi-second
+-- frame hitches - the pump can only act on its time budget between
+-- segments, never partway through one.
 -- @rnumber Mean time per run.
 -- @rtab Each run's time.
 function BENCH:Benchmark(func, iterationsPerRun, runs, preRun, postRun)
@@ -104,16 +122,19 @@ function BENCH:Benchmark(func, iterationsPerRun, runs, preRun, postRun)
 
 	for run = 1, runs do
 		collectgarbage()
+		self:Yield()
+
 		preRun()
 		results[run] = self:Time(func, iterationsPerRun)
 		postRun()
+
 		collectgarbage()
+		self:Yield()
+
 		time = time + results[run]
 
 		local eta = math.floor((time / run) * (runs - run) * 100) / 100
 		self.Logging.Debug(tmpl:format(run, runs, eta))
-
-		self:Yield()
 	end
 
 	return time / runs, results

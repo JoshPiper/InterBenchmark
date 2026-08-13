@@ -14,6 +14,15 @@ return {
 
 	cases = {
 		{
+			name = "Yields without erroring outside a coroutine",
+			func = function()
+				-- Benchmark yields between runs whether or not it is running as
+				-- a background job, so this must never reach a Lua 5.2 API.
+				expect(INTERNET_BENCHMARK.Yield, INTERNET_BENCHMARK).to.succeed()
+			end
+		},
+
+		{
 			name = "Runs a yielding job through to completion",
 			async = true,
 			timeout = 2,

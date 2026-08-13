@@ -7,8 +7,42 @@ INTERNET_BENCHMARK = INTERNET_BENCHMARK or {}
 SERVER = true
 CLIENT = false
 
+-- Garry's Mod ships LuaJIT 2.0 (Lua 5.1) on the public branch, which has no
+-- coroutine.isyieldable. Newer interpreters running this suite do, so it is
+-- removed here to keep the tests honest about what the game actually provides.
+coroutine.isyieldable = nil
+
 function AddCSLuaFile() end
 SysTime = os.clock
+
+-- Console, convar and message surface, enough to load the logging library.
+FCVAR_ARCHIVE, FCVAR_ARCHIVE_XBOX, FCVAR_UNLOGGED = 0, 0, 0
+
+function CreateConVar(name, default)
+	return {
+		GetString = function() return tostring(default) end,
+		GetName = function() return name end,
+	}
+end
+
+cvars = {
+	AddChangeCallback = function() end,
+	RemoveChangeCallback = function() end,
+}
+
+concommand = {
+	Add = function() end,
+}
+
+function MsgC(...)
+	local count = select("#", ...)
+	for i = 1, count do
+		local value = (select(i, ...))
+		if not IsColor(value) then
+			io.write(tostring(value))
+		end
+	end
+end
 
 function istable(v) return type(v) == "table" end
 function isstring(v) return type(v) == "string" end

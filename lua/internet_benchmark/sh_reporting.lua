@@ -102,8 +102,7 @@ function BENCH:HTMLReport()
 		body = table.concat(tabs, "\n")
 	})
 
-	file.CreateDir("internet_benchmarks")
-	file.Write("internet_benchmarks/report.html.txt", report)
+	self:WriteOutput("report.html.txt", report)
 	self:WriteAsset("style.css")
 	self:WriteAsset("script.js")
 	self.Environment:Write()
@@ -122,7 +121,7 @@ function BENCH:WriteAsset(name)
 		content = ""
 	end
 
-	file.Write("internet_benchmarks/" .. name .. ".txt", content)
+	self:WriteOutput(name .. ".txt", content)
 end
 
 --- Generate a single trial's report tab.

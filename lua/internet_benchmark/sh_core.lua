@@ -7,13 +7,29 @@
 INTERNET_BENCHMARK = INTERNET_BENCHMARK or {}
 local BENCH = INTERNET_BENCHMARK
 
-local yieldable, yield = coroutine.isyieldable, coroutine.yield
+local running, yield = coroutine.running, coroutine.yield
 local resume, status = coroutine.resume, coroutine.status
 local noop = function() end
 
+--- The data directory reports are written into.
+BENCH.OutputDir = "internet_benchmarks"
+
+--- Write a file into the suite's output directory, creating it if needed.
+-- @string name The file's name, including extension.
+-- @string content The file's contents.
+function BENCH:WriteOutput(name, content)
+	file.CreateDir(self.OutputDir)
+	file.Write(string.format("%s/%s", self.OutputDir, name), content)
+end
+
 --- Yield when currently inside a coroutine, otherwise do nothing.
+-- coroutine.isyieldable is Lua 5.2+, and Garry's Mod ships LuaJIT 2.0 on the
+-- public branch, so it is not available. In Lua 5.1 coroutine.running()
+-- returns nil on the main thread; later versions flag it with a second
+-- return, and this handles both.
 function BENCH:Yield()
-	if yieldable() then
+	local co, isMain = running()
+	if co and not isMain then
 		yield()
 	end
 end

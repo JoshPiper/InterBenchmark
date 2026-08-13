@@ -82,6 +82,5 @@ end
 
 --- Write the environment statement next to the generated report.
 function ENV:Write()
-	file.CreateDir("internet_benchmarks")
-	file.Write("internet_benchmarks/environment.txt", self:Format())
+	self:WriteOutput("environment.txt", self:Format())
 end

@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  lint:
+    name: GLua Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install glualint
+        run: |
+          url="$(curl -sL https://api.github.com/repos/FPtje/GLuaFixer/releases/latest | grep -oP '"browser_download_url":\s*"\K[^"]*linux[^"]*\.zip' | head -1)"
+          test -n "$url"
+          curl -sL "$url" -o glualint.zip
+          unzip -o glualint.zip
+          chmod +x glualint
+
+      - name: Lint
+        run: |
+          # Templates are HTML/CSS/JS carried in .lua files; they are not Lua.
+          find lua -name '*.lua' -not -path '*/templates/*' -print0 | xargs -0 ./glualint lint
+
+  test:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install LuaJIT
+        run: sudo apt-get update && sudo apt-get install -y luajit
+
+      - name: Run tests
+        run: luajit tests/run.lua

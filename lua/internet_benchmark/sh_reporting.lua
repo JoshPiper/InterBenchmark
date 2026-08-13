@@ -7,6 +7,16 @@ local BENCH = INTERNET_BENCHMARK
 
 local t, f, l = BENCH.Templating, BENCH.Formatting, BENCH.Logging
 
+--- A function's mean as a percentage of the trial's fastest mean.
+-- Guards against a zero minimum, which a too-coarse timer can produce.
+local function percentageOf(mean, minMean)
+	if minMean <= 0 then
+		return 100
+	end
+
+	return (mean / minMean) * 100
+end
+
 --- Benchmark one trial and compute its statistics.
 -- @string name The trial's file name, without extension.
 -- @return results, statistics, trial — or nil when the trial did not run.
@@ -150,7 +160,7 @@ function BENCH:HTMLTab(id, timing, stats, trial, first)
 		table.insert(timePairs.max, stat.max)
 		table.insert(timePairs.mean, stat.mean)
 		table.insert(timePairs.average, stat.average)
-		stat.percentage = (stat.mean / minMean) * 100
+		stat.percentage = percentageOf(stat.mean, minMean)
 	end
 
 	local dataRows, meanRows = {}, {}
@@ -236,7 +246,7 @@ function BENCH:ConsoleReport(name)
 			f:AutoNumber(stat.median, nil, 3),
 			f:AutoNumber(stat.mean, nil, 3),
 			f:AutoNumber(stat.average, nil, 3),
-			math.Round((stat.mean / minMean) * 100)
+			math.Round(percentageOf(stat.mean, minMean))
 		))
 		i = i + 1
 	end

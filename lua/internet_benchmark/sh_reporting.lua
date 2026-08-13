@@ -125,10 +125,13 @@ function BENCH:HTMLEnvironmentGroups()
 end
 
 --- Generate the full HTML report.
--- Writes report.html.txt, style.css.txt, script.js.txt and environment.txt
--- to data/internet_benchmarks/.
+-- Writes report.html.txt and environment.txt to data/internet_benchmarks/.
+-- The report is a single self-contained file: its stylesheet and script are
+-- inlined, so nothing else needs to travel alongside it.
 -- @bool[opt=false] dynamic Recalibrate every trial's iteration count
 -- instead of using its authored or default count.
+-- @rstring The rendered report, so callers (like the client's report
+-- viewer) can use it without reading it back off disk.
 function BENCH:HTMLReport(dynamic)
 	self.Environment:Report()
 
@@ -206,29 +209,42 @@ function BENCH:HTMLReport(dynamic)
 		navTrials = table.concat(headers, "\n"),
 		overview = overview,
 		environment = environment,
-		trials = table.concat(tabs, "\n")
+		trials = table.concat(tabs, "\n"),
+		style = self:ReadAsset("style.css"),
+		script = self:ReadAsset("script.js")
 	})
 
 	self:WriteOutput("report.html.txt", report)
-	self:WriteAsset("style.css")
-	self:WriteAsset("script.js")
 	self.Environment:Write()
 
 	l.ForceInfo("The report has been written to garrysmod/data/internet_benchmarks/.")
-	l.ForceInfo("To view it: rename report.html.txt to report.html, style.css.txt to style.css and script.js.txt to script.js, then open report.html in a browser.")
-	l.ForceInfo("(Garry's Mod can only write a limited set of file extensions, hence the .txt suffixes.)")
+	l.ForceInfo("To view it: rename report.html.txt to report.html, then open it in a browser.")
+	l.ForceInfo("(Garry's Mod can only write a limited set of file extensions, hence the .txt suffix.)")
+
+	if CLIENT and self.OpenReport then
+		self:OpenReport(report)
+	end
+
+	return report
+end
+
+--- Read an asset out of the templates directory.
+-- @string name The asset's file name, without the .lua suffix.
+-- @rstring The asset's content, or "" when it could not be read.
+function BENCH:ReadAsset(name)
+	local content = file.Read("internet_benchmark/templates/html/" .. name .. ".lua", "LUA")
+	if not content then
+		l.Warning(string.format("Asset '%s' could not be read; an empty file was used.", name))
+		content = ""
+	end
+
+	return content
 end
 
 --- Copy a static asset out of the templates directory, as a .txt file.
 -- @string name The asset's file name, without the .lua suffix.
 function BENCH:WriteAsset(name)
-	local content = file.Read("internet_benchmark/templates/html/" .. name .. ".lua", "LUA")
-	if not content then
-		l.Warning(string.format("Asset '%s' could not be read; an empty file was written.", name))
-		content = ""
-	end
-
-	self:WriteOutput(name .. ".txt", content)
+	self:WriteOutput(name .. ".txt", self:ReadAsset(name))
 end
 
 --- Generate a single trial's report view.

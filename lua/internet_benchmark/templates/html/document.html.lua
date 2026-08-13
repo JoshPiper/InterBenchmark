@@ -4,7 +4,7 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<title>Benchmarking Report</title>
-		<link rel="stylesheet" href="style.css">
+		<style>${style}</style>
 	</head>
 
 	<body>
@@ -43,5 +43,5 @@
 		</div>
 	</body>
 
-	<script src="./script.js"></script>
+	<script>${script}</script>
 </html>

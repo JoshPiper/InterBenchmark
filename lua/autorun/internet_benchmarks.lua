@@ -72,6 +72,7 @@ BENCH:Include("classes/sh_trial")
 BENCH:Include("sh_environment")
 BENCH:Include("sh_core")
 BENCH:Include("sh_reporting")
+BENCH:Include("cl_reporting")
 BENCH:Include("sh_commands")
 
 if SERVER then

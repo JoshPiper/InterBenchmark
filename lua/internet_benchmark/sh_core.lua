@@ -203,14 +203,91 @@ function BENCH:LoadTrial(name)
 	return trial
 end
 
+--- Target duration for a single calibration or measurement run, in seconds,
+-- when dynamic iteration calibration is requested (see CalibrateIterations).
+-- Large enough to average out scheduler jitter and clock-resolution noise;
+-- small enough to keep calibration itself cheap.
+BENCH.DynamicTargetDuration = 0.05
+
+--- Iteration bounds dynamic calibration will settle within.
+-- The floor keeps a run long enough for LuaJIT to have a chance to compile
+-- a hot trace before it ends; the ceiling is a safety valve against a
+-- pathologically fast function driving the estimate toward an unbounded
+-- iteration count.
+BENCH.DynamicMinIterations = 1000
+BENCH.DynamicMaxIterations = 10000000
+
+--- Calibrate a trial's iteration count for its actual functions, instead of
+-- using the fixed count it was authored with.
+--
+-- Every function in a trial ends up sharing one iteration count, so raw
+-- per-run statistics stay directly comparable across the trial's Results
+-- table exactly as they are with a fixed count. Because a count that
+-- comfortably clears the target duration for a slow function can badly
+-- undershoot it for a fast one in the same trial, the shared count is
+-- driven by whichever function needs the MOST iterations to reach the
+-- target - the fastest one. Slower functions in the trial will then run
+-- for longer than their own minimum would require; that is the necessary
+-- trade-off for keeping the comparison meaningful.
+--
+-- Each function is probed with a doubling sequence of iteration counts,
+-- running the trial's own before/after hooks around every probe so the
+-- probed cost matches what a real run would see, until a probe reaches the
+-- target duration or the iteration ceiling. The final probe is then
+-- extrapolated back to an exact target-duration estimate, rather than just
+-- using whichever doubled value first crossed the line.
+--
+-- This does not change trial.runs, and it overrides whatever iteration
+-- count the trial was authored with (or its 100,000 default) - dynamic
+-- mode is a per-invocation override, not a per-trial author setting.
+-- @tab trial The trial to calibrate. Mutates trial.iterations.
+function BENCH:CalibrateIterations(trial)
+	local target = self.DynamicTargetDuration
+	local minIterations = self.DynamicMinIterations
+	local maxIterations = self.DynamicMaxIterations
+	local preRun, postRun = trial.before or noop, trial.after or noop
+
+	local needed = minIterations
+	for _, fn in ipairs(trial.functions) do
+		local probe, elapsed = minIterations, 0
+
+		while true do
+			preRun()
+			elapsed = self:Time(fn, probe)
+			postRun()
+			self:Yield()
+
+			if elapsed >= target or probe >= maxIterations then
+				break
+			end
+
+			probe = math.min(probe * 2, maxIterations)
+		end
+
+		-- Extrapolate this function's own target-reaching count from its
+		-- last probe, rather than keeping whatever doubled value happened
+		-- to first cross the target.
+		local estimate = elapsed > 0 and math.ceil(probe * (target / elapsed)) or maxIterations
+		needed = math.max(needed, math.min(estimate, maxIterations))
+	end
+
+	trial.iterations = math.Clamp(needed, minIterations, maxIterations)
+	self.Logging.Info(string.format(
+		"Calibrated '%s' to %d iterations/run (target %.3fs/run).",
+		trial.id, trial.iterations, target
+	))
+end
+
 --- Load and benchmark a single trial.
 -- Sources are collected before the first run, then every function gets a
 -- quarter-scale warm-up pass followed by the timed runs, with the garbage
 -- collector held off throughout.
 -- @string name The trial's file name, without extension.
+-- @bool[opt=false] dynamic Recalibrate the trial's iteration count (see
+-- CalibrateIterations) instead of using its authored or default count.
 -- @rtab results[idx] per function, or nil when the trial did not run.
 -- @rtab The trial.
-function BENCH:Trial(name)
+function BENCH:Trial(name, dynamic)
 	local trial = self:LoadTrial(name)
 	if not trial then
 		return nil
@@ -218,6 +295,11 @@ function BENCH:Trial(name)
 
 	self.Logging.Debug(string.format("Collecting sources for '%s'.", name))
 	self.Introspection:TrialSources(trial)
+
+	if dynamic then
+		self.Logging.Info("Calibrating Iteration Count")
+		self:CalibrateIterations(trial)
+	end
 
 	local preRun, postRun = trial.before, trial.after
 	local iterations, runs = trial.iterations, trial.runs

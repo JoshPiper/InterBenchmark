@@ -19,9 +19,11 @@ end
 
 --- Benchmark one trial and compute its statistics.
 -- @string name The trial's file name, without extension.
+-- @bool[opt=false] dynamic Recalibrate the trial's iteration count instead
+-- of using its authored or default count. @see BENCH:CalibrateIterations
 -- @return results, statistics, trial — or nil when the trial did not run.
-function BENCH:ReportTrial(name)
-	local results, trial = self:Trial(name)
+function BENCH:ReportTrial(name, dynamic)
+	local results, trial = self:Trial(name, dynamic)
 	if not results then
 		return nil
 	end
@@ -49,14 +51,16 @@ end
 
 --- Benchmark every trial on disk.
 -- Trials which are missing, gated off or empty are skipped.
+-- @bool[opt=false] dynamic Recalibrate every trial's iteration count
+-- instead of using its authored or default count.
 -- @rtab A list of {results, statistics, trial, order = n} entries.
-function BENCH:ReportAll()
+function BENCH:ReportAll(dynamic)
 	local reports = {}
 	local names = self:TrialNames()
 
 	for idx, name in ipairs(names) do
 		l.ForceInfo(string.format("Trial '%s' (%d of %d)", name, idx, #names))
-		local results, statistics, trial = self:ReportTrial(name)
+		local results, statistics, trial = self:ReportTrial(name, dynamic)
 		if results then
 			table.insert(reports, {results, statistics, trial, order = trial.order or 0})
 		end
@@ -70,10 +74,12 @@ end
 --- Generate the full HTML report.
 -- Writes report.html.txt, style.css.txt, script.js.txt and environment.txt
 -- to data/internet_benchmarks/.
-function BENCH:HTMLReport()
+-- @bool[opt=false] dynamic Recalibrate every trial's iteration count
+-- instead of using its authored or default count.
+function BENCH:HTMLReport(dynamic)
 	self.Environment:Report()
 
-	local reports = self:ReportAll()
+	local reports = self:ReportAll(dynamic)
 	if #reports == 0 then
 		l.Warning("No trials produced results; the report was not written.")
 		return
@@ -220,8 +226,10 @@ end
 
 --- Benchmark a single trial and print its results to the console.
 -- @string name The trial's file name, without extension.
-function BENCH:ConsoleReport(name)
-	local results, statistics, trial = self:ReportTrial(name)
+-- @bool[opt=false] dynamic Recalibrate the trial's iteration count instead
+-- of using its authored or default count.
+function BENCH:ConsoleReport(name, dynamic)
+	local results, statistics, trial = self:ReportTrial(name, dynamic)
 	if not results then
 		l.ForceWarning(string.format("Trial '%s' did not run (missing, gated off, or empty).", name))
 		return
@@ -252,9 +260,11 @@ function BENCH:ConsoleReport(name)
 end
 
 --- Generate the HTML report in the background.
+-- @bool[opt=false] dynamic Recalibrate every trial's iteration count
+-- instead of using its authored or default count.
 -- @rbool Whether the job was started.
-function BENCH:ReportWithoutCrashing()
+function BENCH:ReportWithoutCrashing(dynamic)
 	return self:Async(function()
-		self:HTMLReport()
+		self:HTMLReport(dynamic)
 	end)
 end

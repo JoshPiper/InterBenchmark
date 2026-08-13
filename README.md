@@ -26,8 +26,8 @@ The suite loads on both the server and the client.
 
 | Command | Effect |
 | --- | --- |
-| `internet_benchmark_run` | Benchmark every trial and write the HTML report. |
-| `internet_benchmark_trial <name>` | Benchmark a single trial and print results to the console (autocompletes). |
+| `internet_benchmark_run [dynamic]` | Benchmark every trial and write the HTML report. |
+| `internet_benchmark_trial <name> [dynamic]` | Benchmark a single trial and print results to the console (autocompletes the name). |
 | `internet_benchmark_environment` | Print the environment statement. |
 | `internet_benchmark_logging_report` | Explain the logging levels and the current configuration. |
 
@@ -35,6 +35,10 @@ Run them from the server console, or from the client console (`F10` / tilde) to
 benchmark the client realm — rendering trials such as `draw_rect` only run there.
 On dedicated servers, benchmark commands are restricted to the server console and
 superadmins.
+
+Pass `dynamic` as the final argument to either command to recalibrate each
+trial's iteration count from a live probe instead of using its fixed default —
+see [Dynamic iteration calibration](#dynamic-iteration-calibration) below.
 
 Benchmarks run in the background on a small per-tick time budget, so the game
 stays responsive while a full suite (several minutes of measuring) grinds away.
@@ -84,6 +88,39 @@ For every trial, the suite:
    Outliers beyond 1.5 × IQR are excluded from the reported minimum/maximum and
    drawn separately; the mean deliberately still includes them. Percentages
    compare each mean against the fastest function in the trial.
+
+### Dynamic iteration calibration
+
+By default, every trial runs its authored iteration count (100,000 unless the
+trial sets its own). That fixed number can be badly wrong in either direction:
+too small for an already-cheap function to produce a run duration that rises
+meaningfully above clock-resolution and scheduler noise, or far larger than
+necessary for a function where 100,000 iterations already takes a long time.
+
+Passing `dynamic` to `internet_benchmark_run` or `internet_benchmark_trial`
+recalibrates every trial's iteration count from a live probe instead: each
+function is timed at a doubling sequence of iteration counts (100, 200, 400,
+…) until a run reaches a target duration (`BENCH.DynamicTargetDuration`,
+0.05s by default), then that probe is extrapolated back to an exact
+target-duration estimate.
+
+Every function within a trial still shares one iteration count — otherwise the
+raw per-run numbers in the Results table (median/min/max/mean) would no longer
+be comparable across functions, since they'd represent different amounts of
+work. The shared count is driven by whichever function in the trial is
+**fastest**, since that's the one that needs the most iterations to reach the
+target; slower functions in the same trial then run for longer than their own
+individual minimum would require. That's an intentional trade-off: it keeps
+the comparison meaningful at the cost of some wasted time on the slower
+functions.
+
+**This is an accuracy and consistency feature, not a speed one.** Most of this
+suite's trials benchmark genuinely tiny operations that already clear a
+reasonable resolution bar in well under 100,000 iterations — calibrating
+toward a real target duration is as likely to *increase* total run time for
+those trials as it is to decrease it. If your actual goal is a faster full
+suite run, `internet_benchmark_trial <name>` against just the trials you care
+about will get there faster than either mode of `internet_benchmark_run`.
 
 ### Caveats
 

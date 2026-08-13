@@ -63,15 +63,27 @@ end
 
 TRIAL
 	:Name("For Loops")
+	:Description(
+		"Eight ways to walk a 100-element sequential table, from generic iteration to a hard-coded numeric bound. Lua only evaluates a numeric "
+		.. "for loop's limit once, before the loop starts - not on every iteration - which is why the tab.n/#tab/tab[0]/length variants all "
+		.. "land close together despite reading their bound differently."
+	)
 	:Order(10)
 	:Function(a)
 	:Label("pairs")
+	:Describe("Generic iteration that has to handle both the array and hash parts of the table, and works even when the table isn't a sequential array - the baseline everything else here is trying to beat.")
 	:Function(b)
 	:Label("jit pairs")
+	:Describe(
+		"Returns Lua's raw next as the iterator directly, instead of calling pairs() to get it - which sounds like it should save a function "
+		.. "call, but tends to lose the loop specialisation LuaJIT applies to a literal pairs()/ipairs() call, and is usually the slowest "
+		.. "candidate here despite doing less per-call work."
+	)
 	:Function(c)
 	:Label("ipairs")
 	:Function(d)
 	:Label("for i fixed max")
+	:Describe("Hard-codes the loop bound as a literal 100 - the fastest option, but silently wrong the moment the table's size changes.")
 	:Function(e)
 	:Label("for i #tab")
 	:Function(f)

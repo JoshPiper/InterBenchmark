@@ -18,11 +18,14 @@ end
 
 TRIAL
 	:Name("HasValue vs Key Lookup in Table Construction vs Upvalues")
+	:Description("Four ways to check membership, crossing two independent choices: a linear scan (table.HasValue) vs a direct key lookup, and building the lookup table fresh on every call vs reusing one captured as an upvalue.")
 	:Order(1001)
 	:Function(a)
 	:Label("Constructed HasValue")
+	:Describe("Rebuilds the table AND does a linear scan through it on every call - the worst of both costs, and the one most people write by accident.")
 	:Function(b)
 	:Label("Constructed Key Lookup")
+	:Describe("Still rebuilds the table on every call, but replaces the scan with a hash lookup - isolates the cost of construction from the cost of table.HasValue's scan.")
 	:Function(c)
 	:Label("UpValue HasValue")
 	:Function(d)

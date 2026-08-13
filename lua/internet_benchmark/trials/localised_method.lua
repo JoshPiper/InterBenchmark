@@ -17,6 +17,7 @@ end
 
 TRIAL
 	:Name("Localised Method Calls")
+	:Description("Whether hoisting a repeatedly-called method into a local pays off, called three times per candidate to give the saved lookups something to add up against.")
 	:Order(3)
 	:Function(a)
 	:Label("Direct Call")

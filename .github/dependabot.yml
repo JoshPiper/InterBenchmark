@@ -1,0 +1,9 @@
+# Keeps the SHA-pinned actions fresh: Dependabot bumps the pin and its tag
+# comment together. The curl-downloaded binaries (glualint, fastgmad,
+# gm_sysinfo) are invisible to it; those pins are bumped deliberately, by hand.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly

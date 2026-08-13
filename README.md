@@ -9,8 +9,9 @@ and friends.
 
 Each claim lives in a small, self-contained **trial** comparing two or more
 implementations. The suite runs every trial under controlled conditions and
-produces a tabbed HTML report with summary statistics, box-and-whisker graphs, and
-the exact source code that was measured.
+produces a single self-contained HTML report — an overview, an environment
+statement and a page per trial with summary statistics, box-and-whisker plots,
+and the exact source code that was measured.
 
 ## Installation
 
@@ -47,20 +48,20 @@ Progress is logged as it goes; the `internet_benchmark_logging_level` convar
 
 ### Output
 
-The report is written to `garrysmod/data/internet_benchmarks/`:
+On the client, `internet_benchmark_run` also opens the finished report directly
+in an in-game panel — no file access needed. The report is written to
+`garrysmod/data/internet_benchmarks/` either way:
 
 | File | Content |
 | --- | --- |
-| `report.html.txt` | The report itself. |
-| `style.css.txt` | Stylesheet referenced by the report. |
-| `script.js.txt` | Tab/highlighting behaviour referenced by the report. |
+| `report.html.txt` | The report itself — a single, self-contained file (its stylesheet and script are inlined; no CDN dependencies). |
 | `environment.txt` | The environment statement for this run. |
 
-Garry's Mod can only write a limited set of file extensions, so everything gets a
-`.txt` suffix. To view the report, rename `report.html.txt` → `report.html`,
-`style.css.txt` → `style.css` and `script.js.txt` → `script.js`, then open
-`report.html` in a browser. (The page pulls Bootstrap, highlight.js, jQuery and
-CanvasJS from CDNs, so it needs an internet connection to render fully.)
+Garry's Mod can only write a limited set of file extensions, so the report gets a
+`.txt` suffix. To view it outside the game, rename `report.html.txt` →
+`report.html` and open it in a browser. It has an Overview, an Environment page
+and one page per trial, navigable from the sidebar, and a light/dark theme
+toggle.
 
 ## Methodology
 

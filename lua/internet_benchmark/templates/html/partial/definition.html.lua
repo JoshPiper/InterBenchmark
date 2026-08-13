@@ -1,2 +1,8 @@
-<h4>${title}</h4>
-${content}
+<div class="definition">
+	<div class="definition-head">
+		<span class="definition-head-name">${title}</span>
+		${tag}
+	</div>
+	${description}
+	${content}
+</div>

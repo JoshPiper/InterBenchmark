@@ -11,9 +11,14 @@ function TEMPLATE:Replace(template, variables)
 		variables = {content = tostring(variables)}
 	end
 
-	return string.gsub(template, "%${(.-)}", function(w)
+	-- Parenthesised to discard gsub's second return (a substitution count):
+	-- left alone, that count tags along as an extra return whenever a
+	-- caller's the last argument in a call, e.g. table.insert(list,
+	-- t:Template(...)) silently becomes a 3-argument table.insert, and
+	-- string.gsub is a rare enough builtin's multi-return quirk to bite.
+	return (string.gsub(template, "%${(.-)}", function(w)
 		return variables[w] or ("${" .. w .. "}")
-	end)
+	end))
 end
 
 function TEMPLATE:Path(path, type)

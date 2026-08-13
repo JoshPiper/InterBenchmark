@@ -2,6 +2,11 @@
 -- gamemode. It only runs where that gamemode's globals are present.
 TRIAL
 	:Name("NS Accessors")
+	:Description(
+		"Player data on this gamemode can be reached three ways: a hand-written direct table lookup into internal fields, the gamemode's "
+		.. "generic 'namespaced var' (NSVar) system, and dedicated accessor methods layered on top of it - each tried through both the "
+		.. "player entity and its metatable directly."
+	)
 	:Order(6)
 	:If(function()
 		if not isfunction(INTERNET) then

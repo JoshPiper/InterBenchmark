@@ -1,1 +1,4 @@
-<li><a class="nav-link px-2 link-dark" x-tab='${key}' href="#">${title}</a></li>
+<button type="button" class="nav-trial" data-view="trial:${key}">
+	<span>${title}</span>
+	<span class="nav-trial-spread ${spreadClass}">${spread}</span>
+</button>

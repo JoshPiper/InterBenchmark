@@ -179,6 +179,100 @@ function ENV:Format()
 	return table.concat(lines, "\n")
 end
 
+--- Group titles, in display order, mapped to the row labels they collect.
+-- Rows are matched by label regardless of where Collect() emits them, so
+-- interleaved plain-GLua and gm_sysinfo rows still land in the right group.
+ENV.GroupOrder = {"Suite", "Game", "Lua runtime", "Operating system", "Processor", "Memory & host"}
+ENV.GroupsByLabel = {
+	["Suite Version"] = "Suite",
+	["Generated"] = "Suite",
+	["Realm"] = "Suite",
+	["Hosting"] = "Suite",
+	["Players"] = "Suite",
+
+	["Game Version"] = "Game",
+	["Game Branch"] = "Game",
+	["Map"] = "Game",
+	["Tick Interval"] = "Game",
+	["Operating System"] = "Game",
+
+	["Lua Runtime"] = "Lua runtime",
+	["JIT Compiler"] = "Lua runtime",
+	["Architecture"] = "Lua runtime",
+
+	["OS Version"] = "Operating system",
+	["Kernel"] = "Operating system",
+	["Distribution"] = "Operating system",
+	["System Info Module"] = "Operating system",
+
+	["CPU Model"] = "Processor",
+	["CPU Architecture"] = "Processor",
+	["Physical Cores"] = "Processor",
+
+	["Total Memory"] = "Memory & host",
+	["Available Memory"] = "Memory & host",
+	["Total Swap"] = "Memory & host",
+	["Load Average"] = "Memory & host",
+	["Host Uptime"] = "Memory & host"
+}
+
+--- Group the collected rows for display, dropping empty groups.
+-- @rtab An ordered list of {title, rows} entries, rows as {label, value}.
+function ENV:Groups()
+	local buckets = {}
+	for _, title in ipairs(self.GroupOrder) do
+		buckets[title] = {}
+	end
+
+	for _, pair in ipairs(self:Collect()) do
+		local title = self.GroupsByLabel[pair[1]]
+		if title then
+			table.insert(buckets[title], pair)
+		end
+	end
+
+	local groups = {}
+	for _, title in ipairs(self.GroupOrder) do
+		if #buckets[title] > 0 then
+			table.insert(groups, {title, buckets[title]})
+		end
+	end
+
+	return groups
+end
+
+--- A handful of headline rows for the environment page's summary tiles.
+-- @rtab An ordered list of {label, value} pairs.
+function ENV:Highlights()
+	local lookup = {}
+	for _, pair in ipairs(self:Collect()) do
+		lookup[pair[1]] = pair[2]
+	end
+
+	local highlights = {}
+
+	local runtime = lookup["Lua Runtime"]
+	if runtime then
+		local jit = lookup["JIT Compiler"] == "Enabled" and "JIT enabled" or "JIT disabled"
+		push(highlights, "Lua runtime", string.format("%s, %s", runtime, jit))
+	end
+
+	if lookup["CPU Model"] then
+		local cores = lookup["Physical Cores"]
+		push(highlights, "Processor", cores and string.format("%s, %s cores", lookup["CPU Model"], cores) or lookup["CPU Model"])
+	elseif lookup["Operating System"] then
+		push(highlights, "Operating system", lookup["Operating System"])
+	end
+
+	if lookup["Realm"] then
+		push(highlights, "Realm", string.format("%s, %s", lookup["Realm"], string.lower(lookup["Hosting"] or "")))
+	end
+
+	push(highlights, "Generated", lookup["Generated"])
+
+	return highlights
+end
+
 --- Log the environment statement through the suite's logger.
 function ENV:Report()
 	for _, pair in ipairs(self:Collect()) do

@@ -1,32 +1,100 @@
-window.tabs = {
-	set: function(id){
-		$("article").removeClass("active")
-		$(document.getElementById(id)).addClass("active")
-	},
+(function(){
+	"use strict";
 
-	bind: function(){
-		$("header li").click(function(){
-			tabs.set($(this).children().first().attr("x-tab"))
-			$(this).siblings().removeClass("active")
-			$(this).addClass("active")
-		})
-	}
-}
+	var THEME_KEY = "internet_benchmark_theme";
 
-$(document).ready(function(){
-	tabs.bind()
+	function applyStoredTheme(){
+		var stored = null;
+		try {
+			stored = localStorage.getItem(THEME_KEY);
+		} catch (e) {}
 
-	let active = $("li.active")
-	console.log(active)
-	// Set either the one marked as active.
-	// Or if none are, fall back to the first sidebar element.
-	if (active.length === 0){
-		active = $("header li").first()
-	} else {
-		active = active.first()
+		if (stored === "dark" || stored === "light"){
+			document.documentElement.setAttribute("data-theme", stored);
+		}
+
+		updateThemeToggleLabel();
 	}
 
-	tabs.set(active.children().first().attr("x-tab"))
+	function currentTheme(){
+		var attr = document.documentElement.getAttribute("data-theme");
+		if (attr === "dark" || attr === "light"){
+			return attr;
+		}
 
-	hljs.highlightAll();
-})
+		return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+	}
+
+	function updateThemeToggleLabel(){
+		var toggle = document.querySelector("[data-theme-toggle]");
+		if (!toggle){
+			return;
+		}
+
+		toggle.textContent = currentTheme() === "dark" ? "Light" : "Dark";
+	}
+
+	function toggleTheme(){
+		var next = currentTheme() === "dark" ? "light" : "dark";
+		document.documentElement.setAttribute("data-theme", next);
+
+		try {
+			localStorage.setItem(THEME_KEY, next);
+		} catch (e) {}
+
+		updateThemeToggleLabel();
+	}
+
+	function setView(view){
+		var sections = document.querySelectorAll("[data-view-section]");
+		for (var i = 0; i < sections.length; i++){
+			var match = sections[i].getAttribute("data-view-section") === view;
+			sections[i].classList.toggle("active", match);
+		}
+
+		var navLinks = document.querySelectorAll("[data-view]");
+		for (var j = 0; j < navLinks.length; j++){
+			var match2 = navLinks[j].getAttribute("data-view") === view;
+			navLinks[j].classList.toggle("active", match2);
+		}
+	}
+
+	function goToView(view){
+		setView(view);
+		if (history.replaceState){
+			history.replaceState(null, "", "#" + view);
+		} else {
+			location.hash = view;
+		}
+	}
+
+	function viewFromHash(){
+		var hash = location.hash.replace(/^#/, "");
+		if (hash && document.querySelector('[data-view-section="' + hash + '"]')){
+			return hash;
+		}
+
+		return "overview";
+	}
+
+	document.addEventListener("click", function(event){
+		var target = event.target.closest("[data-view]");
+		if (target){
+			goToView(target.getAttribute("data-view"));
+			return;
+		}
+
+		if (event.target.closest("[data-theme-toggle]")){
+			toggleTheme();
+		}
+	});
+
+	window.addEventListener("hashchange", function(){
+		setView(viewFromHash());
+	});
+
+	document.addEventListener("DOMContentLoaded", function(){
+		applyStoredTheme();
+		setView(viewFromHash());
+	});
+})();

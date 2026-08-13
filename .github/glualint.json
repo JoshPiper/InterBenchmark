@@ -1,0 +1,17 @@
+{
+    "problemMatcher": [
+        {
+            "owner": "glualint",
+            "pattern": [
+                {
+                    "regexp": "^(.*?): \\[(\\w*)\\] line (\\d+), column (\\d+) - line (\\d+), column (\\d+): (.*)$",
+                    "file": 1,
+                    "severity": 2,
+                    "line": 3,
+                    "column": 4,
+                    "message": 7
+                }
+            ]
+        }
+    ]
+}

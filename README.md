@@ -34,8 +34,8 @@ The suite loads on both the server and the client.
 
 | Command | Effect |
 | --- | --- |
-| `internet_benchmark_run [dynamic]` | Benchmark every trial and write the HTML report. |
-| `internet_benchmark_trial <name> [dynamic]` | Benchmark a single trial and print results to the console (autocompletes the name). |
+| `internet_benchmark_run [--dynamic]` | Benchmark every trial and write the HTML report. |
+| `internet_benchmark_trial <name> [--dynamic]` | Benchmark a single trial and print results to the console (autocompletes the name). |
 | `internet_benchmark_environment` | Print the environment statement. |
 | `internet_benchmark_logging_report` | Explain the logging levels and the current configuration. |
 
@@ -44,9 +44,9 @@ benchmark the client realm — rendering trials such as `draw_rect` only run the
 On dedicated servers, benchmark commands are restricted to the server console and
 superadmins.
 
-Pass `dynamic` as the final argument to either command to recalibrate each
-trial's iteration count from a live probe instead of using its fixed default —
-see [Dynamic iteration calibration](#dynamic-iteration-calibration) below.
+Pass `--dynamic` to either command to recalibrate each trial's iteration count
+from a live probe instead of using its fixed default — see
+[Dynamic iteration calibration](#dynamic-iteration-calibration) below.
 
 Benchmarks run in the background on a small per-tick time budget, so the game
 stays responsive while a full suite (several minutes of measuring) grinds away.
@@ -105,7 +105,7 @@ too small for an already-cheap function to produce a run duration that rises
 meaningfully above clock-resolution and scheduler noise, or far larger than
 necessary for a function where 100,000 iterations already takes a long time.
 
-Passing `dynamic` to `internet_benchmark_run` or `internet_benchmark_trial`
+Passing `--dynamic` to `internet_benchmark_run` or `internet_benchmark_trial`
 recalibrates every trial's iteration count from a live probe instead: each
 function is timed at a doubling sequence of iteration counts (100, 200, 400,
 …) until a run reaches a target duration (`BENCH.DynamicTargetDuration`,

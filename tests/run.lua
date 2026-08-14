@@ -5,6 +5,7 @@ local root = arg and arg[0] and arg[0]:match("^(.*)[/\\][^/\\]+$") or "tests"
 
 dofile(root .. "/shim.lua")
 dofile(root .. "/../lua/internet_benchmark/libs/sh_functional.lua")
+dofile(root .. "/../lua/internet_benchmark/libs/sh_args.lua")
 dofile(root .. "/../lua/internet_benchmark/libs/sh_logging.lua")
 dofile(root .. "/../lua/internet_benchmark/libs/sh_formatting.lua")
 dofile(root .. "/../lua/internet_benchmark/sh_core.lua")
@@ -27,7 +28,7 @@ function t:near(got, want, epsilon, label)
 	end
 end
 
-local tests = {"test_formatting", "test_statistic", "test_core"}
+local tests = {"test_formatting", "test_statistic", "test_core", "test_args"}
 for _, name in ipairs(tests) do
 	dofile(root .. "/" .. name .. ".lua")(t)
 end

@@ -72,6 +72,7 @@ function BENCH:IncludeDir(path, forceState)
 end
 
 BENCH:Include("libs/sh_functional")
+BENCH:Include("libs/sh_args")
 BENCH:Include("libs/sh_logging")
 BENCH:Include("libs/sh_formatting")
 BENCH:Include("libs/sh_templating")

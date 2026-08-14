@@ -220,7 +220,7 @@ return {
 				local report = stub(INTERNET_BENCHMARK, "ReportWithoutCrashing")
 				local callback = concommand.GetTable()["internet_benchmark_run"]
 
-				callback(nil, "internet_benchmark_run", {"dynamic"}, "dynamic")
+				callback(nil, "internet_benchmark_run", {"--dynamic"}, "--dynamic")
 
 				expect(report).was.called(1)
 				expect(report.callHistory[1][2]).to.equal(true)
@@ -241,6 +241,19 @@ return {
 		},
 
 		{
+			name = "internet_benchmark_run does not treat a bare 'dynamic' argument as the flag",
+			func = function()
+				local report = stub(INTERNET_BENCHMARK, "ReportWithoutCrashing")
+				local callback = concommand.GetTable()["internet_benchmark_run"]
+
+				callback(nil, "internet_benchmark_run", {"dynamic"}, "dynamic")
+
+				expect(report).was.called(1)
+				expect(report.callHistory[1][2]).to.beFalse()
+			end
+		},
+
+		{
 			name = "internet_benchmark_trial passes the dynamic flag through to the console report",
 			async = true,
 			timeout = 1,
@@ -248,7 +261,31 @@ return {
 				local report = stub(INTERNET_BENCHMARK, "ConsoleReport")
 				local callback = concommand.GetTable()["internet_benchmark_trial"]
 
-				callback(nil, "internet_benchmark_trial", {"local_vs_global", "dynamic"}, "local_vs_global dynamic")
+				callback(nil, "internet_benchmark_trial", {"local_vs_global", "--dynamic"}, "local_vs_global --dynamic")
+
+				timer.Simple(0.1, function()
+					expect(report).was.called(1)
+					expect(report.callHistory[1][2]).to.equal("local_vs_global")
+					expect(report.callHistory[1][3]).to.equal(true)
+
+					done()
+				end)
+			end,
+
+			cleanup = function()
+				INTERNET_BENCHMARK._ActiveJob = nil
+			end
+		},
+
+		{
+			name = "internet_benchmark_trial accepts the dynamic flag before the trial name",
+			async = true,
+			timeout = 1,
+			func = function()
+				local report = stub(INTERNET_BENCHMARK, "ConsoleReport")
+				local callback = concommand.GetTable()["internet_benchmark_trial"]
+
+				callback(nil, "internet_benchmark_trial", {"--dynamic", "local_vs_global"}, "--dynamic local_vs_global")
 
 				timer.Simple(0.1, function()
 					expect(report).was.called(1)

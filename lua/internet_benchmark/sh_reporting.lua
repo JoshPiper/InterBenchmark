@@ -20,12 +20,15 @@ end
 --- @param name string The trial's file name, without extension.
 --- @param dynamic boolean? Recalibrate the trial's iteration count instead
 --- of using its authored or default count. Defaults to false.
+--- @param test boolean? Force a low, fixed iteration and run count.
+--- Combining this with dynamic is not meaningful and is rejected by the
+--- console commands before it reaches here. Defaults to false.
 --- @see BENCH.CalibrateIterations
 --- @return table? results
 --- @return table? statistics
 --- @return table? trial
-function BENCH:ReportTrial(name, dynamic)
-	local results, trial = self:Trial(name, dynamic)
+function BENCH:ReportTrial(name, dynamic, test)
+	local results, trial = self:Trial(name, dynamic, test)
 	if not results then
 		return nil
 	end
@@ -55,14 +58,17 @@ end
 --- Trials which are missing, gated off or empty are skipped.
 --- @param dynamic boolean? Recalibrate every trial's iteration count
 --- instead of using its authored or default count. Defaults to false.
+--- @param test boolean? Force a low, fixed iteration and run count for every
+--- trial. Combining this with dynamic is not meaningful and is rejected by
+--- the console commands before it reaches here. Defaults to false.
 --- @return table # A list of {results, statistics, trial, order = n} entries.
-function BENCH:ReportAll(dynamic)
+function BENCH:ReportAll(dynamic, test)
 	local reports = {}
 	local names = self:TrialNames()
 
 	for idx, name in ipairs(names) do
 		l.ForceInfo(string.format("Trial '%s' (%d of %d)", name, idx, #names))
-		local results, statistics, trial = self:ReportTrial(name, dynamic)
+		local results, statistics, trial = self:ReportTrial(name, dynamic, test)
 		if results then
 			table.insert(reports, {results, statistics, trial, order = trial.order or 0})
 		end
@@ -183,12 +189,15 @@ end
 --- alongside it.
 --- @param dynamic boolean? Recalibrate every trial's iteration count
 --- instead of using its authored or default count. Defaults to false.
+--- @param test boolean? Force a low, fixed iteration and run count for every
+--- trial. Combining this with dynamic is not meaningful and is rejected by
+--- the console commands before it reaches here. Defaults to false.
 --- @return string? # The rendered report, so callers (like the client's report
 --- viewer) can use it without reading it back off disk.
-function BENCH:HTMLReport(dynamic)
+function BENCH:HTMLReport(dynamic, test)
 	self.Environment:Report()
 
-	local reports = self:ReportAll(dynamic)
+	local reports = self:ReportAll(dynamic, test)
 	if #reports == 0 then
 		l.Warning("No trials produced results; the report was not written.")
 		return
@@ -457,8 +466,11 @@ end
 --- @param name string The trial's file name, without extension.
 --- @param dynamic boolean? Recalibrate the trial's iteration count instead
 --- of using its authored or default count. Defaults to false.
-function BENCH:ConsoleReport(name, dynamic)
-	local results, statistics, trial = self:ReportTrial(name, dynamic)
+--- @param test boolean? Force a low, fixed iteration and run count.
+--- Combining this with dynamic is not meaningful and is rejected by the
+--- console commands before it reaches here. Defaults to false.
+function BENCH:ConsoleReport(name, dynamic, test)
+	local results, statistics, trial = self:ReportTrial(name, dynamic, test)
 	if not results then
 		l.ForceWarning(string.format("Trial '%s' did not run (missing, gated off, or empty).", name))
 		return
@@ -491,9 +503,12 @@ end
 --- Generate the HTML report in the background.
 --- @param dynamic boolean? Recalibrate every trial's iteration count
 --- instead of using its authored or default count. Defaults to false.
+--- @param test boolean? Force a low, fixed iteration and run count for every
+--- trial. Combining this with dynamic is not meaningful and is rejected by
+--- the console commands before it reaches here. Defaults to false.
 --- @return boolean # Whether the job was started.
-function BENCH:ReportWithoutCrashing(dynamic)
+function BENCH:ReportWithoutCrashing(dynamic, test)
 	return self:Async(function()
-		self:HTMLReport(dynamic)
+		self:HTMLReport(dynamic, test)
 	end)
 end

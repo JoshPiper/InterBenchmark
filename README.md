@@ -34,8 +34,8 @@ The suite loads on both the server and the client.
 
 | Command | Effect |
 | --- | --- |
-| `internet_benchmark_run [--dynamic]` | Benchmark every trial and write the HTML report. |
-| `internet_benchmark_trial <name> [--dynamic]` | Benchmark a single trial and print results to the console (autocompletes the name). |
+| `internet_benchmark_run [--dynamic] [--test]` | Benchmark every trial and write the HTML report. |
+| `internet_benchmark_trial <name> [--dynamic] [--test]` | Benchmark a single trial and print results to the console (autocompletes the name). |
 | `internet_benchmark_environment` | Print the environment statement. |
 | `internet_benchmark_logging_report` | Explain the logging levels and the current configuration. |
 
@@ -47,6 +47,13 @@ superadmins.
 Pass `--dynamic` to either command to recalibrate each trial's iteration count
 from a live probe instead of using its fixed default — see
 [Dynamic iteration calibration](#dynamic-iteration-calibration) below.
+
+Pass `--test` to either command to force a low, fixed iteration and run count
+(`BENCH.TestIterations` / `BENCH.TestRuns`, 10 iterations × 2 runs by default)
+instead of a trial's authored, default, or dynamically calibrated counts —
+useful for quickly smoke-testing a trial or the full report pipeline without
+waiting for a real run. `--dynamic` and `--test` are mutually exclusive;
+passing both together is rejected with a warning and nothing runs.
 
 Benchmarks run in the background on a small per-tick time budget, so the game
 stays responsive while a full suite (several minutes of measuring) grinds away.

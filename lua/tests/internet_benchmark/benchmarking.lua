@@ -234,6 +234,25 @@ return {
 		},
 
 		{
+			name = "Trial skips a trial that does not match the tag filter",
+			func = function()
+				local trial = INTERNET_BENCHMARK.Classes.Trial()
+				trial.id = "tag_probe_excluded"
+				trial.runs = 1
+				trial.iterations = 1
+				trial:Tag("slow")
+				trial:Function(function() end)
+				trial:Label("noop")
+
+				stub(INTERNET_BENCHMARK, "LoadTrial").returns(trial)
+
+				local results = INTERNET_BENCHMARK:Trial("tag_probe_excluded", false, false, {"default"}, {})
+
+				expect(results).to.beNil()
+			end
+		},
+
+		{
 			name = "Trial rejects combining dynamic and test",
 			func = function()
 				local trial = INTERNET_BENCHMARK.Classes.Trial()
@@ -250,6 +269,63 @@ return {
 				end)
 
 				expect(ok).to.beFalse()
+			end
+		},
+
+		{
+			name = "Trial runs a trial that matches the tag filter",
+			func = function()
+				local trial = INTERNET_BENCHMARK.Classes.Trial()
+				trial.id = "tag_probe_included"
+				trial.runs = 1
+				trial.iterations = 1
+				trial:Tag("default")
+				trial:Function(function() end)
+				trial:Label("noop")
+
+				stub(INTERNET_BENCHMARK, "LoadTrial").returns(trial)
+
+				local results = INTERNET_BENCHMARK:Trial("tag_probe_included", false, false, {"default"}, {})
+
+				expect(#results).to.equal(1)
+			end
+		},
+
+		{
+			name = "Trial skips a trial matching skip-tag even when it also matches tag",
+			func = function()
+				local trial = INTERNET_BENCHMARK.Classes.Trial()
+				trial.id = "tag_probe_skipped"
+				trial.runs = 1
+				trial.iterations = 1
+				trial:Tag("default")
+				trial:Function(function() end)
+				trial:Label("noop")
+
+				stub(INTERNET_BENCHMARK, "LoadTrial").returns(trial)
+
+				local results = INTERNET_BENCHMARK:Trial("tag_probe_skipped", false, false, {"default"}, {"default"})
+
+				expect(results).to.beNil()
+			end
+		},
+
+		{
+			name = "Trial runs a trial with no explicit tag filter at all",
+			func = function()
+				local trial = INTERNET_BENCHMARK.Classes.Trial()
+				trial.id = "tag_probe_unfiltered"
+				trial.runs = 1
+				trial.iterations = 1
+				trial:Tag("default")
+				trial:Function(function() end)
+				trial:Label("noop")
+
+				stub(INTERNET_BENCHMARK, "LoadTrial").returns(trial)
+
+				local results = INTERNET_BENCHMARK:Trial("tag_probe_unfiltered")
+
+				expect(#results).to.equal(1)
 			end
 		},
 
@@ -327,6 +403,38 @@ return {
 
 				expect(report).was.called(1)
 				expect(report.callHistory[1][2]).to.beFalse()
+			end
+		},
+
+		{
+			name = "internet_benchmark_run passes --tag and --skip-tag through to the report job",
+			func = function()
+				local report = stub(INTERNET_BENCHMARK, "ReportWithoutCrashing")
+				local callback = concommand.GetTable()["internet_benchmark_run"]
+
+				callback(nil, "internet_benchmark_run", {"--tag=default,slow", "--skip-tag=flaky"}, "--tag=default,slow --skip-tag=flaky")
+
+				expect(report).was.called(1)
+				local includeTags = report.callHistory[1][4]
+				local excludeTags = report.callHistory[1][5]
+
+				expect(includeTags[1]).to.equal("default")
+				expect(includeTags[2]).to.equal("slow")
+				expect(excludeTags[1]).to.equal("flaky")
+			end
+		},
+
+		{
+			name = "internet_benchmark_run defaults to no tag filters",
+			func = function()
+				local report = stub(INTERNET_BENCHMARK, "ReportWithoutCrashing")
+				local callback = concommand.GetTable()["internet_benchmark_run"]
+
+				callback(nil, "internet_benchmark_run", {}, "")
+
+				expect(report).was.called(1)
+				expect(#report.callHistory[1][4]).to.equal(0)
+				expect(#report.callHistory[1][5]).to.equal(0)
 			end
 		},
 

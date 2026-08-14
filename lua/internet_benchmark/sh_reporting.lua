@@ -23,12 +23,16 @@ end
 --- @param test boolean? Force a low, fixed iteration and run count.
 --- Combining this with dynamic is not meaningful and is rejected by the
 --- console commands before it reaches here. Defaults to false.
+--- @param includeTags table? Only run the trial if it has one of these tags.
+--- Empty or omitted matches every trial.
+--- @param excludeTags table? Skip the trial if it has one of these tags,
+--- taking precedence over includeTags.
 --- @see BENCH.CalibrateIterations
 --- @return table? results
 --- @return table? statistics
 --- @return table? trial
-function BENCH:ReportTrial(name, dynamic, test)
-	local results, trial = self:Trial(name, dynamic, test)
+function BENCH:ReportTrial(name, dynamic, test, includeTags, excludeTags)
+	local results, trial = self:Trial(name, dynamic, test, includeTags, excludeTags)
 	if not results then
 		return nil
 	end
@@ -55,20 +59,24 @@ function BENCH:TrialNames()
 end
 
 --- Benchmark every trial on disk.
---- Trials which are missing, gated off or empty are skipped.
+--- Trials which are missing, gated off, tag-filtered or empty are skipped.
 --- @param dynamic boolean? Recalibrate every trial's iteration count
 --- instead of using its authored or default count. Defaults to false.
 --- @param test boolean? Force a low, fixed iteration and run count for every
 --- trial. Combining this with dynamic is not meaningful and is rejected by
 --- the console commands before it reaches here. Defaults to false.
+--- @param includeTags table? Only run trials which have one of these tags.
+--- Empty or omitted matches every trial. @see BENCH.TagsMatch
+--- @param excludeTags table? Skip trials which have one of these tags,
+--- taking precedence over includeTags.
 --- @return table # A list of {results, statistics, trial, order = n} entries.
-function BENCH:ReportAll(dynamic, test)
+function BENCH:ReportAll(dynamic, test, includeTags, excludeTags)
 	local reports = {}
 	local names = self:TrialNames()
 
 	for idx, name in ipairs(names) do
 		l.ForceInfo(string.format("Trial '%s' (%d of %d)", name, idx, #names))
-		local results, statistics, trial = self:ReportTrial(name, dynamic, test)
+		local results, statistics, trial = self:ReportTrial(name, dynamic, test, includeTags, excludeTags)
 		if results then
 			table.insert(reports, {results, statistics, trial, order = trial.order or 0})
 		end
@@ -192,12 +200,16 @@ end
 --- @param test boolean? Force a low, fixed iteration and run count for every
 --- trial. Combining this with dynamic is not meaningful and is rejected by
 --- the console commands before it reaches here. Defaults to false.
+--- @param includeTags table? Only run trials which have one of these tags.
+--- Empty or omitted matches every trial. @see BENCH.TagsMatch
+--- @param excludeTags table? Skip trials which have one of these tags,
+--- taking precedence over includeTags.
 --- @return string? # The rendered report, so callers (like the client's report
 --- viewer) can use it without reading it back off disk.
-function BENCH:HTMLReport(dynamic, test)
+function BENCH:HTMLReport(dynamic, test, includeTags, excludeTags)
 	self.Environment:Report()
 
-	local reports = self:ReportAll(dynamic, test)
+	local reports = self:ReportAll(dynamic, test, includeTags, excludeTags)
 	if #reports == 0 then
 		l.Warning("No trials produced results; the report was not written.")
 		return
@@ -506,9 +518,13 @@ end
 --- @param test boolean? Force a low, fixed iteration and run count for every
 --- trial. Combining this with dynamic is not meaningful and is rejected by
 --- the console commands before it reaches here. Defaults to false.
+--- @param includeTags table? Only run trials which have one of these tags.
+--- Empty or omitted matches every trial. @see BENCH.TagsMatch
+--- @param excludeTags table? Skip trials which have one of these tags,
+--- taking precedence over includeTags.
 --- @return boolean # Whether the job was started.
-function BENCH:ReportWithoutCrashing(dynamic, test)
+function BENCH:ReportWithoutCrashing(dynamic, test, includeTags, excludeTags)
 	return self:Async(function()
-		self:HTMLReport(dynamic, test)
+		self:HTMLReport(dynamic, test, includeTags, excludeTags)
 	end)
 end

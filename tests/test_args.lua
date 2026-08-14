@@ -141,4 +141,90 @@ return function(t)
 		t:eq(#suggestions, 1, "the second positional slot uses its own provider")
 		t:eq(suggestions[1], "cmd alpha beta", "the second slot completes after the first is filled")
 	end
+
+	-- ParseTagList.
+
+	do
+		local tags = BENCH:ParseTagList(nil)
+		t:eq(#tags, 0, "nil produces an empty list")
+	end
+
+	do
+		local tags = BENCH:ParseTagList(true)
+		t:eq(#tags, 0, "a bare flag (true) produces an empty list")
+	end
+
+	do
+		local tags = BENCH:ParseTagList("default")
+		t:eq(#tags, 1, "a single value produces a single-entry list")
+		t:eq(tags[1], "default", "the value is kept")
+	end
+
+	do
+		local tags = BENCH:ParseTagList("Default,Rendering")
+		t:eq(#tags, 2, "a comma-separated value splits into multiple tags")
+		t:eq(tags[1], "default", "tags are lower-cased (1)")
+		t:eq(tags[2], "rendering", "tags are lower-cased (2)")
+	end
+
+	do
+		local tags = BENCH:ParseTagList({"default", "rendering,slow"})
+		t:eq(#tags, 3, "a repeated-flag table flattens, splitting each entry on commas")
+		t:eq(tags[1], "default", "flattened tags keep their order (1)")
+		t:eq(tags[2], "rendering", "flattened tags keep their order (2)")
+		t:eq(tags[3], "slow", "flattened tags keep their order (3)")
+	end
+
+	do
+		local tags = BENCH:ParseTagList({"default", true})
+		t:eq(#tags, 1, "a non-string entry within a repeated flag is skipped")
+		t:eq(tags[1], "default", "the string entry is still kept")
+	end
+
+	-- TagsMatch.
+
+	do
+		local matches = BENCH:TagsMatch({}, {}, {})
+		t:eq(matches, true, "no filters at all matches an untagged item")
+	end
+
+	do
+		local matches = BENCH:TagsMatch({"default"}, {}, {})
+		t:eq(matches, true, "no filters at all matches a tagged item")
+	end
+
+	do
+		local matches = BENCH:TagsMatch({"default"}, {"default"}, {})
+		t:eq(matches, true, "an include filter matches an item with that tag")
+	end
+
+	do
+		local matches = BENCH:TagsMatch({"slow"}, {"default"}, {})
+		t:eq(matches, false, "an include filter excludes an item without a matching tag")
+	end
+
+	do
+		local matches = BENCH:TagsMatch({}, {"default"}, {})
+		t:eq(matches, false, "an include filter excludes an untagged item")
+	end
+
+	do
+		local matches = BENCH:TagsMatch({"default", "slow"}, {"slow"}, {})
+		t:eq(matches, true, "an include filter matches on any one of an item's several tags")
+	end
+
+	do
+		local matches = BENCH:TagsMatch({"default"}, {}, {"default"})
+		t:eq(matches, false, "a skip filter excludes a matching item even with no include filter")
+	end
+
+	do
+		local matches = BENCH:TagsMatch({"other"}, {}, {"default"})
+		t:eq(matches, true, "a skip filter leaves a non-matching item untouched")
+	end
+
+	do
+		local matches = BENCH:TagsMatch({"default"}, {"default"}, {"default"})
+		t:eq(matches, false, "a skip filter takes precedence over a matching include filter")
+	end
 end

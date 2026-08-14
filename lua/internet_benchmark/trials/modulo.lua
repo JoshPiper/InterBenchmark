@@ -30,6 +30,7 @@ TRIAL
 		.. "three are not interchangeable."
 	)
 	:Order(9)
+	:Tag("default")
 	:Function(a)
 	:Label("math.fmod")
 	:Describe("Matches C's fmod: the result takes the sign of the dividend (num), which differs from Lua's % for negative numbers.")

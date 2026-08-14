@@ -21,6 +21,7 @@ BENCH.Classes = BENCH.Classes or {}
 --- @field order integer? Tab position within the report.
 --- @field before function? Callback run before every timed run, for every function.
 --- @field after function? Callback run after every timed run, for every function.
+--- @field tags table<integer, string> Tags used to filter the trial with --tag/--skip-tag.
 local TRIAL = {}
 TRIAL.__index = TRIAL
 TRIAL.__nextOrder = 1
@@ -36,7 +37,8 @@ function TRIAL:New()
 		labels = {},
 		descriptions = {},
 		preDefines = {},
-		functions = {}
+		functions = {},
+		tags = {}
 	}, self)
 end
 
@@ -161,6 +163,17 @@ end
 --- @return Trial
 function TRIAL:After(callable)
 	self.after = callable
+	return self
+end
+
+--- Tag the trial, for filtering with the --tag/--skip-tag console command flags.
+--- @param ... string One or more tag names.
+--- @return Trial
+function TRIAL:Tag(...)
+	for _, tag in ipairs({...}) do
+		table.insert(self.tags, tag)
+	end
+
 	return self
 end
 

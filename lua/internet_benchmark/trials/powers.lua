@@ -17,6 +17,7 @@ TRIAL
 	:Name("Calculating a Power")
 	:Description("Three ways to square a number - useful context for when a variable exponent (not just squaring) is unavoidable and ^ can't be hand-expanded into repeated multiplication.")
 	:Order(8)
+	:Tag("default")
 	:Function(a)
 	:Label("x ^ 2")
 	:Describe("A general power operator, good for any exponent - x*x below only applies because the exponent here happens to be the literal 2.")

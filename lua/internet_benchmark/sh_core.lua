@@ -297,13 +297,22 @@ BENCH.TestRuns = 2
 --- dynamically calibrated counts. Combining this with dynamic is rejected
 --- (see the assert below); the console commands also reject that
 --- combination before it reaches here. Defaults to false.
+--- @param includeTags table? Only run the trial if it has one of these tags.
+--- Empty or omitted matches every trial. @see BENCH.TagsMatch
+--- @param excludeTags table? Skip the trial if it has one of these tags,
+--- taking precedence over includeTags.
 --- @return table? # results[idx] per function, or nil when the trial did not run.
 --- @return table? # The trial.
-function BENCH:Trial(name, dynamic, test)
+function BENCH:Trial(name, dynamic, test, includeTags, excludeTags)
 	assert(not (dynamic and test), "BENCH:Trial: dynamic and test cannot both be set.")
 
 	local trial = self:LoadTrial(name)
 	if not trial then
+		return nil
+	end
+
+	if not self:TagsMatch(trial.tags or {}, includeTags or {}, excludeTags or {}) then
+		self.Logging.Info(string.format("Trial '%s' does not match the tag filter, skipping.", name))
 		return nil
 	end
 

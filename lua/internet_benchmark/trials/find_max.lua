@@ -27,6 +27,7 @@ TRIAL
 	:Name("Finding and Returning a Maximum Value")
 	:Description("Four ways to pick the larger of two numbers: the standard library function, an explicit branch, the 'and/or' ternary idiom, and GMod's Either() helper.")
 	:Order(5)
+	:Tag("default")
 	:Function(a)
 	:Label("math.max")
 	:Describe("A C function call, with all the calling overhead that implies compared to inlined Lua.")

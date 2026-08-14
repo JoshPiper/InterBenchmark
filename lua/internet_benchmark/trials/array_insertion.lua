@@ -37,6 +37,7 @@ TRIAL
 	:Name("Array Insertion")
 	:Description("Six ways to grow an array-style table by one element per call, comparing table.insert() with direct indexed writes and the various count-tracking patterns people reach for to avoid it.")
 	:Order(11)
+	:Tag("default")
 	:Function(a)
 	:Label("table.insert")
 	:Describe("A full function call that also has to work out where to insert (the end of the table, by default) - direct indexing below skips both costs.")

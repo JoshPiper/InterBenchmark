@@ -17,6 +17,7 @@ TRIAL
 	:Name("'not a' vs 'a or b'")
 	:Description("Two ways to substitute a default when a value is falsy: an explicit if/not branch, and the 'or' idiom.")
 	:Order(7)
+	:Tag("default")
 	:Function(a)
 	:Label("not a")
 	:Function(b)

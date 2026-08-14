@@ -69,6 +69,7 @@ TRIAL
 		.. "land close together despite reading their bound differently."
 	)
 	:Order(10)
+	:Tag("default")
 	:Function(a)
 	:Label("pairs")
 	:Describe("Generic iteration that has to handle both the array and hash parts of the table, and works even when the table isn't a sequential array.")

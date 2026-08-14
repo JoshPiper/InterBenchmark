@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.0](https://github.com/JoshPiper/InterBenchmark/compare/v2.0.1...v2.1.0) (2026-08-14)
+
+
+### Features
+
+* Package a -minimal build without bundled trials ([#13](https://github.com/JoshPiper/InterBenchmark/issues/13)) ([99e643a](https://github.com/JoshPiper/InterBenchmark/commit/99e643a7f3f7412d2002d609ccd7b356bfa1bfcb))
+
 ## [2.0.1](https://github.com/JoshPiper/InterBenchmark/compare/v2.0.0...v2.0.1) (2026-08-14)
 
 

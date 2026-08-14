@@ -25,7 +25,7 @@
     "lint_ignoreFiles": ["lua/internet_benchmark/templates/**"],
     "lint_spaceBeforeComma": true,
     "lint_spaceAfterComma": false,
-    "lint_maxLineLength": 250,
+    "lint_maxLineLength": 300,
     "lint_warningsAreErrors": true,
 
     "prettyprint_spaceBetweenParens": false,

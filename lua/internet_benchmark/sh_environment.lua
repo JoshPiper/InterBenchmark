@@ -276,6 +276,18 @@ function ENV:Highlights()
 	return highlights
 end
 
+--- Collect the environment statement as a label -> value map, for embedding
+--- in the JSON results export.
+--- @return table # A map of label to value.
+function ENV:Data()
+	local data = {}
+	for _, pair in ipairs(self:Collect()) do
+		data[pair[1]] = pair[2]
+	end
+
+	return data
+end
+
 --- Log the environment statement through the suite's logger.
 function ENV:Report()
 	for _, pair in ipairs(self:Collect()) do

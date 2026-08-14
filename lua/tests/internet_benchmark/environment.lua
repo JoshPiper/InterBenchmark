@@ -229,6 +229,17 @@ return {
 		},
 
 		{
+			name = "Collects environment details as a label -> value map",
+			func = function()
+				local data = INTERNET_BENCHMARK.Environment:Data()
+
+				expect(data).to.beA("table")
+				expect(data["Suite Version"]).to.equal(INTERNET_BENCHMARK.Version)
+				expect(data["Realm"]).to.equal("Server")
+			end
+		},
+
+		{
 			name = "Registers the suite console commands",
 			func = function()
 				local commands = concommand.GetTable()

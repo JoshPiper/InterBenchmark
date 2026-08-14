@@ -215,6 +215,47 @@ return {
 		},
 
 		{
+			name = "Trial forces the fixed test iteration and run count when test mode is requested",
+			func = function()
+				local trial = INTERNET_BENCHMARK.Classes.Trial()
+				trial.id = "test_mode_probe"
+				trial.runs = 100
+				trial.iterations = 100000
+				trial:Function(function() end)
+				trial:Label("noop")
+
+				stub(INTERNET_BENCHMARK, "LoadTrial").returns(trial)
+
+				INTERNET_BENCHMARK:Trial("test_mode_probe", false, true)
+
+				expect(trial.iterations).to.equal(INTERNET_BENCHMARK.TestIterations)
+				expect(trial.runs).to.equal(INTERNET_BENCHMARK.TestRuns)
+			end
+		},
+
+		{
+			name = "Trial's test mode takes precedence over dynamic calibration",
+			func = function()
+				local trial = INTERNET_BENCHMARK.Classes.Trial()
+				trial.id = "test_over_dynamic_probe"
+				trial.runs = 100
+				trial.iterations = 100000
+				trial:Function(function() end)
+				trial:Label("noop")
+
+				stub(INTERNET_BENCHMARK, "LoadTrial").returns(trial)
+				stub(INTERNET_BENCHMARK, "CalibrateIterations").with(function(_, t)
+					t.iterations = 999999
+				end)
+
+				INTERNET_BENCHMARK:Trial("test_over_dynamic_probe", true, true)
+
+				expect(trial.iterations).to.equal(INTERNET_BENCHMARK.TestIterations)
+				expect(trial.runs).to.equal(INTERNET_BENCHMARK.TestRuns)
+			end
+		},
+
+		{
 			name = "internet_benchmark_run passes the dynamic flag through to the report job",
 			func = function()
 				local report = stub(INTERNET_BENCHMARK, "ReportWithoutCrashing")
@@ -228,6 +269,19 @@ return {
 		},
 
 		{
+			name = "internet_benchmark_run passes the test flag through to the report job",
+			func = function()
+				local report = stub(INTERNET_BENCHMARK, "ReportWithoutCrashing")
+				local callback = concommand.GetTable()["internet_benchmark_run"]
+
+				callback(nil, "internet_benchmark_run", {"--test"}, "--test")
+
+				expect(report).was.called(1)
+				expect(report.callHistory[1][3]).to.equal(true)
+			end
+		},
+
+		{
 			name = "internet_benchmark_run defaults the dynamic flag to false",
 			func = function()
 				local report = stub(INTERNET_BENCHMARK, "ReportWithoutCrashing")
@@ -237,6 +291,19 @@ return {
 
 				expect(report).was.called(1)
 				expect(report.callHistory[1][2]).to.beFalse()
+			end
+		},
+
+		{
+			name = "internet_benchmark_run defaults the test flag to false",
+			func = function()
+				local report = stub(INTERNET_BENCHMARK, "ReportWithoutCrashing")
+				local callback = concommand.GetTable()["internet_benchmark_run"]
+
+				callback(nil, "internet_benchmark_run", {}, "")
+
+				expect(report).was.called(1)
+				expect(report.callHistory[1][3]).to.beFalse()
 			end
 		},
 
@@ -278,6 +345,30 @@ return {
 		},
 
 		{
+			name = "internet_benchmark_trial passes the test flag through to the console report",
+			async = true,
+			timeout = 1,
+			func = function()
+				local report = stub(INTERNET_BENCHMARK, "ConsoleReport")
+				local callback = concommand.GetTable()["internet_benchmark_trial"]
+
+				callback(nil, "internet_benchmark_trial", {"local_vs_global", "--test"}, "local_vs_global --test")
+
+				timer.Simple(0.1, function()
+					expect(report).was.called(1)
+					expect(report.callHistory[1][2]).to.equal("local_vs_global")
+					expect(report.callHistory[1][4]).to.equal(true)
+
+					done()
+				end)
+			end,
+
+			cleanup = function()
+				INTERNET_BENCHMARK._ActiveJob = nil
+			end
+		},
+
+		{
 			name = "internet_benchmark_trial accepts the dynamic flag before the trial name",
 			async = true,
 			timeout = 1,
@@ -302,7 +393,7 @@ return {
 		},
 
 		{
-			name = "internet_benchmark_trial defaults the dynamic flag to false",
+			name = "internet_benchmark_trial defaults the dynamic and test flags to false",
 			async = true,
 			timeout = 1,
 			func = function()
@@ -314,6 +405,7 @@ return {
 				timer.Simple(0.1, function()
 					expect(report).was.called(1)
 					expect(report.callHistory[1][3]).to.equal(false)
+					expect(report.callHistory[1][4]).to.equal(false)
 
 					done()
 				end)

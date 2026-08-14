@@ -17,8 +17,8 @@ concommand.Add("internet_benchmark_run", function(ply, _, args)
 	end
 
 	local flags = BENCH:ParseArgs(args)
-	BENCH:ReportWithoutCrashing(flags.dynamic == true)
-end, BENCH:ArgCompleter({flags = {"dynamic"}}), "Benchmark every trial and write the HTML report to data/internet_benchmarks/. Pass '--dynamic' to calibrate each trial's iteration count instead of using its fixed default.")
+	BENCH:ReportWithoutCrashing(flags.dynamic == true, flags.test == true)
+end, BENCH:ArgCompleter({flags = {"dynamic", "test"}}), "Benchmark every trial and write the HTML report to data/internet_benchmarks/. Pass '--dynamic' to calibrate each trial's iteration count instead of using its fixed default. Pass '--test' to force a low iteration and run count for a quick smoke test.")
 
 concommand.Add("internet_benchmark_trial", function(ply, _, args)
 	if not canRun(ply) then
@@ -34,10 +34,11 @@ concommand.Add("internet_benchmark_trial", function(ply, _, args)
 	end
 
 	local dynamic = flags.dynamic == true
+	local test = flags.test == true
 	BENCH:Async(function()
-		BENCH:ConsoleReport(name, dynamic)
+		BENCH:ConsoleReport(name, dynamic, test)
 	end)
-end, BENCH:ArgCompleter({flags = {"dynamic"}, positionals = {function() return BENCH:TrialNames() end}}), "Benchmark a single trial and print the results to the console. Pass '--dynamic' to calibrate the iteration count instead of using the trial's fixed default.")
+end, BENCH:ArgCompleter({flags = {"dynamic", "test"}, positionals = {function() return BENCH:TrialNames() end}}), "Benchmark a single trial and print the results to the console. Pass '--dynamic' to calibrate the iteration count instead of using the trial's fixed default. Pass '--test' to force a low iteration and run count for a quick smoke test.")
 
 concommand.Add("internet_benchmark_environment", function()
 	BENCH.Environment:Report()

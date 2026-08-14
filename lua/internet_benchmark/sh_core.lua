@@ -277,6 +277,13 @@ function BENCH:CalibrateIterations(trial)
 	))
 end
 
+--- Fixed iteration/run counts used when test mode is requested (see the
+--- console commands' --test flag), overriding a trial's authored or
+--- dynamically calibrated counts so a full trial or report can be smoke
+--- tested quickly.
+BENCH.TestIterations = 10
+BENCH.TestRuns = 2
+
 --- Load and benchmark a single trial.
 --- Sources are collected before the first run, then every function gets a
 --- quarter-scale warm-up pass followed by the timed runs, with the garbage
@@ -285,9 +292,13 @@ end
 --- @param dynamic boolean? Recalibrate the trial's iteration count (see
 --- CalibrateIterations) instead of using its authored or default count.
 --- Defaults to false.
+--- @param test boolean? Force a low, fixed iteration and run count (see
+--- TestIterations and TestRuns) instead of the trial's authored, default, or
+--- dynamically calibrated counts. Takes precedence over dynamic. Defaults to
+--- false.
 --- @return table? # results[idx] per function, or nil when the trial did not run.
 --- @return table? # The trial.
-function BENCH:Trial(name, dynamic)
+function BENCH:Trial(name, dynamic, test)
 	local trial = self:LoadTrial(name)
 	if not trial then
 		return nil
@@ -299,6 +310,11 @@ function BENCH:Trial(name, dynamic)
 	if dynamic then
 		self.Logging.Info("Calibrating Iteration Count")
 		self:CalibrateIterations(trial)
+	end
+
+	if test then
+		trial.iterations = self.TestIterations
+		trial.runs = self.TestRuns
 	end
 
 	local preRun, postRun = trial.before, trial.after

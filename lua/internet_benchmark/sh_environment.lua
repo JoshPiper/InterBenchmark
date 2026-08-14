@@ -25,7 +25,9 @@ local attemptedRequire = false
 function ENV:SysInfo()
 	if not istable(sysinfo) and not attemptedRequire then
 		attemptedRequire = true
-		pcall(require, "sysinfo")
+		if util.IsBinaryModuleInstalled("sysinfo") then
+			pcall(require, "sysinfo")
+		end
 	end
 
 	return istable(sysinfo) and sysinfo or nil

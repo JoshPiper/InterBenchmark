@@ -52,8 +52,8 @@ Pass `--test` to either command to force a low, fixed iteration and run count
 (`BENCH.TestIterations` / `BENCH.TestRuns`, 10 iterations × 2 runs by default)
 instead of a trial's authored, default, or dynamically calibrated counts —
 useful for quickly smoke-testing a trial or the full report pipeline without
-waiting for a real run. `--test` takes precedence over `--dynamic` when both
-are passed.
+waiting for a real run. `--dynamic` and `--test` are mutually exclusive;
+passing both together is rejected with a warning and nothing runs.
 
 Benchmarks run in the background on a small per-tick time budget, so the game
 stays responsive while a full suite (several minutes of measuring) grinds away.

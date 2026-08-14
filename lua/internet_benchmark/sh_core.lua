@@ -294,11 +294,14 @@ BENCH.TestRuns = 2
 --- Defaults to false.
 --- @param test boolean? Force a low, fixed iteration and run count (see
 --- TestIterations and TestRuns) instead of the trial's authored, default, or
---- dynamically calibrated counts. Takes precedence over dynamic. Defaults to
---- false.
+--- dynamically calibrated counts. Combining this with dynamic is rejected
+--- (see the assert below); the console commands also reject that
+--- combination before it reaches here. Defaults to false.
 --- @return table? # results[idx] per function, or nil when the trial did not run.
 --- @return table? # The trial.
 function BENCH:Trial(name, dynamic, test)
+	assert(not (dynamic and test), "BENCH:Trial: dynamic and test cannot both be set.")
+
 	local trial = self:LoadTrial(name)
 	if not trial then
 		return nil

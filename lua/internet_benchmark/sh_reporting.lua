@@ -20,8 +20,9 @@ end
 --- @param name string The trial's file name, without extension.
 --- @param dynamic boolean? Recalibrate the trial's iteration count instead
 --- of using its authored or default count. Defaults to false.
---- @param test boolean? Force a low, fixed iteration and run count. Takes
---- precedence over dynamic. Defaults to false.
+--- @param test boolean? Force a low, fixed iteration and run count.
+--- Combining this with dynamic is not meaningful and is rejected by the
+--- console commands before it reaches here. Defaults to false.
 --- @see BENCH.CalibrateIterations
 --- @return table? results
 --- @return table? statistics
@@ -58,7 +59,8 @@ end
 --- @param dynamic boolean? Recalibrate every trial's iteration count
 --- instead of using its authored or default count. Defaults to false.
 --- @param test boolean? Force a low, fixed iteration and run count for every
---- trial. Takes precedence over dynamic. Defaults to false.
+--- trial. Combining this with dynamic is not meaningful and is rejected by
+--- the console commands before it reaches here. Defaults to false.
 --- @return table # A list of {results, statistics, trial, order = n} entries.
 function BENCH:ReportAll(dynamic, test)
 	local reports = {}
@@ -188,7 +190,8 @@ end
 --- @param dynamic boolean? Recalibrate every trial's iteration count
 --- instead of using its authored or default count. Defaults to false.
 --- @param test boolean? Force a low, fixed iteration and run count for every
---- trial. Takes precedence over dynamic. Defaults to false.
+--- trial. Combining this with dynamic is not meaningful and is rejected by
+--- the console commands before it reaches here. Defaults to false.
 --- @return string? # The rendered report, so callers (like the client's report
 --- viewer) can use it without reading it back off disk.
 function BENCH:HTMLReport(dynamic, test)
@@ -463,8 +466,9 @@ end
 --- @param name string The trial's file name, without extension.
 --- @param dynamic boolean? Recalibrate the trial's iteration count instead
 --- of using its authored or default count. Defaults to false.
---- @param test boolean? Force a low, fixed iteration and run count. Takes
---- precedence over dynamic. Defaults to false.
+--- @param test boolean? Force a low, fixed iteration and run count.
+--- Combining this with dynamic is not meaningful and is rejected by the
+--- console commands before it reaches here. Defaults to false.
 function BENCH:ConsoleReport(name, dynamic, test)
 	local results, statistics, trial = self:ReportTrial(name, dynamic, test)
 	if not results then
@@ -500,7 +504,8 @@ end
 --- @param dynamic boolean? Recalibrate every trial's iteration count
 --- instead of using its authored or default count. Defaults to false.
 --- @param test boolean? Force a low, fixed iteration and run count for every
---- trial. Takes precedence over dynamic. Defaults to false.
+--- trial. Combining this with dynamic is not meaningful and is rejected by
+--- the console commands before it reaches here. Defaults to false.
 --- @return boolean # Whether the job was started.
 function BENCH:ReportWithoutCrashing(dynamic, test)
 	return self:Async(function()

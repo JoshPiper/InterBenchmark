@@ -46,14 +46,23 @@ jobs:
           cp -r lua dist/staging/internet_benchmark/lua
           rm -rf dist/staging/internet_benchmark/lua/tests
 
+          # The minimal variant drops the bundled trials so downstream addons
+          # can ship the harness alone and author their own trial set.
+          cp -r dist/staging/internet_benchmark dist/staging/internet_benchmark-minimal
+          rm -rf dist/staging/internet_benchmark-minimal/lua/internet_benchmark/trials
+
       - name: Stamp the build
         run: |
           # Packaged copies state the exact commit they were built from in the
           # environment statement; working copies keep the "dev" marker.
           commit="$(git rev-parse --short HEAD)"
-          autorun="dist/staging/internet_benchmark/lua/autorun/internet_benchmarks.lua"
-          sed -i "s/^BENCH\.Build = \"dev\"$/BENCH.Build = \"${commit}\"/" "$autorun"
-          grep -Fq "BENCH.Build = \"${commit}\"" "$autorun"
+          for autorun in \
+            dist/staging/internet_benchmark/lua/autorun/internet_benchmarks.lua \
+            dist/staging/internet_benchmark-minimal/lua/autorun/internet_benchmarks.lua
+          do
+            sed -i "s/^BENCH\.Build = \"dev\"$/BENCH.Build = \"${commit}\"/" "$autorun"
+            grep -Fq "BENCH.Build = \"${commit}\"" "$autorun"
+          done
 
       - name: Determine version
         id: version
@@ -70,6 +79,9 @@ jobs:
           ./fastgmad create \
             -folder dist/staging/internet_benchmark \
             -out "dist/internet_benchmark-${{ steps.version.outputs.version }}.gma"
+          ./fastgmad create \
+            -folder dist/staging/internet_benchmark-minimal \
+            -out "dist/internet_benchmark-${{ steps.version.outputs.version }}-minimal.gma"
 
       - name: Zip for addons-folder deploys
         run: |
@@ -77,6 +89,7 @@ jobs:
           # as a git clone, minus the development files.
           cd dist/staging
           zip -qr "../internet_benchmark-${{ steps.version.outputs.version }}.zip" internet_benchmark
+          zip -qr "../internet_benchmark-${{ steps.version.outputs.version }}-minimal.zip" internet_benchmark-minimal
 
       - name: Upload artifacts
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1

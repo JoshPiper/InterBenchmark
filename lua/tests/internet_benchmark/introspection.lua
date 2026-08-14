@@ -70,15 +70,15 @@ return {
 		{
 			name = "Falls back to a function's global route when it has no readable source",
 			func = function()
-				local source = INTERNET_BENCHMARK.Introspection:FunctionSource(type)
-				expect(source).to.equal("type")
+				local source = INTERNET_BENCHMARK.Introspection:FunctionSource(debug.getinfo)
+				expect(source).to.equal("debug.getinfo")
 			end
 		},
 
 		{
 			name = "Skips the global route lookup when excludeGlobals is set",
 			func = function()
-				local rendered = INTERNET_BENCHMARK.Introspection:Variable(type, true)
+				local rendered = INTERNET_BENCHMARK.Introspection:Variable(debug.getinfo, true)
 
 				expect(rendered).to.beA("string")
 

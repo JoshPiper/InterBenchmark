@@ -62,6 +62,7 @@ in an in-game panel — no file access needed. The report is written to
 | File | Content |
 | --- | --- |
 | `report.html.txt` | The report itself — a single, self-contained file (its stylesheet and script are inlined; no CDN dependencies). |
+| `results.json.txt` | The same per-trial statistics, as machine-readable JSON, plus the environment statement. |
 | `environment.txt` | The environment statement for this run. |
 
 Garry's Mod can only write a limited set of file extensions, so the report gets a

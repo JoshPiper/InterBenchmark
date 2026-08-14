@@ -183,6 +183,55 @@ return {
 			cleanup = function()
 				file.Delete("internet_benchmarks/style.css.txt")
 			end
+		},
+
+		{
+			name = "Builds a trial's JSON-exportable data with per-function stats",
+			func = function(state)
+				local data = INTERNET_BENCHMARK:TrialResultsData(state.stats, state.trial)
+
+				expect(data.id).to.equal("example")
+				expect(data.name).to.equal("Example Trial")
+				expect(data.runs).to.equal(2)
+				expect(data.iterations).to.equal(10)
+				expect(#data.functions).to.equal(2)
+
+				local first = data.functions[1]
+				expect(first.label).to.equal("First Way")
+				expect(first.median).to.beA("number")
+				expect(first.min).to.beA("number")
+				expect(first.max).to.beA("number")
+				expect(first.mean).to.beA("number")
+				expect(first.average).to.beA("number")
+				expect(first.percentage).to.equal(100)
+			end
+		},
+
+		{
+			name = "Writes results.json.txt alongside the HTML report",
+			func = function(state)
+				stub(INTERNET_BENCHMARK, "ReportAll").returns({
+					{state.timing, state.stats, state.trial, order = 0}
+				})
+
+				INTERNET_BENCHMARK:HTMLReport()
+
+				local written = file.Read("internet_benchmarks/results.json.txt", "DATA")
+				expect(written).to.exist()
+
+				local data = util.JSONToTable(written)
+				expect(data).to.beA("table")
+				expect(data.environment).to.beA("table")
+				expect(data.environment["Suite Version"]).to.equal(INTERNET_BENCHMARK.Version)
+				expect(#data.trials).to.equal(1)
+				expect(data.trials[1].id).to.equal("example")
+			end,
+
+			cleanup = function()
+				file.Delete("internet_benchmarks/results.json.txt")
+				file.Delete("internet_benchmarks/report.html.txt")
+				file.Delete("internet_benchmarks/environment.txt")
+			end
 		}
 	}
 }

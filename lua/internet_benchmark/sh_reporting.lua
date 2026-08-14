@@ -126,10 +126,61 @@ function BENCH:HTMLEnvironmentGroups()
 	return table.concat(groups, "\n")
 end
 
+--- Build one trial's plain-data results, for the JSON export.
+--- Reads stats.minMean before HTMLTab (which runs later in HTMLReport's own
+--- trial loop) clears it, so this must be called first.
+--- @param stats table Per-function statistics, with a minMean key.
+--- @param trial table The trial.
+--- @return table # {id, name, order, runs, iterations, functions}
+function BENCH:TrialResultsData(stats, trial)
+	local minMean = stats.minMean
+	local labels = trial.labels or {}
+
+	local functions = {}
+	for fnId, stat in ipairs(stats) do
+		table.insert(functions, {
+			id = fnId,
+			label = labels[fnId] or ("Function #" .. fnId),
+			median = stat.median,
+			min = stat.min,
+			max = stat.max,
+			mean = stat.mean,
+			average = stat.average,
+			percentage = percentageOf(stat.mean, minMean)
+		})
+	end
+
+	return {
+		id = trial.id,
+		name = trial.name or trial.id,
+		order = trial.order or 0,
+		runs = trial.runs,
+		iterations = trial.iterations,
+		functions = functions
+	}
+end
+
+--- Build the raw results table written to results.json.txt.
+--- @param reports table A list of {results, statistics, trial, order = n}
+--- entries, as returned by ReportAll.
+--- @return table # {environment = {...}, trials = {...}}
+function BENCH:ResultsData(reports)
+	local trials = {}
+	for _, data in SortedPairsByMemberValue(reports, "order") do
+		table.insert(trials, self:TrialResultsData(data[2], data[3]))
+	end
+
+	return {
+		environment = self.Environment:Data(),
+		trials = trials
+	}
+end
+
 --- Generate the full HTML report.
---- Writes report.html.txt and environment.txt to data/internet_benchmarks/.
---- The report is a single self-contained file: its stylesheet and script are
---- inlined, so nothing else needs to travel alongside it.
+--- Writes report.html.txt, results.json.txt and environment.txt to
+--- data/internet_benchmarks/. The report is a single self-contained file:
+--- its stylesheet and script are inlined, so nothing else needs to travel
+--- alongside it.
 --- @param dynamic boolean? Recalibrate every trial's iteration count
 --- instead of using its authored or default count. Defaults to false.
 --- @return string? # The rendered report, so callers (like the client's report
@@ -144,6 +195,10 @@ function BENCH:HTMLReport(dynamic)
 	end
 
 	l.ForceInfo("Generating the HTML report.")
+
+	-- Computed before the tab loop below, which mutates each trial's
+	-- statistics table (clearing minMean, adding percentage) as it renders.
+	local resultsData = self:ResultsData(reports)
 
 	local tabs, summaries = {}, {}
 	local totalCandidates = 0
@@ -217,6 +272,7 @@ function BENCH:HTMLReport(dynamic)
 	})
 
 	self:WriteOutput("report.html.txt", report)
+	self:WriteOutput("results.json.txt", util.TableToJSON(resultsData, true))
 	self.Environment:Write()
 
 	l.ForceInfo("The report has been written to garrysmod/data/internet_benchmarks/.")

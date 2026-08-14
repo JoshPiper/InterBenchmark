@@ -66,7 +66,7 @@ concommand.Add("internet_benchmark_trial", function(ply, _, args)
 	BENCH:Async(function()
 		BENCH:ConsoleReport(name, dynamic, test)
 	end)
-end, BENCH:ArgCompleter({flags = {"dynamic", "test"}, positionals = {function() return BENCH:TrialNames() end}}), "Benchmark a single trial and print the results to the console. Pass '--dynamic' to calibrate the iteration count instead of using the trial's fixed default. Pass '--test' to force a low iteration and run count for a quick smoke test. The two flags cannot be combined.")
+end, BENCH:ArgCompleter({flags = {"dynamic", "test"}, positionals = {function() return BENCH:TrialNames() end}}), "Benchmark a single trial and print the results to the console. '--dynamic'/'--test' set the iteration mode (mutually exclusive).")
 
 concommand.Add("internet_benchmark_environment", function()
 	BENCH.Environment:Report()

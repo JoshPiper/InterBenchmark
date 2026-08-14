@@ -21,10 +21,10 @@ INTROSPECT.Blacklist = {
 INTROSPECT.Cache = {}
 
 --- Read a range of lines from a file on the LUA search path.
----@param path string Path relative to lua/.
----@param startLine integer? First line to read, inclusive.
----@param stopLine integer? Last line to read, inclusive.
----@return string? # The requested lines, or nil when the file cannot be read.
+--- @param path string Path relative to lua/.
+--- @param startLine integer? First line to read, inclusive.
+--- @param stopLine integer? Last line to read, inclusive.
+--- @return string? # The requested lines, or nil when the file cannot be read.
 function INTROSPECT:ReadSource(path, startLine, stopLine)
 	local data = file.Read(path, "LUA")
 	if not data then
@@ -39,8 +39,8 @@ function INTROSPECT:ReadSource(path, startLine, stopLine)
 end
 
 --- Find the dotted global route to a value, if one exists.
----@param var any The value to search for.
----@return string|false # The route (such as "math.max"), or false when none was found.
+--- @param var any The value to search for.
+--- @return string|false # The route (such as "math.max"), or false when none was found.
 function INTROSPECT:Lookup(var, inTable, route, seen)
 	if self.Cache[var] then
 		return self.Cache[var]
@@ -90,10 +90,10 @@ end
 
 --- Get the defining file (relative to lua/) and line range of a function.
 --- Returns nothing for C or unlocatable functions.
----@param fn function
----@return string? path
----@return integer? startLine
----@return integer? stopLine
+--- @param fn function
+--- @return string? path
+--- @return integer? startLine
+--- @return integer? stopLine
 local function sourceInfo(fn)
 	local info = debug.getinfo(fn, "S")
 	if info.what ~= "Lua" then
@@ -110,8 +110,8 @@ end
 
 --- Read a function's defining source.
 --- Falls back to its global route when the source is unavailable.
----@param fn function
----@return string # The function's source, its global route, or a placeholder.
+--- @param fn function
+--- @return string # The function's source, its global route, or a placeholder.
 function INTROSPECT:FunctionSource(fn)
 	local path, startLine, stopLine = sourceInfo(fn)
 	if path then
@@ -130,9 +130,9 @@ function INTROSPECT:FunctionSource(fn)
 end
 
 --- Serialise a captured value into a Lua expression for the report.
----@param var any The captured value.
----@param excludeGlobals boolean? Skip the global route lookup for functions.
----@return string|table|nil # A string expression, a {"raw", source} table for
+--- @param var any The captured value.
+--- @param excludeGlobals boolean? Skip the global route lookup for functions.
+--- @return string|table|nil # A string expression, a {"raw", source} table for
 --- function bodies, or nil when the value cannot be represented (exclude it,
 --- or cover it with a manual predefine).
 function INTROSPECT:Variable(var, excludeGlobals)
@@ -171,9 +171,9 @@ function INTROSPECT:Variable(var, excludeGlobals)
 end
 
 --- Collect the upvalues of a function.
----@param fn function
----@return table<string, any> vars A name-to-value map.
----@return string[] nils A list of names whose values were nil.
+--- @param fn function
+--- @return table<string, any> vars A name-to-value map.
+--- @return string[] nils A list of names whose values were nil.
 local function upvalues(fn)
 	local vars, nils = {}, {}
 	local info = debug.getinfo(fn, "u")
@@ -194,7 +194,7 @@ end
 --- Populate a trial with the sources of its functions and pre-definitions.
 --- Must run before benchmarking, so captured values are shown in their
 --- initial state rather than whatever the runs left behind.
----@param trial table The trial instance to populate.
+--- @param trial table The trial instance to populate.
 function INTROSPECT:TrialSources(trial)
 	local excluded = trial.excludedVars or {}
 

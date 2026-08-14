@@ -20,7 +20,7 @@ local ENV = BENCH.Environment
 local attemptedRequire = false
 
 --- Fetch the optional gm_sysinfo binary module, loading it on first use.
----@return table? # The module's function table, or nil when it is not installed.
+--- @return table? # The module's function table, or nil when it is not installed.
 function ENV:SysInfo()
 	if not istable(sysinfo) and not attemptedRequire then
 		attemptedRequire = true
@@ -91,7 +91,7 @@ end
 --- provided by gm_sysinfo are appended after them when the module is present.
 --- The host name is deliberately never collected - these statements are meant
 --- to be published next to benchmark results.
----@return table # An ordered list of {label, value} pairs.
+--- @return table # An ordered list of {label, value} pairs.
 function ENV:Collect()
 	local osName = "Unknown"
 	if system.IsWindows() then
@@ -152,7 +152,7 @@ function ENV:Collect()
 end
 
 --- Render the environment statement as plain text.
----@return string # The formatted statement.
+--- @return string # The formatted statement.
 function ENV:Format()
 	local lines = {
 		"Internet's Benchmark Suite: Environment Statement",
@@ -216,7 +216,7 @@ ENV.GroupsByLabel = {
 }
 
 --- Group the collected rows for display, dropping empty groups.
----@return table # An ordered list of {title, rows} entries, rows as {label, value}.
+--- @return table # An ordered list of {title, rows} entries, rows as {label, value}.
 function ENV:Groups()
 	local buckets = {}
 	for _, title in ipairs(self.GroupOrder) do
@@ -241,7 +241,7 @@ function ENV:Groups()
 end
 
 --- A handful of headline rows for the environment page's summary tiles.
----@return table # An ordered list of {label, value} pairs.
+--- @return table # An ordered list of {label, value} pairs.
 function ENV:Highlights()
 	local lookup = {}
 	for _, pair in ipairs(self:Collect()) do

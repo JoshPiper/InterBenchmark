@@ -17,13 +17,13 @@ local function percentageOf(mean, minMean)
 end
 
 --- Benchmark one trial and compute its statistics.
----@param name string The trial's file name, without extension.
----@param dynamic boolean? Recalibrate the trial's iteration count instead
+--- @param name string The trial's file name, without extension.
+--- @param dynamic boolean? Recalibrate the trial's iteration count instead
 --- of using its authored or default count. Defaults to false.
----@see BENCH.CalibrateIterations
----@return table? results
----@return table? statistics
----@return table? trial
+--- @see BENCH.CalibrateIterations
+--- @return table? results
+--- @return table? statistics
+--- @return table? trial
 function BENCH:ReportTrial(name, dynamic)
 	local results, trial = self:Trial(name, dynamic)
 	if not results then
@@ -34,7 +34,7 @@ function BENCH:ReportTrial(name, dynamic)
 end
 
 --- Discover every trial on disk.
----@return table # A sorted list of trial names.
+--- @return table # A sorted list of trial names.
 function BENCH:TrialNames()
 	local names = {}
 	local files = file.Find("internet_benchmark/trials/*.lua", "LUA")
@@ -53,9 +53,9 @@ end
 
 --- Benchmark every trial on disk.
 --- Trials which are missing, gated off or empty are skipped.
----@param dynamic boolean? Recalibrate every trial's iteration count
+--- @param dynamic boolean? Recalibrate every trial's iteration count
 --- instead of using its authored or default count. Defaults to false.
----@return table # A list of {results, statistics, trial, order = n} entries.
+--- @return table # A list of {results, statistics, trial, order = n} entries.
 function BENCH:ReportAll(dynamic)
 	local reports = {}
 	local names = self:TrialNames()
@@ -74,10 +74,10 @@ function BENCH:ReportAll(dynamic)
 end
 
 --- A row's severity class, driving its accent colour.
----@param pct number The row's percentage of the trial's fastest mean.
----@param twoTier boolean? Skip the intermediate "notable" tier, for spots
+--- @param pct number The row's percentage of the trial's fastest mean.
+--- @param twoTier boolean? Skip the intermediate "notable" tier, for spots
 --- (like the sidebar) that only distinguish "fine" from "critical". Defaults to false.
----@return string # A CSS class, or "" for the default (muted) tier.
+--- @return string # A CSS class, or "" for the default (muted) tier.
 function BENCH:SeverityClass(pct, twoTier)
 	if pct >= 200 then
 		return "sev-critical"
@@ -91,7 +91,7 @@ function BENCH:SeverityClass(pct, twoTier)
 end
 
 --- Render the environment page's summary tiles.
----@return string # The concatenated tile markup.
+--- @return string # The concatenated tile markup.
 function BENCH:HTMLEnvironmentHighlights()
 	local tiles = {}
 	for _, pair in ipairs(self.Environment:Highlights()) do
@@ -105,7 +105,7 @@ function BENCH:HTMLEnvironmentHighlights()
 end
 
 --- Render the environment page's grouped detail sections.
----@return string # The concatenated group markup.
+--- @return string # The concatenated group markup.
 function BENCH:HTMLEnvironmentGroups()
 	local groups = {}
 	for _, group in ipairs(self.Environment:Groups()) do
@@ -130,9 +130,9 @@ end
 --- Writes report.html.txt and environment.txt to data/internet_benchmarks/.
 --- The report is a single self-contained file: its stylesheet and script are
 --- inlined, so nothing else needs to travel alongside it.
----@param dynamic boolean? Recalibrate every trial's iteration count
+--- @param dynamic boolean? Recalibrate every trial's iteration count
 --- instead of using its authored or default count. Defaults to false.
----@return string? # The rendered report, so callers (like the client's report
+--- @return string? # The rendered report, so callers (like the client's report
 --- viewer) can use it without reading it back off disk.
 function BENCH:HTMLReport(dynamic)
 	self.Environment:Report()
@@ -231,8 +231,8 @@ function BENCH:HTMLReport(dynamic)
 end
 
 --- Read an asset out of the templates directory.
----@param name string The asset's file name, without the .lua suffix.
----@return string # The asset's content, or "" when it could not be read.
+--- @param name string The asset's file name, without the .lua suffix.
+--- @return string # The asset's content, or "" when it could not be read.
 function BENCH:ReadAsset(name)
 	local content = file.Read("internet_benchmark/templates/html/" .. name .. ".lua", "LUA")
 	if not content then
@@ -244,18 +244,18 @@ function BENCH:ReadAsset(name)
 end
 
 --- Copy a static asset out of the templates directory, as a .txt file.
----@param name string The asset's file name, without the .lua suffix.
+--- @param name string The asset's file name, without the .lua suffix.
 function BENCH:WriteAsset(name)
 	self:WriteOutput(name .. ".txt", self:ReadAsset(name))
 end
 
 --- Generate a single trial's report view.
----@param id string The trial's identifier.
----@param timing table Per-function run-time tables.
----@param stats table Per-function statistics, with a minMean key.
----@param trial table The trial.
----@return string view The rendered view.
----@return table summary A summary for the overview page and sidebar: id, title,
+--- @param id string The trial's identifier.
+--- @param timing table Per-function run-time tables.
+--- @param stats table Per-function statistics, with a minMean key.
+--- @param trial table The trial.
+--- @return string view The rendered view.
+--- @return table summary A summary for the overview page and sidebar: id, title,
 --- worstPct, candidateCount, winnerLabel, winnerPerCall.
 function BENCH:HTMLTab(id, timing, stats, trial)
 	l.Debug(string.format("Generating tab for '%s'.", id))
@@ -398,8 +398,8 @@ function BENCH:HTMLTab(id, timing, stats, trial)
 end
 
 --- Benchmark a single trial and print its results to the console.
----@param name string The trial's file name, without extension.
----@param dynamic boolean? Recalibrate the trial's iteration count instead
+--- @param name string The trial's file name, without extension.
+--- @param dynamic boolean? Recalibrate the trial's iteration count instead
 --- of using its authored or default count. Defaults to false.
 function BENCH:ConsoleReport(name, dynamic)
 	local results, statistics, trial = self:ReportTrial(name, dynamic)
@@ -433,9 +433,9 @@ function BENCH:ConsoleReport(name, dynamic)
 end
 
 --- Generate the HTML report in the background.
----@param dynamic boolean? Recalibrate every trial's iteration count
+--- @param dynamic boolean? Recalibrate every trial's iteration count
 --- instead of using its authored or default count. Defaults to false.
----@return boolean # Whether the job was started.
+--- @return boolean # Whether the job was started.
 function BENCH:ReportWithoutCrashing(dynamic)
 	return self:Async(function()
 		self:HTMLReport(dynamic)

@@ -8,9 +8,9 @@ BENCH.Version = "2.0.0"
 
 --- Include a file, obeying the sh/sv/cl realm prefix of its file name.
 --- Files without a recognised prefix are treated as shared.
----@param path string Path to the file, relative to lua/internet_benchmark unless isFull is set.
----@param isFull boolean? If set, the path is treated as relative to lua/.
----@param forceState string? Override the detected realm prefix ("sh", "sv" or "cl").
+--- @param path string Path to the file, relative to lua/internet_benchmark unless isFull is set.
+--- @param isFull boolean? If set, the path is treated as relative to lua/.
+--- @param forceState string? Override the detected realm prefix ("sh", "sv" or "cl").
 function BENCH:Include(path, isFull, forceState)
 	if not isFull then
 		path = "internet_benchmark/" .. path
@@ -42,8 +42,8 @@ function BENCH:Include(path, isFull, forceState)
 end
 
 --- Recursively include a directory, obeying realm prefixes.
----@param path string Path to the directory, relative to lua/internet_benchmark.
----@param forceState string? Override the detected realm prefix for every file.
+--- @param path string Path to the directory, relative to lua/internet_benchmark.
+--- @param forceState string? Override the detected realm prefix for every file.
 function BENCH:IncludeDir(path, forceState)
 	local full = "internet_benchmark/" .. path
 	if not full:EndsWith("/") then

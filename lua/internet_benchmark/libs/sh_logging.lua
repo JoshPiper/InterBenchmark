@@ -2,17 +2,17 @@
 
 local BENCH = INTERNET_BENCHMARK
 
----@class Logging
----@field Fatal fun(...: any) Emit a Fatal level log.
----@field ForceFatal fun(...: any) Emit a Fatal level log, regardless of the active level.
----@field Error fun(...: any) Emit an Error level log.
----@field ForceError fun(...: any) Emit an Error level log, regardless of the active level.
----@field Warning fun(...: any) Emit a Warning level log.
----@field ForceWarning fun(...: any) Emit a Warning level log, regardless of the active level.
----@field Info fun(...: any) Emit an Info level log.
----@field ForceInfo fun(...: any) Emit an Info level log, regardless of the active level.
----@field Debug fun(...: any) Emit a Debug level log.
----@field ForceDebug fun(...: any) Emit a Debug level log, regardless of the active level.
+--- @class Logging
+--- @field Fatal fun(...: any) Emit a Fatal level log.
+--- @field ForceFatal fun(...: any) Emit a Fatal level log, regardless of the active level.
+--- @field Error fun(...: any) Emit an Error level log.
+--- @field ForceError fun(...: any) Emit an Error level log, regardless of the active level.
+--- @field Warning fun(...: any) Emit a Warning level log.
+--- @field ForceWarning fun(...: any) Emit a Warning level log, regardless of the active level.
+--- @field Info fun(...: any) Emit an Info level log.
+--- @field ForceInfo fun(...: any) Emit an Info level log, regardless of the active level.
+--- @field Debug fun(...: any) Emit a Debug level log.
+--- @field ForceDebug fun(...: any) Emit a Debug level log, regardless of the active level.
 BENCH.Logging = {}
 local logging = BENCH.Logging
 
@@ -48,8 +48,8 @@ logging.Colours = {
 
 --- Parse a string logging level (such as that from cvars.String) into a level.
 --- If it fails to parse, the default is used instead.
----@param level string|number Input level.
----@return number # Logging level.
+--- @param level string|number Input level.
+--- @return number # Logging level.
 function logging.Parse(level)
 	if tonumber(level) ~= nil then
 		level = tonumber(level)
@@ -114,8 +114,8 @@ local function flatten(...)
 end
 
 --- Print a message with colour to console.
----@private
----@see MsgC
+--- @private
+--- @see MsgC
 function logging._print(...)
 	MsgC(unpack(flatten(...)))
 	print()
@@ -135,9 +135,9 @@ logging.Phrases = {
 }
 
 --- Create a table with the brand name.
----@param wrapped boolean Should the Brand be wrapped in [].
----@param event string? It's a secret tool that'll help us later.
----@return table
+--- @param wrapped boolean Should the Brand be wrapped in [].
+--- @param event string? It's a secret tool that'll help us later.
+--- @return table
 function logging:Brand(wrapped, event)
 	if not event then
 		event = ""
@@ -158,7 +158,7 @@ end
 --- Build the message functions for a given level.
 --- Adds the function to logging.<LEVEL>, ie logging.Warning, along with a
 --- logging.Force<LEVEL> variant which prints regardless of the active level.
----@param level string Message level.
+--- @param level string Message level.
 function logging:Build(level)
 	local levelValue = isnumber(level) and level or self.Levels[level:upper()]
 

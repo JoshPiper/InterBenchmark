@@ -55,7 +55,7 @@ function FORMAT:GetAllowedPrefixes(name)
 end
 
 --- Find the first allowed prefix which scales num into the given bounds.
----@return number? # The prefix's power of ten, or nil when none fit (or num is 0).
+--- @return number? # The prefix's power of ten, or nil when none fit (or num is 0).
 function FORMAT:Prefix(num, prefixes, minBound, maxBound)
 	prefixes = self:GetAllowedPrefixes(prefixes)
 	minBound = minBound or 0
@@ -74,7 +74,7 @@ function FORMAT:Prefix(num, prefixes, minBound, maxBound)
 end
 
 --- Find the most common prefix across a set of numbers.
----@return number? # The modal prefix's power of ten, or nil for an empty set.
+--- @return number? # The modal prefix's power of ten, or nil for an empty set.
 function FORMAT:ModalPrefix(numbers, prefixes, minBound, maxBound)
 	local calc = {}
 

@@ -13,8 +13,8 @@ local unpack = unpack
 --- print(positiveOnly(-1)) -- Returns 0.
 --- print(positiveOnly(2)) -- Returns 2.
 --- ```
----@param func function Input function to curry.
----@param ... any Arguments to store.
+--- @param func function Input function to curry.
+--- @param ... any Arguments to store.
 function fn.partial(func, ...)
 	local args = {...}
 	local st = #args
@@ -30,7 +30,7 @@ function fn.partial(func, ...)
 end
 
 --- Returns parameters without any changes.
----@param ... any Input paramters.
+--- @param ... any Input paramters.
 local function null(...) return ... end
 
 --- Returns a function where the first two inputs are flipped.
@@ -40,8 +40,8 @@ local function null(...) return ... end
 --- local flippedPrint = flip(print)
 --- flippedPrint("hello", "world") -- Outputs: "world hello"
 --- ```
----@param func function Input function.
----@return function # Flipped function.
+--- @param func function Input function.
+--- @return function # Flipped function.
 function fn.flip(func)
 	return function(a, b, ...)
 		return func(b, a, ...)
@@ -50,8 +50,8 @@ end
 
 --- Reverses a set of input arguments.
 --- See the lua-users wiki page on CurriedLua for the technique this is based on.
----@param ... any Input arguments.
----@return any ... Flipped outputs.
+--- @param ... any Input arguments.
+--- @return any ... Flipped outputs.
 function fn.reverse(...)
 	local function reverse_h(acc, v, ...)
 		if select('#', ...) == 0 then
@@ -65,8 +65,8 @@ function fn.reverse(...)
 end
 
 --- Build a function o from f/g so that f(g(x)) == o(x)
----@param ... function Input functions.
----@return function # Composed function.
+--- @param ... function Input functions.
+--- @return function # Composed function.
 function fn.compose(...)
 	local m = select("#", ...)
 	if m == 0 then return null end

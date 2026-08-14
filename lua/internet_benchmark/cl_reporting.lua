@@ -6,7 +6,7 @@ INTERNET_BENCHMARK = INTERNET_BENCHMARK or {}
 local BENCH = INTERNET_BENCHMARK
 
 --- Open (or reuse) the report viewer, and load a report into it.
----@param html string A complete, self-contained report document.
+--- @param html string A complete, self-contained report document.
 function BENCH:OpenReport(html)
 	if IsValid(self._ReportFrame) then
 		self._ReportBrowser:SetHTML(html)

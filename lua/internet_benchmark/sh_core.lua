@@ -15,8 +15,8 @@ local noop = function() end
 BENCH.OutputDir = "internet_benchmarks"
 
 --- Write a file into the suite's output directory, creating it if needed.
----@param name string The file's name, including extension.
----@param content string The file's contents.
+--- @param name string The file's name, including extension.
+--- @param content string The file's contents.
 function BENCH:WriteOutput(name, content)
 	file.CreateDir(self.OutputDir)
 	file.Write(string.format("%s/%s", self.OutputDir, name), content)
@@ -46,8 +46,8 @@ BENCH.AsyncBudget = 0.002
 --- Run a job in the background without freezing the game.
 --- The job runs inside a coroutine, pumped from a tick timer with a small
 --- per-tick time budget. Errors are logged and re-raised with a traceback.
----@param func function The job to run.
----@return boolean # Whether the job was started.
+--- @param func function The job to run.
+--- @return boolean # Whether the job was started.
 function BENCH:Async(func)
 	if self._ActiveJob then
 		self.Logging.Warning("A benchmark job is already running, ignoring the new request.")
@@ -83,9 +83,9 @@ function BENCH:Async(func)
 end
 
 --- Time a single run of a function, repeated iterations times.
----@param func function Function to call.
----@param iterations integer? Number of times to call the function. Defaults to 1.
----@return number # The time taken, in seconds.
+--- @param func function Function to call.
+--- @param iterations integer? Number of times to call the function. Defaults to 1.
+--- @return number # The time taken, in seconds.
 function BENCH:Time(func, iterations)
 	local clock = SysTime
 	iterations = iterations or 1
@@ -109,8 +109,8 @@ end
 --- uninterruptible segment (as this used to) is what causes multi-second
 --- frame hitches - the pump can only act on its time budget between
 --- segments, never partway through one.
----@return number # Mean time per run.
----@return table # Each run's time.
+--- @return number # Mean time per run.
+--- @return table # Each run's time.
 function BENCH:Benchmark(func, iterationsPerRun, runs, preRun, postRun)
 	local tmpl = string.format("\t\tRun %%0%dd / %%d [ETA: %%ss]", #tostring(runs))
 	local time = 0
@@ -140,7 +140,7 @@ function BENCH:Benchmark(func, iterationsPerRun, runs, preRun, postRun)
 end
 
 --- Benchmark a list of functions.
----@return table # results[idx] holds the run-times table for functions[idx].
+--- @return table # results[idx] holds the run-times table for functions[idx].
 function BENCH:BenchFunctions(functions, iterations, runs, preRun, postRun)
 	local results = {}
 	local tmpl = string.format("\tFunction %%0%dd / %%d", #tostring(#functions))
@@ -157,8 +157,8 @@ end
 --- Load a trial from disk, without benchmarking it.
 --- The trial's meta file (if any) is included first, so its If() gate can
 --- stop the function file from being included in the wrong environment.
----@param name string The trial's file name, without extension.
----@return table? # The trial, or nil when missing, gated off, or empty.
+--- @param name string The trial's file name, without extension.
+--- @return table? # The trial, or nil when missing, gated off, or empty.
 function BENCH:LoadTrial(name)
 	local path = string.format("trials/%s", name)
 	local metaPath, fnPath = path .. ".meta.lua", path .. ".lua"
@@ -239,7 +239,7 @@ BENCH.DynamicMaxIterations = 10000000
 --- This does not change trial.runs, and it overrides whatever iteration
 --- count the trial was authored with (or its 100,000 default) - dynamic
 --- mode is a per-invocation override, not a per-trial author setting.
----@param trial table The trial to calibrate. Mutates trial.iterations.
+--- @param trial table The trial to calibrate. Mutates trial.iterations.
 function BENCH:CalibrateIterations(trial)
 	local target = self.DynamicTargetDuration
 	local minIterations = self.DynamicMinIterations
@@ -281,12 +281,12 @@ end
 --- Sources are collected before the first run, then every function gets a
 --- quarter-scale warm-up pass followed by the timed runs, with the garbage
 --- collector held off throughout.
----@param name string The trial's file name, without extension.
----@param dynamic boolean? Recalibrate the trial's iteration count (see
+--- @param name string The trial's file name, without extension.
+--- @param dynamic boolean? Recalibrate the trial's iteration count (see
 --- CalibrateIterations) instead of using its authored or default count.
 --- Defaults to false.
----@return table? # results[idx] per function, or nil when the trial did not run.
----@return table? # The trial.
+--- @return table? # results[idx] per function, or nil when the trial did not run.
+--- @return table? # The trial.
 function BENCH:Trial(name, dynamic)
 	local trial = self:LoadTrial(name)
 	if not trial then
@@ -324,9 +324,9 @@ end
 --- Compute summary statistics for a set of run times.
 --- Quartiles use the same rank-averaging the suite has always used, and
 --- outliers are detected with the 1.5 IQR rule; min and max exclude them.
----@param results table List of run times.
----@param iterations integer? Iterations per run, for the per-call average. Defaults to 1.
----@return table? # The statistics, or nil for an empty result set.
+--- @param results table List of run times.
+--- @param iterations integer? Iterations per run, for the per-call average. Defaults to 1.
+--- @return table? # The statistics, or nil for an empty result set.
 function BENCH:Statistic(results, iterations)
 	local count = #results
 	if count == 0 then
@@ -382,9 +382,9 @@ function BENCH:Statistic(results, iterations)
 end
 
 --- Compute statistics for every function's results.
----@param results table List of run-time tables, one per function.
----@param iterations integer? Iterations per run. Defaults to 1.
----@return table # statistics[idx] per function, plus a minMean key.
+--- @param results table List of run-time tables, one per function.
+--- @param iterations integer? Iterations per run. Defaults to 1.
+--- @return table # statistics[idx] per function, plus a minMean key.
 function BENCH:Statistics(results, iterations)
 	local statistics = {}
 	local min = math.huge

@@ -1,5 +1,23 @@
 # Changelog
 
+## [3.0.0](https://github.com/JoshPiper/InterBenchmark/compare/v2.1.0...v3.0.0) (2026-08-14)
+
+
+### ⚠ BREAKING CHANGES
+
+* Add BENCH:ParseArgs shared flag-parsing helper for console commands ([#40](https://github.com/JoshPiper/InterBenchmark/issues/40))
+
+### Features
+
+* Add BENCH:ParseArgs shared flag-parsing helper for console commands ([#40](https://github.com/JoshPiper/InterBenchmark/issues/40)) ([091e1fe](https://github.com/JoshPiper/InterBenchmark/commit/091e1fe98ea76ba44e7b2b3a33f36fcf96097823)), closes [#20](https://github.com/JoshPiper/InterBenchmark/issues/20)
+* Add tag support to trials, with --tag/--skip-tag filtering ([#47](https://github.com/JoshPiper/InterBenchmark/issues/47)) ([50a4a06](https://github.com/JoshPiper/InterBenchmark/commit/50a4a0670bc800c34a08fc4e36df27b2c8f403da))
+* Export raw results as JSON alongside the HTML report ([#43](https://github.com/JoshPiper/InterBenchmark/issues/43)) ([e62bea9](https://github.com/JoshPiper/InterBenchmark/commit/e62bea9e5ad59226a1631aaa022df47500744337))
+
+
+### Bug Fixes
+
+* Fall back to sorted extremes when outlier bounds exclude all samples ([#48](https://github.com/JoshPiper/InterBenchmark/issues/48)) ([ec1d7d3](https://github.com/JoshPiper/InterBenchmark/commit/ec1d7d34230366506b3b3313722a7a34742dbaf0))
+
 ## [2.1.0](https://github.com/JoshPiper/InterBenchmark/compare/v2.0.1...v2.1.0) (2026-08-14)
 
 

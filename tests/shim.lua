@@ -1,6 +1,6 @@
 --- A minimal Garry's Mod environment shim.
--- Just enough of GLua to load and test the suite's pure-Lua libraries
--- under a stock LuaJIT interpreter.
+--- Just enough of GLua to load and test the suite's pure-Lua libraries
+--- under a stock LuaJIT interpreter.
 
 INTERNET_BENCHMARK = INTERNET_BENCHMARK or {}
 

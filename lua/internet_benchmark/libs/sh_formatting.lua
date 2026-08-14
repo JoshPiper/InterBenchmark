@@ -1,5 +1,4 @@
 --- Number and text formatting helpers.
--- @module formatting
 
 INTERNET_BENCHMARK = INTERNET_BENCHMARK or {}
 local BENCH = INTERNET_BENCHMARK
@@ -38,7 +37,7 @@ FORMAT.AllowedPrefixes = {
 }
 
 --- Resolve a prefix specification into a list of allowed powers.
--- Accepts a named set, a list of powers, or a single power.
+--- Accepts a named set, a list of powers, or a single power.
 function FORMAT:GetAllowedPrefixes(name)
 	if isstring(name) then
 		return self.AllowedPrefixes[name] or self.AllowedPrefixes.standard
@@ -56,7 +55,7 @@ function FORMAT:GetAllowedPrefixes(name)
 end
 
 --- Find the first allowed prefix which scales num into the given bounds.
--- @rnumber The prefix's power of ten, or nil when none fit (or num is 0).
+---@return number? # The prefix's power of ten, or nil when none fit (or num is 0).
 function FORMAT:Prefix(num, prefixes, minBound, maxBound)
 	prefixes = self:GetAllowedPrefixes(prefixes)
 	minBound = minBound or 0
@@ -75,7 +74,7 @@ function FORMAT:Prefix(num, prefixes, minBound, maxBound)
 end
 
 --- Find the most common prefix across a set of numbers.
--- @rnumber The modal prefix's power of ten, or nil for an empty set.
+---@return number? # The modal prefix's power of ten, or nil for an empty set.
 function FORMAT:ModalPrefix(numbers, prefixes, minBound, maxBound)
 	local calc = {}
 
@@ -90,7 +89,7 @@ function FORMAT:ModalPrefix(numbers, prefixes, minBound, maxBound)
 end
 
 --- Format a number against a specific prefix.
--- A nil prefix formats the number without scaling or suffix.
+--- A nil prefix formats the number without scaling or suffix.
 function FORMAT:Number(num, prefix, sigFig)
 	local formatterString = sigFig == nil and "%s" or string.format("%%#.%sf", sigFig)
 
@@ -115,7 +114,7 @@ function FORMAT:AutoNumber(num, prefixes, sigFig, minBound, maxBound)
 end
 
 --- Format a number with the prefix most common across a set of numbers.
--- Keeps a column of related values in a single, comparable unit.
+--- Keeps a column of related values in a single, comparable unit.
 function FORMAT:AutoNumbers(num, numbers, sigFig, prefixes, minBound, maxBound)
 	return self:Number(
 		num,

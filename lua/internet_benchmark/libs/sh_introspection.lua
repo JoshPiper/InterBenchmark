@@ -1,7 +1,6 @@
 --- Source introspection for benchmark reports.
--- Extracts function sources and upvalue definitions so the report can show
--- exactly what code was measured, alongside the values it captured.
--- @module introspection
+--- Extracts function sources and upvalue definitions so the report can show
+--- exactly what code was measured, alongside the values it captured.
 
 INTERNET_BENCHMARK = INTERNET_BENCHMARK or {}
 local BENCH = INTERNET_BENCHMARK
@@ -9,7 +8,7 @@ BENCH.Introspection = setmetatable({}, {__index = INTERNET_BENCHMARK})
 local INTROSPECT = BENCH.Introspection
 
 --- Global tables which are never searched when naming a value.
--- These are either huge, expensive to walk, or both.
+--- These are either huge, expensive to walk, or both.
 INTROSPECT.Blacklist = {
 	"GCompute",
 	"GLib",
@@ -22,10 +21,10 @@ INTROSPECT.Blacklist = {
 INTROSPECT.Cache = {}
 
 --- Read a range of lines from a file on the LUA search path.
--- @string path Path relative to lua/.
--- @int[opt] startLine First line to read, inclusive.
--- @int[opt] stopLine Last line to read, inclusive.
--- @rstring The requested lines, or nil when the file cannot be read.
+---@param path string Path relative to lua/.
+---@param startLine integer? First line to read, inclusive.
+---@param stopLine integer? Last line to read, inclusive.
+---@return string? # The requested lines, or nil when the file cannot be read.
 function INTROSPECT:ReadSource(path, startLine, stopLine)
 	local data = file.Read(path, "LUA")
 	if not data then
@@ -40,8 +39,8 @@ function INTROSPECT:ReadSource(path, startLine, stopLine)
 end
 
 --- Find the dotted global route to a value, if one exists.
--- @param var The value to search for.
--- @rstring The route (such as "math.max"), or false when none was found.
+---@param var any The value to search for.
+---@return string|false # The route (such as "math.max"), or false when none was found.
 function INTROSPECT:Lookup(var, inTable, route, seen)
 	if self.Cache[var] then
 		return self.Cache[var]
@@ -90,7 +89,11 @@ function INTROSPECT:Lookup(var, inTable, route, seen)
 end
 
 --- Get the defining file (relative to lua/) and line range of a function.
--- @return path, first line, last line — or nil for C or unlocatable functions.
+--- Returns nothing for C or unlocatable functions.
+---@param fn function
+---@return string? path
+---@return integer? startLine
+---@return integer? stopLine
 local function sourceInfo(fn)
 	local info = debug.getinfo(fn, "S")
 	if info.what ~= "Lua" then
@@ -106,8 +109,9 @@ local function sourceInfo(fn)
 end
 
 --- Read a function's defining source.
--- Falls back to its global route when the source is unavailable.
--- @rstring The function's source, its global route, or a placeholder.
+--- Falls back to its global route when the source is unavailable.
+---@param fn function
+---@return string # The function's source, its global route, or a placeholder.
 function INTROSPECT:FunctionSource(fn)
 	local path, startLine, stopLine = sourceInfo(fn)
 	if path then
@@ -126,11 +130,11 @@ function INTROSPECT:FunctionSource(fn)
 end
 
 --- Serialise a captured value into a Lua expression for the report.
--- @param var The captured value.
--- @bool[opt] excludeGlobals Skip the global route lookup for functions.
--- @return A string expression, a {"raw", source} table for function bodies,
--- or nil when the value cannot be represented (exclude it, or cover it with
--- a manual predefine).
+---@param var any The captured value.
+---@param excludeGlobals boolean? Skip the global route lookup for functions.
+---@return string|table|nil # A string expression, a {"raw", source} table for
+--- function bodies, or nil when the value cannot be represented (exclude it,
+--- or cover it with a manual predefine).
 function INTROSPECT:Variable(var, excludeGlobals)
 	if isfunction(var) then
 		if not excludeGlobals then
@@ -167,7 +171,9 @@ function INTROSPECT:Variable(var, excludeGlobals)
 end
 
 --- Collect the upvalues of a function.
--- @return A name-to-value map, and a list of names whose values were nil.
+---@param fn function
+---@return table<string, any> vars A name-to-value map.
+---@return string[] nils A list of names whose values were nil.
 local function upvalues(fn)
 	local vars, nils = {}, {}
 	local info = debug.getinfo(fn, "u")
@@ -186,9 +192,9 @@ local function upvalues(fn)
 end
 
 --- Populate a trial with the sources of its functions and pre-definitions.
--- Must run before benchmarking, so captured values are shown in their
--- initial state rather than whatever the runs left behind.
--- @tab trial The trial instance to populate.
+--- Must run before benchmarking, so captured values are shown in their
+--- initial state rather than whatever the runs left behind.
+---@param trial table The trial instance to populate.
 function INTROSPECT:TrialSources(trial)
 	local excluded = trial.excludedVars or {}
 

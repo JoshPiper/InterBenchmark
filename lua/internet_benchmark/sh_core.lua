@@ -1,9 +1,8 @@
 --- Core benchmarking pipeline.
--- Every long-running function here is coroutine aware: run inside a
--- coroutine (see BENCH:Async) it yields around each run's garbage
--- collections and its timed measurement, so the game keeps ticking while a
--- benchmark grinds away in the background.
--- @module core
+--- Every long-running function here is coroutine aware: run inside a
+--- coroutine (see BENCH:Async) it yields around each run's garbage
+--- collections and its timed measurement, so the game keeps ticking while a
+--- benchmark grinds away in the background.
 
 INTERNET_BENCHMARK = INTERNET_BENCHMARK or {}
 local BENCH = INTERNET_BENCHMARK
@@ -16,18 +15,18 @@ local noop = function() end
 BENCH.OutputDir = "internet_benchmarks"
 
 --- Write a file into the suite's output directory, creating it if needed.
--- @string name The file's name, including extension.
--- @string content The file's contents.
+---@param name string The file's name, including extension.
+---@param content string The file's contents.
 function BENCH:WriteOutput(name, content)
 	file.CreateDir(self.OutputDir)
 	file.Write(string.format("%s/%s", self.OutputDir, name), content)
 end
 
 --- Yield when currently inside a coroutine, otherwise do nothing.
--- coroutine.isyieldable is Lua 5.2+, and Garry's Mod ships LuaJIT 2.0 on the
--- public branch, so it is not available. In Lua 5.1 coroutine.running()
--- returns nil on the main thread; later versions flag it with a second
--- return, and this handles both.
+--- coroutine.isyieldable is Lua 5.2+, and Garry's Mod ships LuaJIT 2.0 on the
+--- public branch, so it is not available. In Lua 5.1 coroutine.running()
+--- returns nil on the main thread; later versions flag it with a second
+--- return, and this handles both.
 function BENCH:Yield()
 	local co, isMain = running()
 	if co and not isMain then
@@ -36,19 +35,19 @@ function BENCH:Yield()
 end
 
 --- Per-tick time budget for background jobs, in seconds.
--- A fixed, small cap rather than a fraction of the tick interval: on a
--- low-tickrate server a fraction of TickInterval() could itself be tens of
--- milliseconds, defeating the point of chunking work at all. This bounds
--- how much extra work the pump piles into one tick once it is already
--- running - it does not bound the length of a single yield-to-yield
--- segment (see Benchmark's per-run yields for that).
+--- A fixed, small cap rather than a fraction of the tick interval: on a
+--- low-tickrate server a fraction of TickInterval() could itself be tens of
+--- milliseconds, defeating the point of chunking work at all. This bounds
+--- how much extra work the pump piles into one tick once it is already
+--- running - it does not bound the length of a single yield-to-yield
+--- segment (see Benchmark's per-run yields for that).
 BENCH.AsyncBudget = 0.002
 
 --- Run a job in the background without freezing the game.
--- The job runs inside a coroutine, pumped from a tick timer with a small
--- per-tick time budget. Errors are logged and re-raised with a traceback.
--- @callable func The job to run.
--- @rbool Whether the job was started.
+--- The job runs inside a coroutine, pumped from a tick timer with a small
+--- per-tick time budget. Errors are logged and re-raised with a traceback.
+---@param func function The job to run.
+---@return boolean # Whether the job was started.
 function BENCH:Async(func)
 	if self._ActiveJob then
 		self.Logging.Warning("A benchmark job is already running, ignoring the new request.")
@@ -84,9 +83,9 @@ function BENCH:Async(func)
 end
 
 --- Time a single run of a function, repeated iterations times.
--- @callable func Function to call.
--- @int[opt=1] iterations Number of times to call the function.
--- @rnumber The time taken, in seconds.
+---@param func function Function to call.
+---@param iterations integer? Number of times to call the function. Defaults to 1.
+---@return number # The time taken, in seconds.
 function BENCH:Time(func, iterations)
 	local clock = SysTime
 	iterations = iterations or 1
@@ -100,18 +99,18 @@ function BENCH:Time(func, iterations)
 end
 
 --- Benchmark a single function.
--- Performs runs timed runs of iterationsPerRun iterations each, with a
--- garbage collection either side of every run.
---
--- Each full collectgarbage() call is its own yield-to-yield segment, kept
--- apart from the timed run and from each other: on a live server with a
--- large heap, a single full collection can itself take a meaningful slice
--- of a frame, and stacking two of them plus the timed run into one
--- uninterruptible segment (as this used to) is what causes multi-second
--- frame hitches - the pump can only act on its time budget between
--- segments, never partway through one.
--- @rnumber Mean time per run.
--- @rtab Each run's time.
+--- Performs runs timed runs of iterationsPerRun iterations each, with a
+--- garbage collection either side of every run.
+---
+--- Each full collectgarbage() call is its own yield-to-yield segment, kept
+--- apart from the timed run and from each other: on a live server with a
+--- large heap, a single full collection can itself take a meaningful slice
+--- of a frame, and stacking two of them plus the timed run into one
+--- uninterruptible segment (as this used to) is what causes multi-second
+--- frame hitches - the pump can only act on its time budget between
+--- segments, never partway through one.
+---@return number # Mean time per run.
+---@return table # Each run's time.
 function BENCH:Benchmark(func, iterationsPerRun, runs, preRun, postRun)
 	local tmpl = string.format("\t\tRun %%0%dd / %%d [ETA: %%ss]", #tostring(runs))
 	local time = 0
@@ -141,7 +140,7 @@ function BENCH:Benchmark(func, iterationsPerRun, runs, preRun, postRun)
 end
 
 --- Benchmark a list of functions.
--- @rtab results[idx] holds the run-times table for functions[idx].
+---@return table # results[idx] holds the run-times table for functions[idx].
 function BENCH:BenchFunctions(functions, iterations, runs, preRun, postRun)
 	local results = {}
 	local tmpl = string.format("\tFunction %%0%dd / %%d", #tostring(#functions))
@@ -156,10 +155,10 @@ function BENCH:BenchFunctions(functions, iterations, runs, preRun, postRun)
 end
 
 --- Load a trial from disk, without benchmarking it.
--- The trial's meta file (if any) is included first, so its If() gate can
--- stop the function file from being included in the wrong environment.
--- @string name The trial's file name, without extension.
--- @rtab The trial, or nil when missing, gated off, or empty.
+--- The trial's meta file (if any) is included first, so its If() gate can
+--- stop the function file from being included in the wrong environment.
+---@param name string The trial's file name, without extension.
+---@return table? # The trial, or nil when missing, gated off, or empty.
 function BENCH:LoadTrial(name)
 	local path = string.format("trials/%s", name)
 	local metaPath, fnPath = path .. ".meta.lua", path .. ".lua"
@@ -204,43 +203,43 @@ function BENCH:LoadTrial(name)
 end
 
 --- Target duration for a single calibration or measurement run, in seconds,
--- when dynamic iteration calibration is requested (see CalibrateIterations).
--- Large enough to average out scheduler jitter and clock-resolution noise;
--- small enough to keep calibration itself cheap.
+--- when dynamic iteration calibration is requested (see CalibrateIterations).
+--- Large enough to average out scheduler jitter and clock-resolution noise;
+--- small enough to keep calibration itself cheap.
 BENCH.DynamicTargetDuration = 0.05
 
 --- Iteration bounds dynamic calibration will settle within.
--- The floor keeps a run long enough for LuaJIT to have a chance to compile
--- a hot trace before it ends; the ceiling is a safety valve against a
--- pathologically fast function driving the estimate toward an unbounded
--- iteration count.
+--- The floor keeps a run long enough for LuaJIT to have a chance to compile
+--- a hot trace before it ends; the ceiling is a safety valve against a
+--- pathologically fast function driving the estimate toward an unbounded
+--- iteration count.
 BENCH.DynamicMinIterations = 1000
 BENCH.DynamicMaxIterations = 10000000
 
 --- Calibrate a trial's iteration count for its actual functions, instead of
--- using the fixed count it was authored with.
---
--- Every function in a trial ends up sharing one iteration count, so raw
--- per-run statistics stay directly comparable across the trial's Results
--- table exactly as they are with a fixed count. Because a count that
--- comfortably clears the target duration for a slow function can badly
--- undershoot it for a fast one in the same trial, the shared count is
--- driven by whichever function needs the MOST iterations to reach the
--- target - the fastest one. Slower functions in the trial will then run
--- for longer than their own minimum would require; that is the necessary
--- trade-off for keeping the comparison meaningful.
---
--- Each function is probed with a doubling sequence of iteration counts,
--- running the trial's own before/after hooks around every probe so the
--- probed cost matches what a real run would see, until a probe reaches the
--- target duration or the iteration ceiling. The final probe is then
--- extrapolated back to an exact target-duration estimate, rather than just
--- using whichever doubled value first crossed the line.
---
--- This does not change trial.runs, and it overrides whatever iteration
--- count the trial was authored with (or its 100,000 default) - dynamic
--- mode is a per-invocation override, not a per-trial author setting.
--- @tab trial The trial to calibrate. Mutates trial.iterations.
+--- using the fixed count it was authored with.
+---
+--- Every function in a trial ends up sharing one iteration count, so raw
+--- per-run statistics stay directly comparable across the trial's Results
+--- table exactly as they are with a fixed count. Because a count that
+--- comfortably clears the target duration for a slow function can badly
+--- undershoot it for a fast one in the same trial, the shared count is
+--- driven by whichever function needs the MOST iterations to reach the
+--- target - the fastest one. Slower functions in the trial will then run
+--- for longer than their own minimum would require; that is the necessary
+--- trade-off for keeping the comparison meaningful.
+---
+--- Each function is probed with a doubling sequence of iteration counts,
+--- running the trial's own before/after hooks around every probe so the
+--- probed cost matches what a real run would see, until a probe reaches the
+--- target duration or the iteration ceiling. The final probe is then
+--- extrapolated back to an exact target-duration estimate, rather than just
+--- using whichever doubled value first crossed the line.
+---
+--- This does not change trial.runs, and it overrides whatever iteration
+--- count the trial was authored with (or its 100,000 default) - dynamic
+--- mode is a per-invocation override, not a per-trial author setting.
+---@param trial table The trial to calibrate. Mutates trial.iterations.
 function BENCH:CalibrateIterations(trial)
 	local target = self.DynamicTargetDuration
 	local minIterations = self.DynamicMinIterations
@@ -279,14 +278,15 @@ function BENCH:CalibrateIterations(trial)
 end
 
 --- Load and benchmark a single trial.
--- Sources are collected before the first run, then every function gets a
--- quarter-scale warm-up pass followed by the timed runs, with the garbage
--- collector held off throughout.
--- @string name The trial's file name, without extension.
--- @bool[opt=false] dynamic Recalibrate the trial's iteration count (see
--- CalibrateIterations) instead of using its authored or default count.
--- @rtab results[idx] per function, or nil when the trial did not run.
--- @rtab The trial.
+--- Sources are collected before the first run, then every function gets a
+--- quarter-scale warm-up pass followed by the timed runs, with the garbage
+--- collector held off throughout.
+---@param name string The trial's file name, without extension.
+---@param dynamic boolean? Recalibrate the trial's iteration count (see
+--- CalibrateIterations) instead of using its authored or default count.
+--- Defaults to false.
+---@return table? # results[idx] per function, or nil when the trial did not run.
+---@return table? # The trial.
 function BENCH:Trial(name, dynamic)
 	local trial = self:LoadTrial(name)
 	if not trial then
@@ -322,11 +322,11 @@ function BENCH:Trial(name, dynamic)
 end
 
 --- Compute summary statistics for a set of run times.
--- Quartiles use the same rank-averaging the suite has always used, and
--- outliers are detected with the 1.5 IQR rule; min and max exclude them.
--- @tab results List of run times.
--- @int[opt=1] iterations Iterations per run, for the per-call average.
--- @rtab The statistics, or nil for an empty result set.
+--- Quartiles use the same rank-averaging the suite has always used, and
+--- outliers are detected with the 1.5 IQR rule; min and max exclude them.
+---@param results table List of run times.
+---@param iterations integer? Iterations per run, for the per-call average. Defaults to 1.
+---@return table? # The statistics, or nil for an empty result set.
 function BENCH:Statistic(results, iterations)
 	local count = #results
 	if count == 0 then
@@ -382,9 +382,9 @@ function BENCH:Statistic(results, iterations)
 end
 
 --- Compute statistics for every function's results.
--- @tab results List of run-time tables, one per function.
--- @int[opt=1] iterations Iterations per run.
--- @rtab statistics[idx] per function, plus a minMean key.
+---@param results table List of run-time tables, one per function.
+---@param iterations integer? Iterations per run. Defaults to 1.
+---@return table # statistics[idx] per function, plus a minMean key.
 function BENCH:Statistics(results, iterations)
 	local statistics = {}
 	local min = math.huge

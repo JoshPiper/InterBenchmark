@@ -1,17 +1,16 @@
 --- Benchmark environment reporting.
--- Collects everything plain GLua exposes about the game and host, so every
--- report can state the conditions it was generated under.
---
--- When the optional gm_sysinfo binary module (3.1.0+) is installed
--- (https://github.com/JoshPiper/gm_sysinfo), the statement is extended with
--- host details plain GLua cannot see: precise OS and kernel versions, the
--- distribution, CPU model and architecture, physical core count, memory and
--- swap totals, load averages and uptime.
---
--- Even with the module, the following still need recording by hand:
---   * CPU clock speed (not yet exposed by gm_sysinfo).
---   * GPU model and driver version.
--- @module environment
+--- Collects everything plain GLua exposes about the game and host, so every
+--- report can state the conditions it was generated under.
+---
+--- When the optional gm_sysinfo binary module (3.1.0+) is installed
+--- (https://github.com/JoshPiper/gm_sysinfo), the statement is extended with
+--- host details plain GLua cannot see: precise OS and kernel versions, the
+--- distribution, CPU model and architecture, physical core count, memory and
+--- swap totals, load averages and uptime.
+---
+--- Even with the module, the following still need recording by hand:
+---   * CPU clock speed (not yet exposed by gm_sysinfo).
+---   * GPU model and driver version.
 
 INTERNET_BENCHMARK = INTERNET_BENCHMARK or {}
 local BENCH = INTERNET_BENCHMARK
@@ -21,7 +20,7 @@ local ENV = BENCH.Environment
 local attemptedRequire = false
 
 --- Fetch the optional gm_sysinfo binary module, loading it on first use.
--- @rtab The module's function table, or nil when it is not installed.
+---@return table? # The module's function table, or nil when it is not installed.
 function ENV:SysInfo()
 	if not istable(sysinfo) and not attemptedRequire then
 		attemptedRequire = true
@@ -64,9 +63,9 @@ local function push(rows, label, value)
 end
 
 --- Call an optional getter, applying a transform to its result.
--- gm_sysinfo getters raise on values they cannot read, and future module
--- versions may add or remove functions, so nothing here is trusted to exist
--- or succeed. Any failure simply omits the row.
+--- gm_sysinfo getters raise on values they cannot read, and future module
+--- versions may add or remove functions, so nothing here is trusted to exist
+--- or succeed. Any failure simply omits the row.
 local function try(getter, transform)
 	if not isfunction(getter) then
 		return nil
@@ -88,11 +87,11 @@ local function try(getter, transform)
 end
 
 --- Collect the environment details.
--- Rows available to plain GLua always come first, in a fixed order; rows
--- provided by gm_sysinfo are appended after them when the module is present.
--- The host name is deliberately never collected - these statements are meant
--- to be published next to benchmark results.
--- @rtab An ordered list of {label, value} pairs.
+--- Rows available to plain GLua always come first, in a fixed order; rows
+--- provided by gm_sysinfo are appended after them when the module is present.
+--- The host name is deliberately never collected - these statements are meant
+--- to be published next to benchmark results.
+---@return table # An ordered list of {label, value} pairs.
 function ENV:Collect()
 	local osName = "Unknown"
 	if system.IsWindows() then
@@ -153,7 +152,7 @@ function ENV:Collect()
 end
 
 --- Render the environment statement as plain text.
--- @rstring The formatted statement.
+---@return string # The formatted statement.
 function ENV:Format()
 	local lines = {
 		"Internet's Benchmark Suite: Environment Statement",
@@ -180,8 +179,8 @@ function ENV:Format()
 end
 
 --- Group titles, in display order, mapped to the row labels they collect.
--- Rows are matched by label regardless of where Collect() emits them, so
--- interleaved plain-GLua and gm_sysinfo rows still land in the right group.
+--- Rows are matched by label regardless of where Collect() emits them, so
+--- interleaved plain-GLua and gm_sysinfo rows still land in the right group.
 ENV.GroupOrder = {"Suite", "Game", "Lua runtime", "Operating system", "Processor", "Memory & host"}
 ENV.GroupsByLabel = {
 	["Suite Version"] = "Suite",
@@ -217,7 +216,7 @@ ENV.GroupsByLabel = {
 }
 
 --- Group the collected rows for display, dropping empty groups.
--- @rtab An ordered list of {title, rows} entries, rows as {label, value}.
+---@return table # An ordered list of {title, rows} entries, rows as {label, value}.
 function ENV:Groups()
 	local buckets = {}
 	for _, title in ipairs(self.GroupOrder) do
@@ -242,7 +241,7 @@ function ENV:Groups()
 end
 
 --- A handful of headline rows for the environment page's summary tiles.
--- @rtab An ordered list of {label, value} pairs.
+---@return table # An ordered list of {label, value} pairs.
 function ENV:Highlights()
 	local lookup = {}
 	for _, pair in ipairs(self:Collect()) do

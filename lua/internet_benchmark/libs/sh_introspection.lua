@@ -60,15 +60,20 @@ function INTROSPECT:Lookup(var, inTable, route, seen)
 
 	local toDo = {}
 	for k, v in pairs(inTable) do
-		if v == var then
-			table.insert(route, k)
-			route = table.concat(route, ".")
-			self.Cache[var] = route
-			return route
-		end
+		-- Only string keys can form a valid dotted route; other key types
+		-- (entities, panels, vectors used as table keys, etc.) can't be
+		-- concatenated and can't be part of a global variable name anyway.
+		if isstring(k) then
+			if v == var then
+				table.insert(route, k)
+				route = table.concat(route, ".")
+				self.Cache[var] = route
+				return route
+			end
 
-		if istable(v) and not seen[v] then
-			toDo[k] = v
+			if istable(v) and not seen[v] then
+				toDo[k] = v
+			end
 		end
 	end
 

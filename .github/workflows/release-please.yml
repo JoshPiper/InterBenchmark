@@ -8,11 +8,16 @@ concurrency:
   group: release-please-${{ github.ref }}
 
 jobs:
-  # Maintains a rolling release PR from conventional commits; on merge of that
-  # PR, tags the commit and creates a draft GitHub release. Nothing releases
-  # until the PR is merged, so "not ready" is simply "don't merge it yet".
+  # On merge of the rolling release PR, tags the commit and creates a draft
+  # GitHub release. This is kept separate from release-please-pr below: that
+  # job re-derives "the latest release" from the GitHub API, and a release
+  # this job just created is still a draft at that point (it isn't published
+  # until publish-assets runs, later in this same workflow) - drafts don't
+  # count as "found" in that lookup, so running both in one release-please
+  # invocation makes it lose track of the latest release and recompute the
+  # version from the entire commit history instead.
   release-please:
-    name: Release PR or release
+    name: Tag release
     if: github.repository_owner == 'JoshPiper'
     runs-on: ubuntu-latest
     permissions:
@@ -30,6 +35,7 @@ jobs:
           # (GitHub suppresses recursive workflow triggers). Add a
           # RELEASE_PLEASE_TOKEN PAT secret to get CI runs on release PRs.
           token: ${{ secrets.RELEASE_PLEASE_TOKEN || secrets.GITHUB_TOKEN }}
+          skip-github-pull-request: true
 
   # The release is created as a draft, and a draft only materialises its git
   # tag once published, so assets are built from the release commit itself.
@@ -77,3 +83,26 @@ jobs:
         run: |
           gh release upload "${{ needs.release-please.outputs.tag_name }}" assets/* --clobber -R "${GITHUB_REPOSITORY}"
           gh release edit "${{ needs.release-please.outputs.tag_name }}" --draft=false -R "${GITHUB_REPOSITORY}"
+
+  # Opens or updates the rolling release PR. Split from the tagging job above
+  # and ordered after publish-assets so that, on a push that just published a
+  # release, the newly published (no longer draft) release is visible by the
+  # time this looks up "the latest release" to diff commits against.
+  release-please-pr:
+    name: Update release PR
+    needs: [release-please, build-assets, publish-assets]
+    if: |
+      always() && github.repository_owner == 'JoshPiper' &&
+      needs.release-please.result == 'success' &&
+      needs.build-assets.result != 'failure' && needs.build-assets.result != 'cancelled' &&
+      needs.publish-assets.result != 'failure' && needs.publish-assets.result != 'cancelled'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Run release-please
+        uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
+        with:
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN || secrets.GITHUB_TOKEN }}
+          skip-github-release: true

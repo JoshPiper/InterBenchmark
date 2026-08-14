@@ -7,4 +7,5 @@ TRIAL
 		.. "Color() built once and reused, each with and without an explicit alpha."
 	)
 	:Order(101)
+	:Tag("default")
 	:If(CLIENT)

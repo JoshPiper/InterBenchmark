@@ -36,6 +36,7 @@ TRIAL
 		.. "actually exercises, worth keeping in mind when reading how close their results are."
 	)
 	:Order(102)
+	:Tag("default")
 	:Function(testA)
 	:Label("string sub")
 	:Describe("Matches the whole ${...} token and strips the delimiters by hand with :sub(), rather than capturing just the inner name.")

@@ -22,6 +22,7 @@ TRIAL
 	:Name("Unpack")
 	:Description("Three ways to pass a fixed-size table's contents as separate arguments to math.min: indexing each slot by hand, letting the generic unpack() walk the table, and a hand-written unpack4() specialised to exactly four elements.")
 	:Order(4)
+	:Tag("default")
 	:Function(a)
 	:Label("table index")
 	:Function(b)

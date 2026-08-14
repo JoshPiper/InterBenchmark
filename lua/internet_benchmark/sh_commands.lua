@@ -40,8 +40,10 @@ concommand.Add("internet_benchmark_run", function(ply, _, args)
 		return
 	end
 
-	BENCH:ReportWithoutCrashing(dynamic, test)
-end, BENCH:ArgCompleter({flags = {"dynamic", "test"}}), "Benchmark every trial and write the HTML report to data/internet_benchmarks/. Pass '--dynamic' to calibrate each trial's iteration count instead of using its fixed default. Pass '--test' to force a low iteration and run count for a quick smoke test. The two flags cannot be combined.")
+	local includeTags = BENCH:ParseTagList(flags.tag)
+	local excludeTags = BENCH:ParseTagList(flags["skip-tag"])
+	BENCH:ReportWithoutCrashing(dynamic, test, includeTags, excludeTags)
+end, BENCH:ArgCompleter({flags = {"dynamic", "test", "tag", "skip-tag"}}), "Benchmark every trial and write the HTML report. '--dynamic'/'--test' set the iteration mode (mutually exclusive). '--tag'/'--skip-tag' (repeatable/comma-separated) filter trials, Ansible-style.")
 
 concommand.Add("internet_benchmark_trial", function(ply, _, args)
 	if not canRun(ply) then

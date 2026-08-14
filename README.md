@@ -34,7 +34,7 @@ The suite loads on both the server and the client.
 
 | Command | Effect |
 | --- | --- |
-| `internet_benchmark_run [--dynamic] [--test]` | Benchmark every trial and write the HTML report. |
+| `internet_benchmark_run [--dynamic] [--test] [--tag=...] [--skip-tag=...]` | Benchmark every trial and write the HTML report. |
 | `internet_benchmark_trial <name> [--dynamic] [--test]` | Benchmark a single trial and print results to the console (autocompletes the name). |
 | `internet_benchmark_environment` | Print the environment statement. |
 | `internet_benchmark_logging_report` | Explain the logging levels and the current configuration. |
@@ -54,6 +54,17 @@ instead of a trial's authored, default, or dynamically calibrated counts —
 useful for quickly smoke-testing a trial or the full report pipeline without
 waiting for a real run. `--dynamic` and `--test` are mutually exclusive;
 passing both together is rejected with a warning and nothing runs.
+
+Pass `--tag=name` and `--skip-tag=name` to `internet_benchmark_run` to filter
+which trials run, with the same precedence
+[Ansible](https://docs.ansible.com/projects/ansible/latest/playbook_guide/playbooks_tags.html)
+gives its own `--tags`/`--skip-tags`: with no `--tag`, every trial not excluded
+by `--skip-tag` runs; with `--tag`, only trials carrying at least one of the
+given tags run; `--skip-tag` always wins, excluding a trial even if it also
+matches `--tag`. Either flag accepts a comma-separated list, and either can be
+repeated. Every trial shipped with the suite is tagged `default`, so
+`internet_benchmark_run --tag=default` runs just the built-ins, excluding any
+you add of your own.
 
 Benchmarks run in the background on a small per-tick time budget, so the game
 stays responsive while a full suite (several minutes of measuring) grinds away.
@@ -217,6 +228,7 @@ end
 TRIAL
 	:Name("My Trial")
 	:Order(50)
+	:Tag("default")
 	:Function(viaLength)
 	:Label("tab[#tab + 1]")
 	:Function(viaInsert)
@@ -235,6 +247,7 @@ TRIAL
 | `:Runs(n)` / `:Iterations(n)` | Override the 100 × 100,000 defaults. |
 | `:Before(fn)` / `:After(fn)` | Hooks around every timed run (outside the timing). |
 | `:If(boolOrFn)` | Gate the trial (meta files only — see below). |
+| `:Tag(...)` | Tag the trial for `--tag`/`--skip-tag` filtering (see [Usage](#usage)). Accepts one or more names. |
 | `:Exclude(name)` | Hide a captured upvalue from the report's pre-definitions. |
 | `:ManualPredefine(first, last)` | Show these lines of the trial file as pre-definitions instead. |
 

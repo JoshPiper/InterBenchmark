@@ -4,6 +4,7 @@ TRIAL
 	:Name("Distance vs DistToSqr")
 	:Description("Whether the square root in Distance() is worth paying for when only a comparison (e.g. a nearest-neighbour or range check) is needed, not the actual distance value.")
 	:Order(12)
+	:Tag("default")
 	:Before(function()
 		vector1.x = math.random(-1000, 1000)
 		vector1.y = math.random(-1000, 1000)

@@ -50,6 +50,61 @@ function BENCH:ParseArgs(args)
 	return flags, positional
 end
 
+--- Normalises a --tag/--skip-tag flag value (as returned in ParseArgs's flag
+--- map) into a flat, lower-cased list of tag names.
+--- Each value may itself be a comma-separated list, and repeated flags
+--- already collapse into a table (see ParseArgs); both forms are flattened
+--- into one list here. A bare flag (`--tag` with no value, parsed as `true`)
+--- contributes no tags.
+--- @param value string|table|boolean|nil A flag's value, as returned by ParseArgs.
+--- @return table # A list of lower-cased tag names.
+function BENCH:ParseTagList(value)
+	local tags = {}
+	if value == nil then
+		return tags
+	end
+
+	local values = type(value) == "table" and value or {value}
+	for _, entry in ipairs(values) do
+		if type(entry) == "string" then
+			for tag in entry:gmatch("[^,]+") do
+				table.insert(tags, tag:lower())
+			end
+		end
+	end
+
+	return tags
+end
+
+--- Whether a set of tags should run, given --tag/--skip-tag filters, using
+--- the same precedence Ansible gives its own --tags/--skip-tags: skipping
+--- always wins, and with no include filter every non-skipped item runs.
+--- @param tags table The item's own tags.
+--- @param includeTags table Tags passed via --tag. An empty list matches everything.
+--- @param excludeTags table Tags passed via --skip-tag.
+--- @return boolean
+function BENCH:TagsMatch(tags, includeTags, excludeTags)
+	if #excludeTags > 0 then
+		for _, tag in ipairs(tags) do
+			if table.HasValue(excludeTags, tag) then
+				return false
+			end
+		end
+	end
+
+	if #includeTags == 0 then
+		return true
+	end
+
+	for _, tag in ipairs(tags) do
+		if table.HasValue(includeTags, tag) then
+			return true
+		end
+	end
+
+	return false
+end
+
 --- Builds a GMod concommand autocomplete callback from a small schema, so
 --- flags and positionals complete correctly regardless of the order they're
 --- typed in.

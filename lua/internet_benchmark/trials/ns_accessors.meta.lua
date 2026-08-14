@@ -8,6 +8,7 @@ TRIAL
 		.. "player entity and its metatable directly."
 	)
 	:Order(6)
+	:Tag("default")
 	:If(function()
 		if not isfunction(INTERNET) then
 			return false

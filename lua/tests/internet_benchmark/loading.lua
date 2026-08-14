@@ -122,6 +122,36 @@ return {
 				INTERNET_BENCHMARK:LoadTrial("local_vs_global")
 				expect(TRIAL).to.beNil()
 			end
+		},
+
+		{
+			name = "A fresh trial has no tags, and Tag() appends to the list",
+			func = function()
+				local trial = INTERNET_BENCHMARK.Classes.Trial()
+				expect(trial.tags).to.beA("table")
+				expect(#trial.tags).to.equal(0)
+
+				trial:Tag("default", "slow")
+
+				expect(#trial.tags).to.equal(2)
+				expect(trial.tags[1]).to.equal("default")
+				expect(trial.tags[2]).to.equal("slow")
+			end
+		},
+
+		{
+			name = "Every trial shipped with the suite is tagged 'default'",
+			func = function()
+				local names = INTERNET_BENCHMARK:TrialNames()
+
+				for _, name in ipairs(names) do
+					local trial = INTERNET_BENCHMARK:LoadTrial(name)
+					if trial then
+						local hasDefault = table.HasValue(trial.tags, "default")
+						expect(hasDefault).to.beTrue()
+					end
+				end
+			end
 		}
 	}
 }

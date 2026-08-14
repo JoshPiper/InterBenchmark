@@ -1,6 +1,5 @@
 --- Report generation.
--- Runs trials, computes their statistics and renders the HTML report.
--- @module reporting
+--- Runs trials, computes their statistics and renders the HTML report.
 
 INTERNET_BENCHMARK = INTERNET_BENCHMARK or {}
 local BENCH = INTERNET_BENCHMARK
@@ -8,7 +7,7 @@ local BENCH = INTERNET_BENCHMARK
 local t, f, l = BENCH.Templating, BENCH.Formatting, BENCH.Logging
 
 --- A function's mean as a percentage of the trial's fastest mean.
--- Guards against a zero minimum, which a too-coarse timer can produce.
+--- Guards against a zero minimum, which a too-coarse timer can produce.
 local function percentageOf(mean, minMean)
 	if minMean <= 0 then
 		return 100
@@ -18,10 +17,13 @@ local function percentageOf(mean, minMean)
 end
 
 --- Benchmark one trial and compute its statistics.
--- @string name The trial's file name, without extension.
--- @bool[opt=false] dynamic Recalibrate the trial's iteration count instead
--- of using its authored or default count. @see BENCH:CalibrateIterations
--- @return results, statistics, trial — or nil when the trial did not run.
+--- @param name string The trial's file name, without extension.
+--- @param dynamic boolean? Recalibrate the trial's iteration count instead
+--- of using its authored or default count. Defaults to false.
+--- @see BENCH.CalibrateIterations
+--- @return table? results
+--- @return table? statistics
+--- @return table? trial
 function BENCH:ReportTrial(name, dynamic)
 	local results, trial = self:Trial(name, dynamic)
 	if not results then
@@ -32,7 +34,7 @@ function BENCH:ReportTrial(name, dynamic)
 end
 
 --- Discover every trial on disk.
--- @rtab A sorted list of trial names.
+--- @return table # A sorted list of trial names.
 function BENCH:TrialNames()
 	local names = {}
 	local files = file.Find("internet_benchmark/trials/*.lua", "LUA")
@@ -50,10 +52,10 @@ function BENCH:TrialNames()
 end
 
 --- Benchmark every trial on disk.
--- Trials which are missing, gated off or empty are skipped.
--- @bool[opt=false] dynamic Recalibrate every trial's iteration count
--- instead of using its authored or default count.
--- @rtab A list of {results, statistics, trial, order = n} entries.
+--- Trials which are missing, gated off or empty are skipped.
+--- @param dynamic boolean? Recalibrate every trial's iteration count
+--- instead of using its authored or default count. Defaults to false.
+--- @return table # A list of {results, statistics, trial, order = n} entries.
 function BENCH:ReportAll(dynamic)
 	local reports = {}
 	local names = self:TrialNames()
@@ -72,10 +74,10 @@ function BENCH:ReportAll(dynamic)
 end
 
 --- A row's severity class, driving its accent colour.
--- @number pct The row's percentage of the trial's fastest mean.
--- @bool[opt=false] twoTier Skip the intermediate "notable" tier, for spots
--- (like the sidebar) that only distinguish "fine" from "critical".
--- @rstring A CSS class, or "" for the default (muted) tier.
+--- @param pct number The row's percentage of the trial's fastest mean.
+--- @param twoTier boolean? Skip the intermediate "notable" tier, for spots
+--- (like the sidebar) that only distinguish "fine" from "critical". Defaults to false.
+--- @return string # A CSS class, or "" for the default (muted) tier.
 function BENCH:SeverityClass(pct, twoTier)
 	if pct >= 200 then
 		return "sev-critical"
@@ -89,7 +91,7 @@ function BENCH:SeverityClass(pct, twoTier)
 end
 
 --- Render the environment page's summary tiles.
--- @rstring The concatenated tile markup.
+--- @return string # The concatenated tile markup.
 function BENCH:HTMLEnvironmentHighlights()
 	local tiles = {}
 	for _, pair in ipairs(self.Environment:Highlights()) do
@@ -103,7 +105,7 @@ function BENCH:HTMLEnvironmentHighlights()
 end
 
 --- Render the environment page's grouped detail sections.
--- @rstring The concatenated group markup.
+--- @return string # The concatenated group markup.
 function BENCH:HTMLEnvironmentGroups()
 	local groups = {}
 	for _, group in ipairs(self.Environment:Groups()) do
@@ -125,13 +127,13 @@ function BENCH:HTMLEnvironmentGroups()
 end
 
 --- Generate the full HTML report.
--- Writes report.html.txt and environment.txt to data/internet_benchmarks/.
--- The report is a single self-contained file: its stylesheet and script are
--- inlined, so nothing else needs to travel alongside it.
--- @bool[opt=false] dynamic Recalibrate every trial's iteration count
--- instead of using its authored or default count.
--- @rstring The rendered report, so callers (like the client's report
--- viewer) can use it without reading it back off disk.
+--- Writes report.html.txt and environment.txt to data/internet_benchmarks/.
+--- The report is a single self-contained file: its stylesheet and script are
+--- inlined, so nothing else needs to travel alongside it.
+--- @param dynamic boolean? Recalibrate every trial's iteration count
+--- instead of using its authored or default count. Defaults to false.
+--- @return string? # The rendered report, so callers (like the client's report
+--- viewer) can use it without reading it back off disk.
 function BENCH:HTMLReport(dynamic)
 	self.Environment:Report()
 
@@ -229,8 +231,8 @@ function BENCH:HTMLReport(dynamic)
 end
 
 --- Read an asset out of the templates directory.
--- @string name The asset's file name, without the .lua suffix.
--- @rstring The asset's content, or "" when it could not be read.
+--- @param name string The asset's file name, without the .lua suffix.
+--- @return string # The asset's content, or "" when it could not be read.
 function BENCH:ReadAsset(name)
 	local content = file.Read("internet_benchmark/templates/html/" .. name .. ".lua", "LUA")
 	if not content then
@@ -242,19 +244,19 @@ function BENCH:ReadAsset(name)
 end
 
 --- Copy a static asset out of the templates directory, as a .txt file.
--- @string name The asset's file name, without the .lua suffix.
+--- @param name string The asset's file name, without the .lua suffix.
 function BENCH:WriteAsset(name)
 	self:WriteOutput(name .. ".txt", self:ReadAsset(name))
 end
 
 --- Generate a single trial's report view.
--- @string id The trial's identifier.
--- @tab timing Per-function run-time tables.
--- @tab stats Per-function statistics, with a minMean key.
--- @tab trial The trial.
--- @rstring The rendered view.
--- @rtab A summary for the overview page and sidebar: id, title, worstPct,
--- candidateCount, winnerLabel, winnerPerCall.
+--- @param id string The trial's identifier.
+--- @param timing table Per-function run-time tables.
+--- @param stats table Per-function statistics, with a minMean key.
+--- @param trial table The trial.
+--- @return string view The rendered view.
+--- @return table summary A summary for the overview page and sidebar: id, title,
+--- worstPct, candidateCount, winnerLabel, winnerPerCall.
 function BENCH:HTMLTab(id, timing, stats, trial)
 	l.Debug(string.format("Generating tab for '%s'.", id))
 
@@ -396,9 +398,9 @@ function BENCH:HTMLTab(id, timing, stats, trial)
 end
 
 --- Benchmark a single trial and print its results to the console.
--- @string name The trial's file name, without extension.
--- @bool[opt=false] dynamic Recalibrate the trial's iteration count instead
--- of using its authored or default count.
+--- @param name string The trial's file name, without extension.
+--- @param dynamic boolean? Recalibrate the trial's iteration count instead
+--- of using its authored or default count. Defaults to false.
 function BENCH:ConsoleReport(name, dynamic)
 	local results, statistics, trial = self:ReportTrial(name, dynamic)
 	if not results then
@@ -431,9 +433,9 @@ function BENCH:ConsoleReport(name, dynamic)
 end
 
 --- Generate the HTML report in the background.
--- @bool[opt=false] dynamic Recalibrate every trial's iteration count
--- instead of using its authored or default count.
--- @rbool Whether the job was started.
+--- @param dynamic boolean? Recalibrate every trial's iteration count
+--- instead of using its authored or default count. Defaults to false.
+--- @return boolean # Whether the job was started.
 function BENCH:ReportWithoutCrashing(dynamic)
 	return self:Async(function()
 		self:HTMLReport(dynamic)

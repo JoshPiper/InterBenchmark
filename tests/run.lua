@@ -1,5 +1,5 @@
 --- Test runner.
--- Usage, from the repository root: luajit tests/run.lua
+--- Usage, from the repository root: luajit tests/run.lua
 
 local root = arg and arg[0] and arg[0]:match("^(.*)[/\\][^/\\]+$") or "tests"
 

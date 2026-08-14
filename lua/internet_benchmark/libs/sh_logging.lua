@@ -1,7 +1,18 @@
 --- Levelled, coloured console logging.
--- @module logging
 
 local BENCH = INTERNET_BENCHMARK
+
+--- @class Logging
+--- @field Fatal fun(...: any) Emit a Fatal level log.
+--- @field ForceFatal fun(...: any) Emit a Fatal level log, regardless of the active level.
+--- @field Error fun(...: any) Emit an Error level log.
+--- @field ForceError fun(...: any) Emit an Error level log, regardless of the active level.
+--- @field Warning fun(...: any) Emit a Warning level log.
+--- @field ForceWarning fun(...: any) Emit a Warning level log, regardless of the active level.
+--- @field Info fun(...: any) Emit an Info level log.
+--- @field ForceInfo fun(...: any) Emit an Info level log, regardless of the active level.
+--- @field Debug fun(...: any) Emit a Debug level log.
+--- @field ForceDebug fun(...: any) Emit a Debug level log, regardless of the active level.
 BENCH.Logging = {}
 local logging = BENCH.Logging
 
@@ -36,9 +47,9 @@ logging.Colours = {
 }
 
 --- Parse a string logging level (such as that from cvars.String) into a level.
--- If it fails to parse, the default is used instead.
--- @string level Input Level
--- @rnumber Logging Level
+--- If it fails to parse, the default is used instead.
+--- @param level string|number Input level.
+--- @return number # Logging level.
 function logging.Parse(level)
 	if tonumber(level) ~= nil then
 		level = tonumber(level)
@@ -103,8 +114,8 @@ local function flatten(...)
 end
 
 --- Print a message with colour to console.
--- @internal
--- @see MsgC
+--- @private
+--- @see MsgC
 function logging._print(...)
 	MsgC(unpack(flatten(...)))
 	print()
@@ -124,9 +135,9 @@ logging.Phrases = {
 }
 
 --- Create a table with the brand name.
--- @bool wrapped Should the Brand be wrapped in [].
--- @string event It's a secret tool that'll help us later.
--- @rtab
+--- @param wrapped boolean Should the Brand be wrapped in [].
+--- @param event string? It's a secret tool that'll help us later.
+--- @return table
 function logging:Brand(wrapped, event)
 	if not event then
 		event = ""
@@ -145,9 +156,9 @@ function logging:Brand(wrapped, event)
 end
 
 --- Build the message functions for a given level.
--- Adds the function to logging.<LEVEL>, ie logging.Warning, along with a
--- logging.Force<LEVEL> variant which prints regardless of the active level.
--- @tparam string level Message level.
+--- Adds the function to logging.<LEVEL>, ie logging.Warning, along with a
+--- logging.Force<LEVEL> variant which prints regardless of the active level.
+--- @param level string Message level.
 function logging:Build(level)
 	local levelValue = isnumber(level) and level or self.Levels[level:upper()]
 
@@ -206,24 +217,10 @@ function logging:Build(level)
 	)
 end
 
--- @function logging:Fatal(...)
--- Emit a Fatal Level Log.
 logging:Build("Fatal")
-
--- @function logging:Error(...)
--- Emit a Error Level Log.
 logging:Build("Error")
-
--- @function logging:Warning(...)
--- Emit a Warning Level Log.
 logging:Build("Warning")
-
--- @function logging:Info(...)
--- Emit a Info Level Log.
 logging:Build("Info")
-
--- @function logging:Debug(...)
--- Emit a Debug Level Log.
 logging:Build("Debug")
 
 concommand.Add("internet_benchmark_logging_report", function()

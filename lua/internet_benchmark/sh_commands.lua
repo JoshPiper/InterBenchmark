@@ -1,12 +1,11 @@
 --- Console commands.
--- @module commands
 
 INTERNET_BENCHMARK = INTERNET_BENCHMARK or {}
 local BENCH = INTERNET_BENCHMARK
 
 --- Whether a command caller may run benchmarks in this realm.
--- Clientside anyone may benchmark their own game. Serverside, only the
--- dedicated console and superadmins qualify.
+--- Clientside anyone may benchmark their own game. Serverside, only the
+--- dedicated console and superadmins qualify.
 local function canRun(ply)
 	return CLIENT or not IsValid(ply) or ply:IsSuperAdmin()
 end

@@ -1,13 +1,12 @@
 --- The report's in-game viewer.
--- Since HTMLReport() now renders a single self-contained document, it can be
--- handed straight to a DHTML panel instead of only being written to disk.
--- @module reporting.viewer
+--- Since HTMLReport() now renders a single self-contained document, it can be
+--- handed straight to a DHTML panel instead of only being written to disk.
 
 INTERNET_BENCHMARK = INTERNET_BENCHMARK or {}
 local BENCH = INTERNET_BENCHMARK
 
 --- Open (or reuse) the report viewer, and load a report into it.
--- @string html A complete, self-contained report document.
+--- @param html string A complete, self-contained report document.
 function BENCH:OpenReport(html)
 	if IsValid(self._ReportFrame) then
 		self._ReportBrowser:SetHTML(html)

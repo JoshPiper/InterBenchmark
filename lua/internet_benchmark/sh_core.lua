@@ -393,6 +393,13 @@ function BENCH:Statistic(results, iterations)
 		end
 	end
 
+	-- A zero IQR (too few samples to spread across quartiles) can flag
+	-- every point as an outlier, leaving min/max at their sentinel values.
+	-- Fall back to the sorted extremes so a real range is always reported.
+	if min == math.huge then
+		min, max = sorted[1], sorted[count]
+	end
+
 	stats.min = min
 	stats.max = max
 	stats.outliers = outliers

@@ -208,7 +208,7 @@ return {
 		},
 
 		{
-			name = "Writes results.json.txt alongside the HTML report",
+			name = "Writes results.json alongside the HTML report",
 			func = function(state)
 				stub(INTERNET_BENCHMARK, "ReportAll").returns({
 					{state.timing, state.stats, state.trial, order = 0}
@@ -216,7 +216,7 @@ return {
 
 				INTERNET_BENCHMARK:HTMLReport()
 
-				local written = file.Read("internet_benchmarks/results.json.txt", "DATA")
+				local written = file.Read("internet_benchmarks/results.json", "DATA")
 				expect(written).to.exist()
 
 				local data = util.JSONToTable(written)
@@ -228,7 +228,7 @@ return {
 			end,
 
 			cleanup = function()
-				file.Delete("internet_benchmarks/results.json.txt")
+				file.Delete("internet_benchmarks/results.json")
 				file.Delete("internet_benchmarks/report.html.txt")
 				file.Delete("internet_benchmarks/environment.txt")
 			end

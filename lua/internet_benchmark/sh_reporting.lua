@@ -160,7 +160,7 @@ function BENCH:TrialResultsData(stats, trial)
 	}
 end
 
---- Build the raw results table written to results.json.txt.
+--- Build the raw results table written to results.json.
 --- @param reports table A list of {results, statistics, trial, order = n}
 --- entries, as returned by ReportAll.
 --- @return table # {environment = {...}, trials = {...}}
@@ -177,7 +177,7 @@ function BENCH:ResultsData(reports)
 end
 
 --- Generate the full HTML report.
---- Writes report.html.txt, results.json.txt and environment.txt to
+--- Writes report.html.txt, results.json and environment.txt to
 --- data/internet_benchmarks/. The report is a single self-contained file:
 --- its stylesheet and script are inlined, so nothing else needs to travel
 --- alongside it.
@@ -272,7 +272,7 @@ function BENCH:HTMLReport(dynamic)
 	})
 
 	self:WriteOutput("report.html.txt", report)
-	self:WriteOutput("results.json.txt", util.TableToJSON(resultsData, true))
+	self:WriteOutput("results.json", util.TableToJSON(resultsData, true))
 	self.Environment:Write()
 
 	l.ForceInfo("The report has been written to garrysmod/data/internet_benchmarks/.")

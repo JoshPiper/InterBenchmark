@@ -60,15 +60,17 @@ function INTROSPECT:Lookup(var, inTable, route, seen)
 
 	local toDo = {}
 	for k, v in pairs(inTable) do
-		if v == var then
-			table.insert(route, k)
-			route = table.concat(route, ".")
-			self.Cache[var] = route
-			return route
-		end
+		if isstring(k) then
+			if v == var then
+				table.insert(route, k)
+				route = table.concat(route, ".")
+				self.Cache[var] = route
+				return route
+			end
 
-		if istable(v) and not seen[v] then
-			toDo[k] = v
+			if istable(v) and not seen[v] then
+				toDo[k] = v
+			end
 		end
 	end
 

@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.0.1](https://github.com/JoshPiper/InterBenchmark/compare/v2.0.0...v2.0.1) (2026-08-14)
+
+
+### Bug Fixes
+
+* Drop redundant comment on string-key guard ([f10cc4f](https://github.com/JoshPiper/InterBenchmark/commit/f10cc4f07da8662e8a950bb610f58178e4dd826c))
+* Skip non-string keys when walking globals for a route ([5200092](https://github.com/JoshPiper/InterBenchmark/commit/52000926160308827006cd30ecb7835a1076e2f6))
+* Skip non-string keys when walking globals in Lookup ([82bcc25](https://github.com/JoshPiper/InterBenchmark/commit/82bcc250d51728a070384635999e7dcb72a4cc1a))
+* Suppress console warning when gm_sysinfo module is absent ([72fb9eb](https://github.com/JoshPiper/InterBenchmark/commit/72fb9ebf7476fbc37aad7638337726fbff329f55))
+* Suppress console warning when gm_sysinfo module is absent ([734afb6](https://github.com/JoshPiper/InterBenchmark/commit/734afb6a30f3fa8b0117cc6a48387db72de33d69))
+
 ## 2.0.0 (2026-08-13)
 
 

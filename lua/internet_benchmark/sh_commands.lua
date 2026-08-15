@@ -6,7 +6,13 @@ local BENCH = INTERNET_BENCHMARK
 --- Whether a command caller may run benchmarks in this realm.
 --- Clientside anyone may benchmark their own game. Serverside, only the
 --- dedicated console and superadmins qualify.
-local function canRun(ply)
+--- Also the authorisation check for realm-bridged requests (see
+--- sv_realm.lua): callers there must pass the net message's actual sender,
+--- never anything the client claims, so a request can't buy itself server
+--- execution just by phrasing itself as a net message instead of a command.
+--- @param ply Player?
+--- @return boolean
+function BENCH:CanRunHere(ply)
 	return CLIENT or not IsValid(ply) or ply:IsSuperAdmin()
 end
 
@@ -19,7 +25,7 @@ end
 --- @param dynamic boolean
 --- @param test boolean
 --- @return boolean
-local function conflictingFlags(dynamic, test)
+function BENCH:ConflictingFlags(dynamic, test)
 	if dynamic and test then
 		BENCH.Logging.ForceWarning("--dynamic and --test cannot be combined.")
 		return true
@@ -28,25 +34,78 @@ local function conflictingFlags(dynamic, test)
 	return false
 end
 
+--- Read and validate a --realm flag.
+--- @param flags table As returned by BENCH:ParseArgs.
+--- @return string? # "client" or "server", or nil when none was given.
+--- @return boolean # Whether an invalid value was passed (already warned about).
+local function readRealm(flags)
+	local realm = flags.realm
+	if realm == nil then
+		return nil, false
+	end
+
+	realm = type(realm) == "string" and realm:lower() or nil
+	if realm ~= "client" and realm ~= "server" then
+		BENCH.Logging.ForceWarning("--realm must be 'client' or 'server'.")
+		return nil, true
+	end
+
+	return realm, false
+end
+
+--- Whether a --realm value names the realm opposite to the one currently
+--- running this code - the only case that needs bridging over the net.
+--- Naming the current realm is a no-op: it falls through to a normal local
+--- run, exactly as if --realm had not been passed at all.
+--- @param realm string? "client" or "server".
+--- @return boolean
+local function isRemoteRealm(realm)
+	return realm ~= nil and ((SERVER and realm == "client") or (CLIENT and realm == "server"))
+end
+
 concommand.Add("internet_benchmark_run", function(ply, _, args)
-	if not canRun(ply) then
+	if not BENCH:CanRunHere(ply) then
 		BENCH.Logging.Warning("Only superadmins may run server-side benchmarks.")
 		return
 	end
 
 	local flags = BENCH:ParseArgs(args)
 	local dynamic, test = flags.dynamic == true, flags.test == true
-	if conflictingFlags(dynamic, test) then
+	if BENCH:ConflictingFlags(dynamic, test) then
 		return
 	end
 
 	local includeTags = BENCH:ParseTagList(flags.tag)
 	local excludeTags = BENCH:ParseTagList(flags["skip-tag"])
+
+	local realm, invalidRealm = readRealm(flags)
+	if invalidRealm then
+		return
+	end
+
+	if isRemoteRealm(realm) then
+		local params = {dynamic = dynamic, test = test, includeTags = includeTags, excludeTags = excludeTags}
+
+		if SERVER then
+			local target, err = BENCH:ResolvePlayer(flags.target)
+			if not target then
+				BENCH.Logging.ForceWarning(err)
+				return
+			end
+
+			BENCH:RequestRemoteRun("run", params, target)
+		else
+			BENCH:RequestRemoteRun("run", params)
+		end
+
+		return
+	end
+
 	BENCH:ReportWithoutCrashing(dynamic, test, includeTags, excludeTags)
-end, BENCH:ArgCompleter({flags = {"dynamic", "test", "tag", "skip-tag"}}), "Benchmark every trial and write the HTML report. '--dynamic'/'--test' set the iteration mode (mutually exclusive). '--tag'/'--skip-tag' (repeatable/comma-separated) filter trials, Ansible-style.")
+end, BENCH:ArgCompleter({flags = {"dynamic", "test", "tag", "skip-tag", "realm", "target"}}), "Benchmark every trial and write the HTML report. '--dynamic'/'--test' set the iteration mode (mutually exclusive). '--tag'/'--skip-tag' (repeatable/comma-separated) filter trials, Ansible-style. '--realm=client'/'--realm=server' bridges the run to the opposite realm ('--realm=client' needs '--target=<player>' and only works from the server console).")
 
 concommand.Add("internet_benchmark_trial", function(ply, _, args)
-	if not canRun(ply) then
+	if not BENCH:CanRunHere(ply) then
 		BENCH.Logging.Warning("Only superadmins may run server-side benchmarks.")
 		return
 	end
@@ -54,19 +113,42 @@ concommand.Add("internet_benchmark_trial", function(ply, _, args)
 	local flags, positional = BENCH:ParseArgs(args)
 	local name = positional[1]
 	if not name then
-		BENCH.Logging.ForceWarning("Usage: internet_benchmark_trial <name> [--dynamic] [--test]")
+		BENCH.Logging.ForceWarning("Usage: internet_benchmark_trial <name> [--dynamic] [--test] [--realm=client|server] [--target=<player>]")
 		return
 	end
 
 	local dynamic, test = flags.dynamic == true, flags.test == true
-	if conflictingFlags(dynamic, test) then
+	if BENCH:ConflictingFlags(dynamic, test) then
+		return
+	end
+
+	local realm, invalidRealm = readRealm(flags)
+	if invalidRealm then
+		return
+	end
+
+	if isRemoteRealm(realm) then
+		local params = {name = name, dynamic = dynamic, test = test}
+
+		if SERVER then
+			local target, err = BENCH:ResolvePlayer(flags.target)
+			if not target then
+				BENCH.Logging.ForceWarning(err)
+				return
+			end
+
+			BENCH:RequestRemoteRun("trial", params, target)
+		else
+			BENCH:RequestRemoteRun("trial", params)
+		end
+
 		return
 	end
 
 	BENCH:Async(function()
 		BENCH:ConsoleReport(name, dynamic, test)
 	end)
-end, BENCH:ArgCompleter({flags = {"dynamic", "test"}, positionals = {function() return BENCH:TrialNames() end}}), "Benchmark a single trial and print the results to the console. '--dynamic'/'--test' set the iteration mode (mutually exclusive).")
+end, BENCH:ArgCompleter({flags = {"dynamic", "test", "realm", "target"}, positionals = {function() return BENCH:TrialNames() end}}), "Benchmark a single trial and print the results to the console. '--dynamic'/'--test' set the iteration mode (mutually exclusive). '--realm=client'/'--realm=server' bridges the run to the opposite realm ('--realm=client' needs '--target=<player>' and only works from the server console).")
 
 concommand.Add("internet_benchmark_environment", function()
 	BENCH.Environment:Report()

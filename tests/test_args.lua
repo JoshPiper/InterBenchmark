@@ -130,6 +130,13 @@ return function(t)
 	end
 
 	do
+		local complete = BENCH:ArgCompleter(trialSchema)
+		local suggestions = complete("internet_benchmark_trial", "array_insertion for")
+		t:eq(#suggestions, 1, "a single provider repeats for a second positional slot")
+		t:eq(suggestions[1], "internet_benchmark_trial array_insertion for_loops", "the repeated provider completes the second trial name")
+	end
+
+	do
 		local twoSlotSchema = {
 			positionals = {
 				function() return {"alpha"} end,

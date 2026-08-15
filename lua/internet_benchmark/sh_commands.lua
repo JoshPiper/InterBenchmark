@@ -52,9 +52,8 @@ concommand.Add("internet_benchmark_trial", function(ply, _, args)
 	end
 
 	local flags, positional = BENCH:ParseArgs(args)
-	local name = positional[1]
-	if not name then
-		BENCH.Logging.ForceWarning("Usage: internet_benchmark_trial <name> [--dynamic] [--test]")
+	if #positional == 0 then
+		BENCH.Logging.ForceWarning("Usage: internet_benchmark_trial <name> [<name> ...] [--dynamic] [--test]")
 		return
 	end
 
@@ -64,9 +63,12 @@ concommand.Add("internet_benchmark_trial", function(ply, _, args)
 	end
 
 	BENCH:Async(function()
-		BENCH:ConsoleReport(name, dynamic, test)
+		for _, name in ipairs(positional) do
+			BENCH:ConsoleReport(name, dynamic, test)
+			BENCH:Yield()
+		end
 	end)
-end, BENCH:ArgCompleter({flags = {"dynamic", "test"}, positionals = {function() return BENCH:TrialNames() end}}), "Benchmark a single trial and print the results to the console. '--dynamic'/'--test' set the iteration mode (mutually exclusive).")
+end, BENCH:ArgCompleter({flags = {"dynamic", "test"}, positionals = {function() return BENCH:TrialNames() end}}), "Benchmark one or more trials and print the results to the console. '--dynamic'/'--test' set the iteration mode (mutually exclusive).")
 
 concommand.Add("internet_benchmark_environment", function()
 	BENCH.Environment:Report()

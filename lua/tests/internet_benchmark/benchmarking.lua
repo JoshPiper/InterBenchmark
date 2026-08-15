@@ -548,6 +548,48 @@ return {
 			cleanup = function()
 				INTERNET_BENCHMARK._ActiveJob = nil
 			end
+		},
+
+		{
+			name = "internet_benchmark_trial runs every trial name given, in order",
+			async = true,
+			timeout = 1,
+			func = function()
+				local report = stub(INTERNET_BENCHMARK, "ConsoleReport")
+				local callback = concommand.GetTable()["internet_benchmark_trial"]
+
+				callback(nil, "internet_benchmark_trial", {"local_vs_global", "for_loops", "--dynamic"}, "local_vs_global for_loops --dynamic")
+
+				timer.Simple(0.1, function()
+					expect(report).was.called(2)
+					expect(report.callHistory[1][2]).to.equal("local_vs_global")
+					expect(report.callHistory[1][3]).to.equal(true)
+					expect(report.callHistory[2][2]).to.equal("for_loops")
+					expect(report.callHistory[2][3]).to.equal(true)
+
+					done()
+				end)
+			end,
+
+			cleanup = function()
+				INTERNET_BENCHMARK._ActiveJob = nil
+			end
+		},
+
+		{
+			name = "internet_benchmark_trial warns and does not run when no trial name is given",
+			func = function()
+				local report = stub(INTERNET_BENCHMARK, "ConsoleReport")
+				local callback = concommand.GetTable()["internet_benchmark_trial"]
+
+				callback(nil, "internet_benchmark_trial", {"--dynamic"}, "--dynamic")
+
+				expect(report).wasNot.called()
+			end,
+
+			cleanup = function()
+				INTERNET_BENCHMARK._ActiveJob = nil
+			end
 		}
 	}
 }

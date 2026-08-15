@@ -16,6 +16,11 @@ local unpack = unpack
 --- @param func function Input function to curry.
 --- @param ... any Arguments to store.
 function fn.partial(func, ...)
+	-- args is shared across every call to the returned function and mutated
+	-- in place rather than copied per call, so it can keep a previous call's
+	-- arguments reachable past that call's return. That is intentional, not
+	-- a bug: unpack(args, 1, st + m) below already bounds what actually
+	-- reaches func. Do not "fix" this into a per-call copy without measuring.
 	local args = {...}
 	local st = #args
 

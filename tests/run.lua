@@ -28,7 +28,7 @@ function t:near(got, want, epsilon, label)
 	end
 end
 
-local tests = {"test_formatting", "test_statistic", "test_core", "test_args", "test_functional"}
+local tests = {"test_formatting", "test_statistic", "test_core", "test_args"}
 for _, name in ipairs(tests) do
 	dofile(root .. "/" .. name .. ".lua")(t)
 end

@@ -232,6 +232,126 @@ return {
 				file.Delete("internet_benchmarks/report.html.txt")
 				file.Delete("internet_benchmarks/environment.txt")
 			end
+		},
+
+		{
+			name = "Orders the exported trials by their configured order",
+			func = function(state)
+				local stats = state.stats
+				local data = INTERNET_BENCHMARK:ResultsData({
+					{state.timing, stats, {id = "alpha", name = "Alpha", runs = 2, iterations = 10}, order = 2},
+					{state.timing, stats, {id = "beta", name = "Beta", runs = 2, iterations = 10}, order = 1}
+				})
+
+				expect(#data.trials).to.equal(2)
+				expect(data.trials[1].id).to.equal("beta")
+				expect(data.trials[2].id).to.equal("alpha")
+				expect(data.environment["Suite Version"]).to.equal(INTERNET_BENCHMARK.Version)
+			end
+		},
+
+		{
+			name = "Marks a result at twice the fastest mean as critical",
+			func = function()
+				expect(INTERNET_BENCHMARK:SeverityClass(200)).to.equal("sev-critical")
+				expect(INTERNET_BENCHMARK:SeverityClass(450)).to.equal("sev-critical")
+			end
+		},
+
+		{
+			name = "Marks a result a little behind the fastest mean as notable",
+			func = function()
+				expect(INTERNET_BENCHMARK:SeverityClass(105)).to.equal("sev-warn")
+				expect(INTERNET_BENCHMARK:SeverityClass(150)).to.equal("sev-warn")
+			end
+		},
+
+		{
+			name = "Leaves a result close to the fastest mean unmarked",
+			func = function()
+				expect(INTERNET_BENCHMARK:SeverityClass(100)).to.equal("")
+				expect(INTERNET_BENCHMARK:SeverityClass(104.9)).to.equal("")
+			end
+		},
+
+		{
+			name = "Skips the notable tier where only two tiers are wanted",
+			func = function()
+				expect(INTERNET_BENCHMARK:SeverityClass(150, true)).to.equal("")
+				expect(INTERNET_BENCHMARK:SeverityClass(200, true)).to.equal("sev-critical")
+			end
+		},
+
+		{
+			name = "Reads an asset out of the templates directory",
+			func = function()
+				local content = INTERNET_BENCHMARK:ReadAsset("style.css")
+
+				expect(content).to.beA("string")
+				expect(#content).to.beGreaterThan(0)
+				expect(content).to.equal(file.Read("internet_benchmark/templates/html/style.css.lua", "LUA"))
+			end
+		},
+
+		{
+			name = "Falls back to an empty asset when one cannot be read",
+			func = function(state)
+				state.logLevel = INTERNET_BENCHMARK.Logging.Level
+				INTERNET_BENCHMARK.Logging.Level = INTERNET_BENCHMARK.Logging.Levels.NONE
+
+				expect(INTERNET_BENCHMARK:ReadAsset("no_such_asset")).to.equal("")
+			end,
+
+			cleanup = function(state)
+				INTERNET_BENCHMARK.Logging.Level = state.logLevel
+			end
+		},
+
+		{
+			name = "Renders the environment summary tiles",
+			func = function()
+				local html = INTERNET_BENCHMARK:HTMLEnvironmentHighlights()
+
+				expect(string.find(html, "tile-label", 1, true)).to.exist()
+				expect(string.find(html, "Generated", 1, true)).to.exist()
+			end
+		},
+
+		{
+			name = "Renders the environment detail groups under their titles",
+			func = function()
+				local html = INTERNET_BENCHMARK:HTMLEnvironmentGroups()
+
+				expect(string.find(html, "env-group", 1, true)).to.exist()
+				expect(string.find(html, "<h2>Suite</h2>", 1, true)).to.exist()
+				expect(string.find(html, "Suite Version", 1, true)).to.exist()
+			end
+		},
+
+		{
+			name = "Runs the HTML report as a background job, passing its flags through",
+			async = true,
+			timeout = 2,
+			func = function()
+				local report = stub(INTERNET_BENCHMARK, "HTMLReport")
+
+				local started = INTERNET_BENCHMARK:ReportWithoutCrashing(true, false, {"default"}, {"slow"})
+				expect(started).to.beTrue()
+
+				timer.Simple(0.25, function()
+					expect(report).was.called(1)
+					expect(report.callHistory[1][2]).to.beTrue()
+					expect(report.callHistory[1][3]).to.beFalse()
+					expect(report.callHistory[1][4][1]).to.equal("default")
+					expect(report.callHistory[1][5][1]).to.equal("slow")
+
+					done()
+				end)
+			end,
+
+			cleanup = function()
+				INTERNET_BENCHMARK._ActiveJob = nil
+			end
 		}
 	}
 }

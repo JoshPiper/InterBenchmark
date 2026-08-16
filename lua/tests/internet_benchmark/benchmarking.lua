@@ -112,6 +112,87 @@ return {
 		},
 
 		{
+			name = "Statistic computes count, spread and quartiles for a clean set",
+			func = function()
+				local stats = INTERNET_BENCHMARK:Statistic({1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 100)
+
+				expect(stats.count).to.equal(10)
+				expect(stats.total).to.equal(55)
+				expect(stats.mean).to.equal(5.5)
+				expect(stats.median).to.equal(5.5)
+				expect(stats.q1).to.equal(3.5)
+				expect(stats.q3).to.equal(7.5)
+				expect(stats.iqr).to.equal(4)
+				expect(stats.stdev).to.aboutEqual(2.8722813232690143, 1e-9)
+				expect(stats.average).to.equal(0.055)
+				expect(stats.min).to.equal(1)
+				expect(stats.max).to.equal(10)
+				expect(#stats.outliers).to.equal(0)
+			end
+		},
+
+		{
+			name = "Statistic separates an extreme value into outliers, excluding it from min/max",
+			func = function()
+				local stats = INTERNET_BENCHMARK:Statistic({9, 1, 100, 3, 7, 5, 4, 6, 2, 8}, 1)
+
+				expect(stats.median).to.equal(5.5)
+				expect(stats.q1).to.equal(3.5)
+				expect(stats.q3).to.equal(7.5)
+				expect(#stats.outliers).to.equal(1)
+				expect(stats.outliers[1]).to.equal(100)
+				expect(stats.min).to.equal(1)
+				expect(stats.max).to.equal(9)
+				expect(stats.mean).to.equal(14.5)
+			end
+		},
+
+		{
+			name = "Statistic does not treat identical run times as outliers",
+			func = function()
+				local stats = INTERNET_BENCHMARK:Statistic({5, 5, 5, 5}, 1)
+
+				expect(stats.median).to.equal(5)
+				expect(stats.min).to.equal(5)
+				expect(stats.max).to.equal(5)
+				expect(#stats.outliers).to.equal(0)
+			end
+		},
+
+		{
+			name = "Statistic produces sane statistics for a single run",
+			func = function()
+				local stats = INTERNET_BENCHMARK:Statistic({7}, 10)
+
+				expect(stats.median).to.equal(7)
+				expect(stats.q1).to.equal(7)
+				expect(stats.q3).to.equal(7)
+				expect(stats.min).to.equal(7)
+				expect(stats.max).to.equal(7)
+				expect(#stats.outliers).to.equal(0)
+				expect(stats.average).to.aboutEqual(0.7, 1e-12)
+			end
+		},
+
+		{
+			name = "Statistic returns nil for an empty result set",
+			func = function()
+				expect(INTERNET_BENCHMARK:Statistic({}, 1)).to.beNil()
+			end
+		},
+
+		{
+			name = "Statistics tracks the smallest per-function mean as minMean",
+			func = function()
+				local all = INTERNET_BENCHMARK:Statistics({{1, 2, 3}, {4, 5, 6}}, 10)
+
+				expect(all.minMean).to.equal(2)
+				expect(all[1].average).to.aboutEqual(0.2, 1e-12)
+				expect(all[2].mean).to.equal(5)
+			end
+		},
+
+		{
 			name = "Benchmarks a whole trial and restores the garbage collector",
 			func = function()
 				local trial = INTERNET_BENCHMARK.Classes.Trial()

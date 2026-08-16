@@ -11,6 +11,33 @@ local function rowValue(details, label)
 	return nil
 end
 
+--- Capture the lines the logger emits for a case; cleanup must call restore.
+--- Each level's function captures the printer when it is built, so both
+--- installing and removing the fake have to rebuild them.
+local function fakeLogPrinter()
+	local logging = INTERNET_BENCHMARK.Logging
+	local levels = {"Fatal", "Error", "Warning", "Info", "Debug"}
+	local original = logging._print
+	local captured = {lines = {}}
+
+	logging._print = function(...)
+		table.insert(captured.lines, {...})
+	end
+
+	for _, level in ipairs(levels) do
+		logging:Build(level)
+	end
+
+	captured.restore = function()
+		logging._print = original
+		for _, level in ipairs(levels) do
+			logging:Build(level)
+		end
+	end
+
+	return captured
+end
+
 --- Install a fake gm_sysinfo table for a case; cleanup must call the return.
 local function fakeSysInfo(fake)
 	local original = sysinfo
@@ -248,6 +275,34 @@ return {
 				expect(commands["internet_benchmark_trial"]).to.beA("function")
 				expect(commands["internet_benchmark_environment"]).to.beA("function")
 				expect(commands["internet_benchmark_logging_report"]).to.beA("function")
+			end
+		},
+
+		{
+			name = "Logs one line per collected row when reporting the statement",
+			func = function(state)
+				state.log = fakeLogPrinter()
+
+				local details = INTERNET_BENCHMARK.Environment:Collect()
+				INTERNET_BENCHMARK.Environment:Report()
+
+				expect(#state.log.lines).to.equal(#details)
+			end,
+
+			cleanup = function(state)
+				state.log.restore()
+			end
+		},
+
+		{
+			name = "internet_benchmark_environment prints the environment statement",
+			func = function()
+				local report = stub(INTERNET_BENCHMARK.Environment, "Report")
+				local callback = concommand.GetTable()["internet_benchmark_environment"]
+
+				callback(nil, "internet_benchmark_environment", {}, "")
+
+				expect(report).was.called(1)
 			end
 		}
 	}

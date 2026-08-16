@@ -158,9 +158,7 @@ function BENCH:ArgCompleter(schema)
 				end
 			end
 
-			-- When there are fewer providers than positional slots, the last
-			-- provider repeats for every further slot - this is how a
-			-- variadic positional (e.g. multiple trial names) completes.
+			-- Past the last provider, the final one repeats (variadic positionals).
 			local provider = positionalProviders[slot + 1] or positionalProviders[#positionalProviders]
 			if provider then
 				local partial = current:lower()

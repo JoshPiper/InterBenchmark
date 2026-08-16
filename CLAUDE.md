@@ -18,3 +18,8 @@ Do not add comments that:
 - Restate a function's name/signature in prose.
 
 If removing a comment wouldn't confuse a future reader, don't write it.
+
+When a comment is warranted, keep it to a single short line. Never write
+multi-line or multi-paragraph comment blocks, and never write a docstring
+that walks through parameters, return values, or examples in prose — one
+line max.

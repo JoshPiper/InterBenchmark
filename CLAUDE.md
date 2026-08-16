@@ -1,0 +1,20 @@
+# CLAUDE.md
+
+Guidance for Claude Code when working in this repository.
+
+## Comments
+
+Default to writing no comments. Only add one when the *why* is non-obvious —
+a hidden constraint, a subtle invariant, a workaround for a specific engine
+quirk, or behavior that would surprise a reader. Never add a comment that
+just restates what the code already says (e.g. `-- set x to 1` above
+`x = 1`, or `--- Does the thing` above a function named `DoThing`).
+
+Do not add comments that:
+- Narrate the current task, fix, or PR ("added for the reporting feature",
+  "fixes issue with templating").
+- Describe *what* a line does when the identifiers already make it obvious.
+- Mark removed/changed code (`-- removed`, `-- old: ...`).
+- Restate a function's name/signature in prose.
+
+If removing a comment wouldn't confuse a future reader, don't write it.

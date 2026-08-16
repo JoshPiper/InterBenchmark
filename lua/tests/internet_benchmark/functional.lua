@@ -1,7 +1,6 @@
 --- Pure-function helpers: partial application, flipping, reversal and composition.
 
---- Captures a call's arguments as (count, ...), using select("#", ...) rather
---- than # so that nils in the middle of the list are not lost.
+--- Captures a call's arguments as (count, ...); select("#", ...) keeps mid-list nils.
 local function capture(...)
 	return select("#", ...), ...
 end
@@ -82,10 +81,7 @@ return {
 		},
 
 		{
-			-- reverse_h's `v` parameter has nothing bound to it when there are
-			-- no varargs at all, so it defaults to nil like any unfilled
-			-- parameter - and that nil is still returned. The result is one
-			-- value (nil), not zero values.
+			-- reverse_h's unbound `v` defaults to nil, and that nil is still returned as one value.
 			name = "reverse of no arguments returns a single nil, not zero values",
 			func = function()
 				local n = select("#", INTERNET_BENCHMARK.Functional.reverse())

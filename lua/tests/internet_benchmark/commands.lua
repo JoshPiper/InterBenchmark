@@ -1,9 +1,4 @@
---- Console command authorisation and validation, shared with the realm
---- bridge (see sv_realm.lua/cl_realm.lua). The actual cross-realm net
---- relay isn't covered here - these integration tests run serverside with
---- no real connected client to round-trip against - so this covers only
---- the pieces reachable without one; the relay itself needs a manual check
---- with a real dedicated server and client (see the README).
+--- Console command authorisation and validation, shared with the realm bridge; the cross-realm net relay itself needs a manual check (see the README).
 
 return {
 	groupName = "Internet's Benchmark Suite: Commands",

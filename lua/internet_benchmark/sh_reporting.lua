@@ -206,10 +206,7 @@ end
 --- taking precedence over includeTags.
 --- @return string? # The rendered report, so callers (like the client's report
 --- viewer) can use it without reading it back off disk.
---- @return table? # A short overview summary (trials, candidates, widestPct,
---- widestName, tieCount), for callers (like the realm bridge, see
---- sv_realm.lua/cl_realm.lua) that need the headline figures without
---- re-deriving them from the HTML.
+--- @return table? # A short overview summary (trials, candidates, widestPct, widestName, tieCount) for callers like the realm bridge.
 function BENCH:HTMLReport(dynamic, test, includeTags, excludeTags)
 	self.Environment:Report()
 
@@ -491,9 +488,7 @@ end
 --- @param test boolean? Force a low, fixed iteration and run count.
 --- Combining this with dynamic is not meaningful and is rejected by the
 --- console commands before it reaches here. Defaults to false.
---- @return table? # The formatted lines that were logged, so callers (like
---- the realm bridge, see sv_realm.lua/cl_realm.lua) can relay them
---- elsewhere without reparsing console output. nil when the trial did not run.
+--- @return table? # The formatted lines that were logged, for callers like the realm bridge; nil when the trial did not run.
 function BENCH:ConsoleReport(name, dynamic, test)
 	local results, statistics, trial = self:ReportTrial(name, dynamic, test)
 	if not results then

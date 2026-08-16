@@ -1,14 +1,9 @@
---- Server-side realm bridging (see sh_realm.lua).
---- Handles a client asking the server to run on its behalf ('--realm=server',
---- typed in a client console), and the server console asking one specific
---- connected client to run locally ('--realm=client --target=<player>').
+--- Server-side realm bridging: handles a client asking the server to run on its behalf, and the server console asking one connected client to run locally (see sh_realm.lua).
 
 INTERNET_BENCHMARK = INTERNET_BENCHMARK or {}
 local BENCH = INTERNET_BENCHMARK
 
---- Resolve a --target flag value to exactly one connected player.
---- Tries an exact SteamID/SteamID64 match first, then falls back to a
---- case-insensitive substring match on nickname.
+--- Resolve a --target flag value to exactly one connected player, by SteamID/SteamID64 then nickname substring.
 --- @param query string? A flag value, as returned by BENCH:ParseArgs.
 --- @return Player? # The matched player, or nil when no single match was found.
 --- @return string? # An error message, set whenever the first return is nil.
@@ -46,8 +41,7 @@ function BENCH:ResolvePlayer(query)
 	return matches[1]
 end
 
---- Direction B reply: a targeted client's answer to a run/trial the server
---- console asked it to perform.
+--- Direction B reply: a targeted client's answer to a run/trial the server console asked it to perform.
 --- @param requestId integer
 --- @param resultKind string "text", "summary" or "reject".
 --- @param payload string

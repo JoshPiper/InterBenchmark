@@ -3,13 +3,7 @@
 INTERNET_BENCHMARK = INTERNET_BENCHMARK or {}
 local BENCH = INTERNET_BENCHMARK
 
---- Whether a command caller may run benchmarks in this realm.
---- Clientside anyone may benchmark their own game. Serverside, only the
---- dedicated console and superadmins qualify.
---- Also the authorisation check for realm-bridged requests (see
---- sv_realm.lua): callers there must pass the net message's actual sender,
---- never anything the client claims, so a request can't buy itself server
---- execution just by phrasing itself as a net message instead of a command.
+--- Whether a command caller may run benchmarks in this realm; also the authorisation check for realm-bridged requests (see sv_realm.lua).
 --- @param ply Player?
 --- @return boolean
 function BENCH:CanRunHere(ply)
@@ -53,10 +47,7 @@ local function readRealm(flags)
 	return realm, false
 end
 
---- Whether a --realm value names the realm opposite to the one currently
---- running this code - the only case that needs bridging over the net.
---- Naming the current realm is a no-op: it falls through to a normal local
---- run, exactly as if --realm had not been passed at all.
+--- Whether --realm names the opposite realm to this one, the only case that needs bridging over the net.
 --- @param realm string? "client" or "server".
 --- @return boolean
 local function isRemoteRealm(realm)

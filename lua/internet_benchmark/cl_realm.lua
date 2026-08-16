@@ -1,13 +1,9 @@
---- Client-side realm bridging (see sh_realm.lua).
---- Handles the server asking this client to run locally ('--realm=client
---- --target=<player>', typed at the server console), and this client's own
---- requests for the server to run ('--realm=server', typed in its console).
+--- Client-side realm bridging: handles the server asking this client to run locally, and this client's own requests for the server to run (see sh_realm.lua).
 
 INTERNET_BENCHMARK = INTERNET_BENCHMARK or {}
 local BENCH = INTERNET_BENCHMARK
 
---- Direction A reply: the server's answer to a run/trial this client asked
---- it to perform.
+--- Direction A reply: the server's answer to a run/trial this client asked it to perform.
 --- @param requestId integer
 --- @param resultKind string "html", "text" or "reject".
 --- @param payload string

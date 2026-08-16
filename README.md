@@ -265,20 +265,23 @@ see `draw_rect.meta.lua` (client-only) and `ns_accessors.meta.lua`
 
 ## Development
 
-Testing runs in two tiers, both in CI on every push and pull request:
+Testing lives entirely under `lua/tests/internet_benchmark/` as
+[GLuaTest](https://github.com/CFC-Servers/GLuaTest) suites, run in a real GMod
+server. This covers trial discovery and realm gating, source introspection,
+argument parsing, formatting and statistics maths, the timing loop, the
+background job pump, report rendering, file output, and the console commands.
 
-| Tier | Location | Runs | Covers |
-| --- | --- | --- | --- |
-| Unit | `tests/` | `luajit tests/run.lua` | Statistics and formatting maths, under stock LuaJIT via a small GMod shim. Fast, no game needed. |
-| Integration | `lua/tests/internet_benchmark/` | [GLuaTest](https://github.com/CFC-Servers/GLuaTest), in a real GMod server | Trial discovery and realm gating, source introspection, the timing loop, the background job pump, report rendering, file output, and the console commands. |
+CI runs the suite automatically on every push and pull request (`ingame` job
+in `.github/workflows/ci.yml`), and can also be triggered manually via
+`workflow_dispatch` from the Actions tab.
 
-To run the integration tier locally, clone GLuaTest into `addons/` alongside this
-addon and start a server with `gluatest_enable 1`. In CI it runs automatically in
-a containerised server via GLuaTest's reusable workflow, which also installs the
-released, checksum-pinned gm_sysinfo module so the environment integration is
-exercised against the real binary as well as injected fakes.
+To run the suite locally, clone GLuaTest into `addons/` alongside this addon
+and start a server with `gluatest_enable 1`. In CI it runs in a containerised
+server via GLuaTest's reusable workflow, which also installs the released,
+checksum-pinned gm_sysinfo module so the environment integration is exercised
+against the real binary as well as injected fakes.
 
-Integration tests run **serverside**, so the client-only trials (`draw_rect`,
+The suite runs **serverside**, so the client-only trials (`draw_rect`,
 `set_draw_color`) are covered only to the extent that they are correctly skipped;
 verifying their timings still needs a manual client-side run.
 

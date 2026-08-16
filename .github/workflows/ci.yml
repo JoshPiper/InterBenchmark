@@ -44,18 +44,6 @@ jobs:
           # Templates are HTML/CSS/JS carried in .lua files; they are not Lua.
           find lua -name '*.lua' -not -path '*/templates/*' -print0 | xargs -0 ./glualint lint
 
-  test:
-    name: Unit Tests
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-
-      - name: Install LuaJIT
-        run: sudo apt-get update && sudo apt-get install -y luajit
-
-      - name: Run tests
-        run: luajit tests/run.lua
-
   package:
     name: Package
     # Proves every change still packs cleanly: gmad's whitelist rejects stray

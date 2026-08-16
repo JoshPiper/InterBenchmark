@@ -15,7 +15,6 @@
 		"addon.json",
 		"release-please-config.json",
 		"version.txt",
-		"tests/*",
 		"lua/tests/*"
 	]
 }

@@ -59,8 +59,8 @@ function logging.Parse(level)
 		return math.Clamp(level, logging.Levels._MIN, logging.Levels._MAX)
 	end
 
-	if logging.Levels[level] then
-		return logging.Levels[level]
+	if isstring(level) and logging.Levels[level:upper()] then
+		return logging.Levels[level:upper()]
 	end
 
 	return logging.Levels.DEFAULT

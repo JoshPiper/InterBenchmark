@@ -2,6 +2,18 @@
 
 Guidance for Claude Code when working in this repository.
 
+## Pull Requests
+
+PR titles must start with their conventional commit prefix
+(e.g. `feat:`, `fix:`, `docs:`, `chore:`, `refactor:`, `test:`, `ci:`).
+
+## Testing
+
+- When fixing a bug, add a test case that reproduces it, so it can't
+  silently regress in the future.
+- When adding a new feature, following TDD may help, but at minimum every
+  feature must ship with a comprehensive test suite covering its behavior.
+
 ## Comments
 
 Default to writing no comments. Only add one when the *why* is non-obvious —

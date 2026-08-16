@@ -4,6 +4,7 @@ on:
   push:
     branches: [main]
   pull_request:
+  workflow_dispatch:
   schedule:
     # Weekly run to catch drift while the repo is quiet: a new Garry's Mod
     # server build or runner image can break the suite without any commit

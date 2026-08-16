@@ -44,6 +44,15 @@ return {
 		},
 
 		{
+			name = "Parse resolves a level name regardless of case",
+			func = function()
+				local logging = INTERNET_BENCHMARK.Logging
+				expect(logging.Parse("debug")).to.equal(logging.Levels.DEBUG)
+				expect(logging.Parse("Debug")).to.equal(logging.Levels.DEBUG)
+			end
+		},
+
+		{
 			name = "Parse resolves a numeric string to that number",
 			func = function()
 				expect(INTERNET_BENCHMARK.Logging.Parse("30")).to.equal(30)

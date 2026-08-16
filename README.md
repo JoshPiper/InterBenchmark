@@ -35,7 +35,7 @@ The suite loads on both the server and the client.
 | Command | Effect |
 | --- | --- |
 | `internet_benchmark_run [--dynamic] [--test] [--tag=...] [--skip-tag=...]` | Benchmark every trial and write the HTML report. |
-| `internet_benchmark_trial <name> [--dynamic] [--test]` | Benchmark a single trial and print results to the console (autocompletes the name). |
+| `internet_benchmark_trial <name> [<name> ...] [--dynamic] [--test]` | Benchmark one or more trials and print results to the console (autocompletes names). |
 | `internet_benchmark_environment` | Print the environment statement. |
 | `internet_benchmark_logging_report` | Explain the logging levels and the current configuration. |
 

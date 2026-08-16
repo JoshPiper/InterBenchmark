@@ -158,7 +158,8 @@ function BENCH:ArgCompleter(schema)
 				end
 			end
 
-			local provider = positionalProviders[slot + 1]
+			-- Past the last provider, the final one repeats (variadic positionals).
+			local provider = positionalProviders[slot + 1] or positionalProviders[#positionalProviders]
 			if provider then
 				local partial = current:lower()
 				for _, name in ipairs(provider()) do

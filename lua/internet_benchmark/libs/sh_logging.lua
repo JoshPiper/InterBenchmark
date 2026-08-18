@@ -138,7 +138,7 @@ logging.Phrases = {
 --- The brand is rebuilt for every printed line, so the date lookup behind it is
 --- cached rather than run per line. A session running across an event boundary
 --- picks the change up on the next refresh, or on the next map load.
-logging.EventCacheTime = 60
+logging.EventCacheTime = 30 * 60
 
 --- The last resolved event, and the time at which it stops being trusted.
 --- @private

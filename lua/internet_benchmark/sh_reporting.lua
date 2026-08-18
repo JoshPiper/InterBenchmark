@@ -206,6 +206,7 @@ end
 --- taking precedence over includeTags.
 --- @return string? # The rendered report, so callers (like the client's report
 --- viewer) can use it without reading it back off disk.
+--- @return table? # A short overview summary (trials, candidates, widestPct, widestName, tieCount) for callers like the realm bridge.
 function BENCH:HTMLReport(dynamic, test, includeTags, excludeTags)
 	self.Environment:Report()
 
@@ -304,7 +305,13 @@ function BENCH:HTMLReport(dynamic, test, includeTags, excludeTags)
 		self:OpenReport(report)
 	end
 
-	return report
+	return report, {
+		trials = #summaries,
+		candidates = totalCandidates,
+		widestPct = maxWorst,
+		widestName = widestName,
+		tieCount = tieCount
+	}
 end
 
 --- Read an asset out of the templates directory.
@@ -481,25 +488,27 @@ end
 --- @param test boolean? Force a low, fixed iteration and run count.
 --- Combining this with dynamic is not meaningful and is rejected by the
 --- console commands before it reaches here. Defaults to false.
+--- @return table? # The formatted lines that were logged, for callers like the realm bridge; nil when the trial did not run.
 function BENCH:ConsoleReport(name, dynamic, test)
 	local results, statistics, trial = self:ReportTrial(name, dynamic, test)
 	if not results then
 		l.ForceWarning(string.format("Trial '%s' did not run (missing, gated off, or empty).", name))
-		return
+		return nil
 	end
 
 	local minMean = statistics.minMean
 	statistics.minMean = nil
 
 	local labels = trial.labels or {}
-	l.ForceInfo(string.format(
+	local lines = {}
+	table.insert(lines, string.format(
 		"Results for '%s' (%d runs of %d iterations):",
 		trial.name or name, trial.runs, trial.iterations
 	))
 
 	local i = 1
 	for fnId, stat in SortedPairsByMemberValue(statistics, "mean") do
-		l.ForceInfo(string.format(
+		table.insert(lines, string.format(
 			"%2d. %s: median %ss, mean %ss (%ss/call), %d%%",
 			i,
 			labels[fnId] or ("Function #" .. fnId),
@@ -510,6 +519,12 @@ function BENCH:ConsoleReport(name, dynamic, test)
 		))
 		i = i + 1
 	end
+
+	for _, line in ipairs(lines) do
+		l.ForceInfo(line)
+	end
+
+	return lines
 end
 
 --- Generate the HTML report in the background.

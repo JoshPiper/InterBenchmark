@@ -34,8 +34,8 @@ The suite loads on both the server and the client.
 
 | Command | Effect |
 | --- | --- |
-| `internet_benchmark_run [--dynamic] [--test] [--tag=...] [--skip-tag=...]` | Benchmark every trial and write the HTML report. |
-| `internet_benchmark_trial <name> [--dynamic] [--test]` | Benchmark a single trial and print results to the console (autocompletes the name). |
+| `internet_benchmark_run [--dynamic] [--test] [--tag=...] [--skip-tag=...] [--realm=...] [--target=...]` | Benchmark every trial and write the HTML report. |
+| `internet_benchmark_trial <name> [--dynamic] [--test] [--realm=...] [--target=...]` | Benchmark a single trial and print results to the console (autocompletes the name). |
 | `internet_benchmark_environment` | Print the environment statement. |
 | `internet_benchmark_logging_report` | Explain the logging levels and the current configuration. |
 
@@ -65,6 +65,29 @@ matches `--tag`. Either flag accepts a comma-separated list, and either can be
 repeated. Every trial shipped with the suite is tagged `default`, so
 `internet_benchmark_run --tag=default` runs just the built-ins, excluding any
 you add of your own.
+
+Pass `--realm=client` or `--realm=server` to either command to bridge the run
+to the *other* realm from wherever you typed it, over the network:
+
+- Typed in a client console with `--realm=server`: asks the server to run,
+  subject to the same superadmin/dedicated-console restriction as running it
+  there directly. Results relay back and print (or, for
+  `internet_benchmark_run`, open in the report viewer) on the requesting
+  client, exactly as if it had run locally.
+- Typed at the server console with `--realm=client --target=<name or
+  SteamID>`: asks one connected client to run. `--target` is required here
+  (a dedicated server may have any number of connected players, so there's
+  no implicit target) and matches an exact SteamID/SteamID64 first, then
+  falls back to a case-insensitive substring match on nickname. The target
+  runs it exactly as a local client run (its own viewer opens, its own disk
+  copy is written), and a summary relays back to the server console.
+
+Naming the realm the command is *already* running in is a no-op — `--realm`
+only does something when it names the opposite realm. If the requesting
+player disconnects before a bridged run finishes, the reply is dropped
+rather than erroring; if the target realm is already busy with another run,
+the request is rejected with an explicit message instead of silently doing
+nothing.
 
 Benchmarks run in the background on a small per-tick time budget, so the game
 stays responsive while a full suite (several minutes of measuring) grinds away.

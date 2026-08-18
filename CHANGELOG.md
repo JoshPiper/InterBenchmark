@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.1.0](https://github.com/JoshPiper/InterBenchmark/compare/v3.0.0...v3.1.0) (2026-08-18)
+
+
+### Features
+
+* Add --realm bridging for cross-realm benchmark runs ([#51](https://github.com/JoshPiper/InterBenchmark/issues/51)) ([3af6281](https://github.com/JoshPiper/InterBenchmark/commit/3af62811b113b37abdd3c591c3a76393f990dccd))
+
 ## [3.0.0](https://github.com/JoshPiper/InterBenchmark/compare/v2.1.0...v3.0.0) (2026-08-14)
 
 

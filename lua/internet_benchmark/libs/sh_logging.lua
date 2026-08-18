@@ -117,8 +117,9 @@ end
 --- @private
 --- @see MsgC
 function logging._print(...)
-	MsgC(unpack(flatten(...)))
-	print()
+	local args = flatten(...)
+	table.insert(args, "\n")
+	MsgC(unpack(args))
 end
 
 --- A table storing often used logging "phrases".

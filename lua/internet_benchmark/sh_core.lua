@@ -119,6 +119,9 @@ function BENCH:Benchmark(func, iterationsPerRun, runs, preRun, postRun)
 	preRun = preRun or noop
 	postRun = postRun or noop
 
+	-- Wall clock, not the sum of the timings: the pump only advances this loop for AsyncBudget per tick.
+	local started = SysTime()
+
 	for run = 1, runs do
 		collectgarbage()
 		self:Yield()
@@ -132,7 +135,8 @@ function BENCH:Benchmark(func, iterationsPerRun, runs, preRun, postRun)
 
 		time = time + results[run]
 
-		local eta = math.floor((time / run) * (runs - run) * 100) / 100
+		local elapsed = SysTime() - started
+		local eta = math.floor((elapsed / run) * (runs - run) * 100) / 100
 		self.Logging.Debug(tmpl:format(run, runs, eta))
 	end
 

@@ -82,6 +82,38 @@ return {
 		},
 
 		{
+			name = "Projects the ETA from wall clock rather than from the measured times",
+			func = function()
+				-- The extra 0.875s per run stands in for the pump idling between ticks.
+				local now = 1000
+
+				local clock = stub(_G, "SysTime")
+				clock.with(function() return now end)
+
+				local timed = stub(INTERNET_BENCHMARK, "Time")
+				timed.with(function()
+					now = now + 0.125
+					return 0.125
+				end)
+
+				local logged = stub(INTERNET_BENCHMARK.Logging, "Debug")
+
+				local mean = INTERNET_BENCHMARK:Benchmark(function() end, 1, 4, function()
+					now = now + 0.875
+				end)
+
+				-- Restored before asserting: SysTime is too central to leave faked while an assertion unwinds.
+				clock:Restore()
+				timed:Restore()
+				logged:Restore()
+
+				expect(logged.callHistory[1][1]).to.equal("\t\tRun 1 / 4 [ETA: 3s]")
+				expect(logged.callHistory[4][1]).to.equal("\t\tRun 4 / 4 [ETA: 0s]")
+				expect(mean).to.aboutEqual(0.125, 1e-9)
+			end
+		},
+
+		{
 			name = "Benchmarks every function it is given",
 			func = function()
 				local first, second = 0, 0

@@ -1,5 +1,23 @@
 # Changelog
 
+## [3.1.0](https://github.com/JoshPiper/InterBenchmark/compare/v3.0.0...v3.1.0) (2026-08-24)
+
+
+### Features
+
+* Add --realm bridging for cross-realm benchmark runs ([#51](https://github.com/JoshPiper/InterBenchmark/issues/51)) ([3af6281](https://github.com/JoshPiper/InterBenchmark/commit/3af62811b113b37abdd3c591c3a76393f990dccd))
+
+
+### Bug Fixes
+
+* Append newline in MsgC call instead of separate print() ([#69](https://github.com/JoshPiper/InterBenchmark/issues/69)) ([57aaabb](https://github.com/JoshPiper/InterBenchmark/commit/57aaabb54b27e554a30083d4f06529c93bcb586f))
+* Project the benchmark ETA from wall clock ([#71](https://github.com/JoshPiper/InterBenchmark/issues/71)) ([01a4b68](https://github.com/JoshPiper/InterBenchmark/commit/01a4b68ad5f6c075b9d6078afe094d48d834656c))
+
+
+### Performance Improvements
+
+* Cache the logging brand's event lookup ([#70](https://github.com/JoshPiper/InterBenchmark/issues/70)) ([8ae4410](https://github.com/JoshPiper/InterBenchmark/commit/8ae44101cadd04975b55a3466d64555876766690))
+
 ## [3.0.0](https://github.com/JoshPiper/InterBenchmark/compare/v2.1.0...v3.0.0) (2026-08-14)
 
 

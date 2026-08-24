@@ -134,20 +134,43 @@ logging.Phrases = {
 	}
 }
 
+--- How long a resolved event is trusted for, in seconds.
+--- The brand is rebuilt for every printed line, so the date lookup behind it is
+--- cached rather than run per line. A session running across an event boundary
+--- picks the change up on the next refresh, or on the next map load.
+logging.EventCacheTime = 30 * 60
+
+--- The last resolved event, and the time at which it stops being trusted.
+--- @private
+logging._event = nil
+--- @private
+logging._eventExpiry = 0
+
+--- Resolve the event currently in effect, if any.
+--- @return string # Phrase suffix for the event, or "" for the plain brand.
+function logging:Event()
+	local now = SysTime()
+	if self._event and now < self._eventExpiry then
+		return self._event
+	end
+
+	local event = ""
+	if os.date("%m") == "06" then
+		event = "Pride"
+	end
+
+	self._event = event
+	self._eventExpiry = now + self.EventCacheTime
+
+	return event
+end
+
 --- Create a table with the brand name.
 --- @param wrapped boolean Should the Brand be wrapped in [].
 --- @param event string? It's a secret tool that'll help us later.
 --- @return table
 function logging:Brand(wrapped, event)
-	if not event then
-		event = ""
-
-		if os.date("%m") == "06" then
-			event = "Pride"
-		end
-	end
-
-	local brand = self.Phrases["Brand" .. event] or self.Phrases.Brand
+	local brand = self.Phrases["Brand" .. (event or self:Event())] or self.Phrases.Brand
 	if wrapped then
 		return {self.Colours.Text, "[", brand, self.Colours.Text, "]"}
 	end

@@ -27,6 +27,9 @@ export async function stage(options) {
 
 	const addon = path.join(paths.override, "addons", ADDON);
 	await fs.mkdir(addon, {recursive: true});
+	// The image ships no garrysmod/data, so the entrypoint cannot pre-write the
+	// clean-exit sentinel it later reads the run's success from.
+	await fs.mkdir(path.join(paths.override, "data"), {recursive: true});
 	// The entrypoint reads through a directory of the same name, as the
 	// workflow's artifact download would have created.
 	await fs.mkdir(path.join(paths.artifacts, "_gluatest_artifacts"), {recursive: true});

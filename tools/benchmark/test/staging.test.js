@@ -77,6 +77,13 @@ test("writes the server config, requirements and artifacts directory the entrypo
 	assert.ok(await exists(path.join(paths.artifacts, "_gluatest_artifacts")));
 });
 
+test("stages a data directory, which the image does not ship", async (t) => {
+	const root = await scratch(t);
+	const {paths} = await stageFrom(root, []);
+
+	assert.ok(await exists(path.join(paths.override, "data")));
+});
+
 test("merges extra overrides over the staged server files", async (t) => {
 	const root = await scratch(t);
 	const extra = path.join(root, "extra", "lua", "bin");

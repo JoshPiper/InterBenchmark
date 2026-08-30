@@ -1,5 +1,32 @@
 # Changelog
 
+## [3.2.0](https://github.com/JoshPiper/InterBenchmark/compare/v3.1.0...v3.2.0) (2026-08-30)
+
+
+### Features
+
+* Publish a CI-generated report to GitHub Pages ([#95](https://github.com/JoshPiper/InterBenchmark/issues/95)) ([b2eaf86](https://github.com/JoshPiper/InterBenchmark/commit/b2eaf86798ab7fe08e5fb18a1c0cf67aab1ba031))
+
+
+### Bug Fixes
+
+* Correct the published report's URL and a spurious upload failure ([#97](https://github.com/JoshPiper/InterBenchmark/issues/97)) ([f17cffc](https://github.com/JoshPiper/InterBenchmark/commit/f17cffc8a9fb363ce551661b82bb5c7f67d948fd))
+* Count partial's stored arguments with select, not the length operator ([#77](https://github.com/JoshPiper/InterBenchmark/issues/77)) ([ae8f1d2](https://github.com/JoshPiper/InterBenchmark/commit/ae8f1d2fb835f67788e01135ac2433380753ea62))
+* Guard the report's log scale against zero-length runs ([#72](https://github.com/JoshPiper/InterBenchmark/issues/72)) ([2f889f8](https://github.com/JoshPiper/InterBenchmark/commit/2f889f86f91f79a6ad96b73e6ba3104eaaa91613))
+* Only accept realm replies from the party the request went to ([#74](https://github.com/JoshPiper/InterBenchmark/issues/74)) ([c7af8ea](https://github.com/JoshPiper/InterBenchmark/commit/c7af8eaf064637ac531126bd53246b8eb50829e8))
+* Restart the garbage collector when a trial raises ([#79](https://github.com/JoshPiper/InterBenchmark/issues/79)) ([81aba92](https://github.com/JoshPiper/InterBenchmark/commit/81aba92bea6651c4ebfa06ae31e3599779b17bf6))
+* Restrict the environment and logging report commands to superadmins ([#78](https://github.com/JoshPiper/InterBenchmark/issues/78)) ([d8df03d](https://github.com/JoshPiper/InterBenchmark/commit/d8df03d6c0bcc337561019f99327a2b1ca0d6a6a))
+* Skip a trial whose run or iteration count is below one ([#76](https://github.com/JoshPiper/InterBenchmark/issues/76)) ([25fc805](https://github.com/JoshPiper/InterBenchmark/commit/25fc805fb3326f94364217ee438e6341bc7c8388))
+* Split console help text so glualint's line limit passes ([#73](https://github.com/JoshPiper/InterBenchmark/issues/73)) ([de48041](https://github.com/JoshPiper/InterBenchmark/commit/de4804103facc187a4fb0df3d574f0281b988043))
+* Stop sending realm chunks to a player who has left ([#86](https://github.com/JoshPiper/InterBenchmark/issues/86)) ([9c56071](https://github.com/JoshPiper/InterBenchmark/commit/9c5607110d50520fa15707d8075cded4495fd291))
+* Tolerate any URL fragment in the report's view router ([#84](https://github.com/JoshPiper/InterBenchmark/issues/84)) ([266c7cc](https://github.com/JoshPiper/InterBenchmark/commit/266c7cc6722d97ae742c85465ab4c4f90d7cb29c))
+* Validate trial names before building a path out of them ([#80](https://github.com/JoshPiper/InterBenchmark/issues/80)) ([30fe2a1](https://github.com/JoshPiper/InterBenchmark/commit/30fe2a1e04ab1150496f05bcbd209b5883dfbfd7))
+
+
+### Performance Improvements
+
+* Cache a failed global route lookup ([#82](https://github.com/JoshPiper/InterBenchmark/issues/82)) ([12f3a5c](https://github.com/JoshPiper/InterBenchmark/commit/12f3a5cedcc38cf25f84ee42c16c752e201b8d1a))
+
 ## [3.1.0](https://github.com/JoshPiper/InterBenchmark/compare/v3.0.0...v3.1.0) (2026-08-24)
 
 

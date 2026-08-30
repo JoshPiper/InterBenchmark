@@ -70,8 +70,16 @@
 
 	function viewFromHash(){
 		var hash = location.hash.replace(/^#/, "");
-		if (hash && document.querySelector('[data-view-section="' + hash + '"]')){
-			return hash;
+		if (!hash){
+			return "overview";
+		}
+
+		// Matched by attribute, not a built selector: an unescaped quote in a fragment throws.
+		var sections = document.querySelectorAll("[data-view-section]");
+		for (var i = 0; i < sections.length; i++){
+			if (sections[i].getAttribute("data-view-section") === hash){
+				return hash;
+			}
 		}
 
 		return "overview";

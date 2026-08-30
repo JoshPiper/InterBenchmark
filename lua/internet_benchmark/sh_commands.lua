@@ -54,6 +54,17 @@ local function isRemoteRealm(realm)
 	return realm ~= nil and ((SERVER and realm == "client") or (CLIENT and realm == "server"))
 end
 
+--- Join help-text fragments into one console help string, so the fragments stay readable in source.
+--- @param ... string
+--- @return string
+local function helpText(...)
+	return table.concat({...}, " ")
+end
+
+local helpIterationMode = "'--dynamic'/'--test' set the iteration mode (mutually exclusive)."
+local helpTagFilter = "'--tag'/'--skip-tag' (repeatable/comma-separated) filter trials, Ansible-style."
+local helpRealm = "'--realm=client'/'--realm=server' bridges the run to the opposite realm ('--realm=client' needs '--target=<player>' and only works from the server console)."
+
 concommand.Add("internet_benchmark_run", function(ply, _, args)
 	if not BENCH:CanRunHere(ply) then
 		BENCH.Logging.Warning("Only superadmins may run server-side benchmarks.")
@@ -93,7 +104,12 @@ concommand.Add("internet_benchmark_run", function(ply, _, args)
 	end
 
 	BENCH:ReportWithoutCrashing(dynamic, test, includeTags, excludeTags)
-end, BENCH:ArgCompleter({flags = {"dynamic", "test", "tag", "skip-tag", "realm", "target"}}), "Benchmark every trial and write the HTML report. '--dynamic'/'--test' set the iteration mode (mutually exclusive). '--tag'/'--skip-tag' (repeatable/comma-separated) filter trials, Ansible-style. '--realm=client'/'--realm=server' bridges the run to the opposite realm ('--realm=client' needs '--target=<player>' and only works from the server console).")
+end, BENCH:ArgCompleter({flags = {"dynamic", "test", "tag", "skip-tag", "realm", "target"}}), helpText(
+	"Benchmark every trial and write the HTML report.",
+	helpIterationMode,
+	helpTagFilter,
+	helpRealm
+))
 
 concommand.Add("internet_benchmark_trial", function(ply, _, args)
 	if not BENCH:CanRunHere(ply) then
@@ -139,7 +155,11 @@ concommand.Add("internet_benchmark_trial", function(ply, _, args)
 	BENCH:Async(function()
 		BENCH:ConsoleReport(name, dynamic, test)
 	end)
-end, BENCH:ArgCompleter({flags = {"dynamic", "test", "realm", "target"}, positionals = {function() return BENCH:TrialNames() end}}), "Benchmark a single trial and print the results to the console. '--dynamic'/'--test' set the iteration mode (mutually exclusive). '--realm=client'/'--realm=server' bridges the run to the opposite realm ('--realm=client' needs '--target=<player>' and only works from the server console).")
+end, BENCH:ArgCompleter({flags = {"dynamic", "test", "realm", "target"}, positionals = {function() return BENCH:TrialNames() end}}), helpText(
+	"Benchmark a single trial and print the results to the console.",
+	helpIterationMode,
+	helpRealm
+))
 
 concommand.Add("internet_benchmark_environment", function()
 	BENCH.Environment:Report()

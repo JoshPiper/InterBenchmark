@@ -1,6 +1,10 @@
 name: Benchmark
 
 on:
+  schedule:
+    # An hour after ci.yml's own drift run, so a suite that no longer works is
+    # already reported by the time this tries to publish results from it.
+    - cron: "0 7 * * 1"
   workflow_dispatch:
     inputs:
       mode:
@@ -44,18 +48,19 @@ on:
         description: Minutes to let the server run before killing it.
         type: string
         required: true
-        default: "30"
-      sysinfo:
-        description: Install gm_sysinfo, for a fuller environment statement.
+        default: "60"
+      publish:
+        description: Replace the published report with this run's.
         type: boolean
         required: true
-        default: true
+        default: false
 
 permissions:
   contents: read
 
 concurrency:
-  # Every run here was asked for by name, so none of them is ever superseded.
+  # Every run here was asked for by name, or is the weekly one; none of them is
+  # ever superseded by a newer one.
   group: benchmark-${{ github.ref }}
   cancel-in-progress: false
 
@@ -67,6 +72,8 @@ jobs:
     # backstop for a job that wedges before or after it, so it is deliberately
     # far looser than any sensible --timeout.
     timeout-minutes: 120
+    outputs:
+      publish: ${{ steps.plan.outputs.publish }}
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -81,8 +88,35 @@ jobs:
         working-directory: tools/benchmark
         run: node --test
 
+      - name: Plan the run
+        id: plan
+        env:
+          # The weekly run carries no inputs, so the fallbacks are what it runs:
+          # the full suite, at the counts its trials were authored with.
+          MODE: ${{ inputs.mode || 'all' }}
+          ITERATIONS: ${{ inputs.iterations || 'default' }}
+          BRANCH: ${{ inputs.branch || 'live' }}
+          TIMEOUT: ${{ inputs.timeout || '60' }}
+          PUBLISH: ${{ github.event_name == 'schedule' || inputs.publish == true }}
+        run: |
+          # Publishing a filtered or smoke-count run would leave a page that
+          # presents itself as the reference report while being nothing of the
+          # sort, so it is refused before the server ever boots.
+          if [ "$PUBLISH" = "true" ] && { [ "$MODE" != "all" ] || [ "$ITERATIONS" != "default" ]; }; then
+            echo "::error title=Benchmark::Only a full run at the authored iteration counts can be published; got mode=$MODE, iterations=$ITERATIONS."
+            exit 1
+          fi
+
+          {
+            echo "MODE=$MODE"
+            echo "ITERATIONS=$ITERATIONS"
+            echo "BRANCH=$BRANCH"
+            echo "TIMEOUT=$TIMEOUT"
+          } >> "$GITHUB_ENV"
+
+          echo "publish=$PUBLISH" >> "$GITHUB_OUTPUT"
+
       - name: Install gm_sysinfo
-        if: inputs.sysinfo
         env:
           # Pinned and checksummed like every other third-party binary here;
           # Dependabot cannot see curl downloads, so bumps are deliberate.
@@ -104,13 +138,9 @@ jobs:
 
       - name: Run the benchmark
         env:
-          MODE: ${{ inputs.mode }}
           TRIAL: ${{ inputs.trial }}
           TAGS: ${{ inputs.tags }}
           SKIP_TAGS: ${{ inputs.skip-tags }}
-          ITERATIONS: ${{ inputs.iterations }}
-          BRANCH: ${{ inputs.branch }}
-          TIMEOUT: ${{ inputs.timeout }}
         run: |
           args=(--mode="$MODE" --iterations="$ITERATIONS" --branch="$BRANCH" --timeout="$TIMEOUT")
 
@@ -126,11 +156,10 @@ jobs:
             args+=(--skip-tag="$SKIP_TAGS")
           fi
 
-          if [ -d sysinfo ]; then
-            args+=(--override=sysinfo)
-          fi
+          node tools/benchmark/harness.js "${args[@]}" --override=sysinfo
 
-          node tools/benchmark/harness.js "${args[@]}"
+      - name: Build the page
+        run: node tools/benchmark/site.js --bundle=benchmark-output
 
       - name: Upload the report
         # A failed run still leaves a server log, and often a crash log, which
@@ -138,6 +167,67 @@ jobs:
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: benchmark-${{ inputs.mode }}-${{ github.run_id }}
+          name: benchmark-${{ github.run_id }}
           path: benchmark-output
           if-no-files-found: error
+
+  publish:
+    name: Publish the report
+    needs: benchmark
+    if: needs.benchmark.outputs.publish == 'true'
+    runs-on: ubuntu-latest
+    # Held apart from the benchmark job so the long-running container never
+    # holds a token that can write to the repository.
+    permissions:
+      contents: write
+    concurrency:
+      # Publishing is a read-modify-write of one branch; two at once would race,
+      # and cancelling one midway leaves a half-written report behind.
+      group: benchmark-publish
+      cancel-in-progress: false
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+        with:
+          name: benchmark-${{ github.run_id }}
+          path: benchmark-output
+
+      - name: Publish to gh-pages
+        env:
+          # Only this subtree is ever touched, so a docs publisher can own the
+          # rest of the branch without either side re-owning the other's files.
+          DESTINATION: reports
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          pages="$RUNNER_TEMP/pages"
+          if git ls-remote --exit-code --heads origin gh-pages > /dev/null 2>&1; then
+            git fetch --depth 1 origin gh-pages:gh-pages
+            git worktree add "$pages" gh-pages
+          else
+            git worktree add --orphan -b gh-pages "$pages"
+          fi
+
+          # Pages runs Jekyll over a branch source unless told not to, which
+          # would rewrite files this suite generated byte-for-byte.
+          touch "$pages/.nojekyll"
+
+          rm -rf "${pages:?}/$DESTINATION"
+          mkdir -p "$pages/$DESTINATION"
+          cp benchmark-output/index.html \
+             benchmark-output/report.html \
+             benchmark-output/results.json \
+             benchmark-output/environment.txt \
+             "$pages/$DESTINATION/"
+
+          git -C "$pages" add --all
+          if git -C "$pages" diff --cached --quiet; then
+            echo "::notice::The report is unchanged; nothing to publish."
+            exit 0
+          fi
+
+          git -C "$pages" commit -m "docs: Publish the benchmark report from ${GITHUB_SHA}"
+          git -C "$pages" push origin gh-pages

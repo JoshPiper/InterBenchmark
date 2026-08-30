@@ -87,16 +87,22 @@ measure — read back from the server's own log rather than a hard-coded list, s
 the note cannot drift as trials are added. Note the log records *that* a trial
 gated off, never why, so the page lists them without attributing a cause.
 
-`.github/workflows/pages.yml` runs the harness at the trials' authored counts,
-builds that page, and commits the four files into `reports/` on the `gh-pages`
-branch. It touches nothing else on that branch: a docs publisher can own the
+The workflow's `publish` job commits those four files into `reports/` on the
+`gh-pages` branch. It touches nothing else there: a docs publisher can own the
 root without either side having to re-own the other's files, which an
 artifact-based Pages deployment — a full site replacement every time — cannot
 do.
 
 ## In CI
 
-`.github/workflows/benchmark.yml` exposes the same choices as
-`workflow_dispatch` inputs and uploads the output directory as an artifact.
-This harness's own tests (`node --test`) run there before the container starts,
-and on every push and pull request via the `harness` job in `ci.yml`.
+`.github/workflows/benchmark.yml` runs weekly, and on demand with the same
+choices as `workflow_dispatch` inputs. Either way it uploads the whole output
+directory as an artifact.
+
+The weekly run publishes. A dispatched run has to ask, with the `publish`
+input, and is refused before the server boots unless it is a full run at the
+authored iteration counts — a filtered or smoke-count run published to that URL
+would present itself as the reference report while being nothing of the sort.
+
+This harness's own tests (`node --test`) run before the container starts, and
+on every push and pull request via the `harness` job in `ci.yml`.

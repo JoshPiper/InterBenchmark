@@ -3,6 +3,8 @@
 --- (see the README).
 
 --- Captures a chunk per net.Start, so a case can count what left the realm.
+--- Called from each case rather than beforeEach: GLuaTest only puts stub in
+--- a case function's environment.
 local function captureNet(state)
 	state.sent = {}
 
@@ -34,7 +36,6 @@ return {
 	beforeEach = function(state)
 		state.chunkSize = INTERNET_BENCHMARK.RealmChunkSize
 		INTERNET_BENCHMARK.RealmChunkSize = 8
-		captureNet(state)
 	end,
 
 	afterEach = function(state)
@@ -45,6 +46,8 @@ return {
 		{
 			name = "Sends every chunk of a payload to a player who stays connected",
 			func = function(state)
+				captureNet(state)
+
 				local sent = INTERNET_BENCHMARK:SendChunkedString(fakePlayer(), 1, "text", string.rep("a", 24))
 
 				expect(sent).to.beTrue()
@@ -55,6 +58,8 @@ return {
 		{
 			name = "Stops sending once the target player disconnects mid-payload",
 			func = function(state)
+				captureNet(state)
+
 				local sent = INTERNET_BENCHMARK:SendChunkedString(fakePlayer(1), 2, "html", string.rep("a", 24))
 
 				expect(sent).to.beFalse()
@@ -65,6 +70,8 @@ return {
 		{
 			name = "Sends nothing at all when the target player has already left",
 			func = function(state)
+				captureNet(state)
+
 				local sent = INTERNET_BENCHMARK:SendChunkedString(fakePlayer(0), 3, "text", "short")
 
 				expect(sent).to.beFalse()
@@ -75,6 +82,8 @@ return {
 		{
 			name = "Sends to the server without needing a player",
 			func = function(state)
+				captureNet(state)
+
 				local sent = INTERNET_BENCHMARK:SendChunkedString(nil, 4, "text", string.rep("a", 16))
 
 				expect(sent).to.beTrue()

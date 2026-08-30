@@ -338,11 +338,18 @@ against. It takes a full run, a tag-filtered group or a single trial:
 node tools/benchmark/harness.js --mode=trial --trial=modulo --iterations=test
 ```
 
-`.github/workflows/benchmark.yml` exposes the same choices as manual
-`workflow_dispatch` inputs and uploads `report.html`, `results.json`,
-`environment.txt` and the server log as an artifact. Nothing in it gates on the
-numbers: results from a shared CI runner describe that runner, not the
-candidates. See [tools/benchmark/README.md](tools/benchmark/README.md).
+`.github/workflows/benchmark.yml` runs it weekly, and on demand with the same
+choices as manual `workflow_dispatch` inputs, uploading `report.html`,
+`results.json`, `environment.txt` and the server log as an artifact. Nothing in
+it gates on the numbers: results from a shared CI runner describe that runner,
+not the candidates. See [tools/benchmark/README.md](tools/benchmark/README.md).
+
+The weekly run is published to
+[GitHub Pages](https://joshpiper.github.io/InterBenchmark/reports/), so the
+suite's own results can be read without installing anything. It is measured on a
+shared Actions runner and the page says so at length — it is a fixed, repeatable
+vantage point, not an authoritative measurement. Client-only trials never appear
+there, because the run has no client realm.
 
 **Linting**: [glualint](https://github.com/FPtje/GLuaFixer) with the bundled
 `.glualint.json`. Templates under `lua/internet_benchmark/templates/` are

@@ -370,8 +370,18 @@ function BENCH:HTMLTab(id, timing, stats, trial)
 	-- plot share one log domain, padded either side of the data.
 	lo = lo / 1.35
 	hi = hi * 1.1
-	local span = math.log(hi / lo)
+
+	-- A zero lower bound would make the log domain infinite, and every coordinate NaN.
+	if lo <= 0 and hi > 0 then
+		lo = hi / 1000
+	end
+
+	local span = lo > 0 and math.log(hi / lo) or 0
 	local function pos(v)
+		if span <= 0 then
+			return 0
+		end
+
 		return math.Clamp(math.log(v / lo) / span * 100, 0, 100)
 	end
 

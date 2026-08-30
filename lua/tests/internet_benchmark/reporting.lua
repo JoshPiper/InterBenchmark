@@ -352,6 +352,56 @@ return {
 			cleanup = function()
 				INTERNET_BENCHMARK._ActiveJob = nil
 			end
+		},
+
+		{
+			name = "Keeps the log scale finite when the fastest candidate measures zero",
+			func = function(state)
+				local timing = {{0, 0}, {0.04, 0.05}}
+				local stats = INTERNET_BENCHMARK:Statistics(timing, 10)
+				local html = INTERNET_BENCHMARK:HTMLTab("example", timing, stats, state.trial)
+
+				expect(string.find(string.lower(html), "nan", 1, true)).to.beNil()
+				expect(string.find(string.lower(html), "inf", 1, true)).to.beNil()
+			end
+		},
+
+		{
+			name = "Keeps the log scale finite when every candidate measures zero",
+			func = function(state)
+				local timing = {{0, 0}, {0, 0}}
+				local stats = INTERNET_BENCHMARK:Statistics(timing, 10)
+				local html = INTERNET_BENCHMARK:HTMLTab("example", timing, stats, state.trial)
+
+				expect(string.find(string.lower(html), "nan", 1, true)).to.beNil()
+				expect(string.find(string.lower(html), "inf", 1, true)).to.beNil()
+			end
+		},
+
+		{
+			name = "Still scales the measurable candidates when a zero is present",
+			func = function(state)
+				local timing = {{0, 0}, {0.04, 0.05}, {0.4, 0.5}}
+				state.trial.functions = {function() end, function() end, function() end}
+				state.trial.labels = {"Zero", "Middle", "Slowest"}
+
+				local stats = INTERNET_BENCHMARK:Statistics(timing, 10)
+				local html = INTERNET_BENCHMARK:HTMLTab("example", timing, stats, state.trial)
+
+				local widths = {}
+				for width in string.gmatch(html, "width: ([%d%.]+)%%") do
+					table.insert(widths, tonumber(width))
+				end
+
+				-- The result bars come first, one per candidate, ranked fastest first.
+				expect(#widths >= 3).to.beTrue()
+				expect(widths[1] < widths[2]).to.beTrue()
+				expect(widths[2] < widths[3]).to.beTrue()
+
+				for _, width in ipairs(widths) do
+					expect(width >= 0 and width <= 100).to.beTrue()
+				end
+			end
 		}
 	}
 }

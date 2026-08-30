@@ -163,8 +163,10 @@ jobs:
 
       - name: Upload the report
         # A failed run still leaves a server log, and often a crash log, which
-        # are the only things that explain why it failed.
-        if: always()
+        # are the only things that explain why it failed. A run refused at the
+        # planning stage has none of that, and erroring on the empty directory
+        # would only bury the refusal that actually stopped it.
+        if: always() && steps.plan.outcome == 'success'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: benchmark-${{ github.run_id }}

@@ -84,6 +84,11 @@ end
 --- @param excludeTags table Tags passed via --skip-tag.
 --- @return boolean
 function BENCH:TagsMatch(tags, includeTags, excludeTags)
+	-- Tag lists can arrive from the realm bridge's JSON, so a non-list is treated as an absent filter rather than indexed.
+	tags = istable(tags) and tags or {}
+	includeTags = istable(includeTags) and includeTags or {}
+	excludeTags = istable(excludeTags) and excludeTags or {}
+
 	if #excludeTags > 0 then
 		for _, tag in ipairs(tags) do
 			if table.HasValue(excludeTags, tag) then

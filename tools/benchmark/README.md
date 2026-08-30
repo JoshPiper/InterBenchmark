@@ -71,6 +71,29 @@ than the 30 minute default allows; `--iterations=test` exercises the whole
 pipeline in a couple of minutes, and is the right way to check a change to the
 harness itself.
 
+## Publishing
+
+`site.js` turns a bundle into a publishable site by writing `index.html` beside
+the report:
+
+```bash
+node tools/benchmark/site.js --bundle=benchmark-output
+```
+
+The page exists to frame the numbers, because a report served from a URL
+invites being read as authoritative when it is nothing of the sort. It leads
+with that disclaimer, before any figure, and names the trials the run could not
+measure — read back from the server's own log rather than a hard-coded list, so
+the note cannot drift as trials are added. Note the log records *that* a trial
+gated off, never why, so the page lists them without attributing a cause.
+
+`.github/workflows/pages.yml` runs the harness at the trials' authored counts,
+builds that page, and commits the four files into `reports/` on the `gh-pages`
+branch. It touches nothing else on that branch: a docs publisher can own the
+root without either side having to re-own the other's files, which an
+artifact-based Pages deployment — a full site replacement every time — cannot
+do.
+
 ## In CI
 
 `.github/workflows/benchmark.yml` exposes the same choices as

@@ -324,6 +324,14 @@ node tools/benchmark/harness.js --mode=trial --trial=modulo --iterations=test
 numbers: results from a shared CI runner describe that runner, not the
 candidates. See [tools/benchmark/README.md](tools/benchmark/README.md).
 
+A reference run is published to
+[GitHub Pages](https://joshpiper.github.io/InterBenchmark/reports/) on every
+push to `main` and weekly, so the suite's own results can be read without
+installing anything. It is measured on a shared Actions runner and the page
+says so at length — it is a fixed, repeatable vantage point, not an
+authoritative measurement. Client-only trials never appear there, because the
+run has no client realm.
+
 **Linting**: [glualint](https://github.com/FPtje/GLuaFixer) with the bundled
 `.glualint.json`. Templates under `lua/internet_benchmark/templates/` are
 HTML/CSS/JS carried in `.lua` files (so they ride the client download list) and

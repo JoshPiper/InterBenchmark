@@ -6,6 +6,7 @@
 		".claude/*",
 		".editorconfig",
 		".git/*",
+		".gitignore",
 		".github/*",
 		".glualint.json",
 		".release-please-manifest.json",

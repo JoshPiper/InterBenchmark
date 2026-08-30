@@ -351,9 +351,7 @@ function BENCH:Trial(name, dynamic, test, includeTags, excludeTags)
 	collectgarbage("stop")
 	local oldStep = collectgarbage("setstepmul", 10000)
 
-	-- Guarded so a raising trial function cannot leave the collector stopped
-	-- for the rest of the session. LuaJIT's VM is fully resumable, so the
-	-- per-run yields below still reach the pump from inside this pcall.
+	-- LuaJIT's VM is fully resumable, so the per-run yields still reach the pump from inside this pcall.
 	local ok, results = pcall(function()
 		self:BenchFunctions(trial.functions, math.ceil(iterations / 4), math.ceil(runs / 4), preRun, postRun)
 

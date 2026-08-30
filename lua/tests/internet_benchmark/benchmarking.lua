@@ -225,6 +225,72 @@ return {
 		},
 
 		{
+			name = "Statistics does not fault on a function with no recorded runs",
+			func = function()
+				local all = INTERNET_BENCHMARK:Statistics({{}}, 10)
+
+				expect(all[1]).to.beNil()
+				expect(all.minMean).to.equal(math.huge)
+			end
+		},
+
+		{
+			name = "Trial skips a trial asking for no runs",
+			func = function()
+				local trial = INTERNET_BENCHMARK.Classes.Trial()
+				trial.id = "no_runs_probe"
+				trial.runs = 0
+				trial.iterations = 10
+				trial:Function(function() end)
+				trial:Label("noop")
+
+				stub(INTERNET_BENCHMARK, "LoadTrial").returns(trial)
+
+				expect(INTERNET_BENCHMARK:Trial("no_runs_probe")).to.beNil()
+			end
+		},
+
+		{
+			name = "Trial skips a trial asking for no iterations",
+			func = function()
+				local trial = INTERNET_BENCHMARK.Classes.Trial()
+				trial.id = "no_iterations_probe"
+				trial.runs = 2
+				trial.iterations = 0
+				trial:Function(function() end)
+				trial:Label("noop")
+
+				stub(INTERNET_BENCHMARK, "LoadTrial").returns(trial)
+
+				expect(INTERNET_BENCHMARK:Trial("no_iterations_probe")).to.beNil()
+			end
+		},
+
+		{
+			name = "Trial still runs a zero-run trial in test mode, which sets its own counts",
+			func = function()
+				local trial = INTERNET_BENCHMARK.Classes.Trial()
+				trial.id = "test_mode_zero_probe"
+				trial.runs = 0
+				trial.iterations = 0
+				trial:Function(function() end)
+				trial:Label("noop")
+
+				stub(INTERNET_BENCHMARK, "LoadTrial").returns(trial)
+
+				local results = INTERNET_BENCHMARK:Trial("test_mode_zero_probe", false, true)
+
+				expect(results).to.exist()
+				expect(#results[1]).to.equal(INTERNET_BENCHMARK.TestRuns)
+			end,
+
+			cleanup = function()
+				collectgarbage("setstepmul", 200)
+				collectgarbage("restart")
+			end
+		},
+
+		{
 			name = "Benchmarks a whole trial and restores the garbage collector",
 			func = function()
 				local trial = INTERNET_BENCHMARK.Classes.Trial()

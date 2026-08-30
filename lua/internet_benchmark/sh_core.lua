@@ -333,6 +333,15 @@ function BENCH:Trial(name, dynamic, test, includeTags, excludeTags)
 		trial.runs = self.TestRuns
 	end
 
+	-- Checked after dynamic and test mode, against the counts actually about to be used.
+	if (trial.runs or 0) < 1 or (trial.iterations or 0) < 1 then
+		self.Logging.Warning(string.format(
+			"Trial '%s' asks for %s runs of %s iterations; both must be at least 1, skipping.",
+			name, tostring(trial.runs), tostring(trial.iterations)
+		))
+		return nil
+	end
+
 	local preRun, postRun = trial.before, trial.after
 	local iterations, runs = trial.iterations, trial.runs
 
@@ -429,8 +438,14 @@ function BENCH:Statistics(results, iterations)
 	local min = math.huge
 
 	for fnId, result in ipairs(results) do
-		statistics[fnId] = self:Statistic(result, iterations)
-		min = math.min(min, statistics[fnId].mean)
+		local statistic = self:Statistic(result, iterations)
+		if not statistic then
+			self.Logging.Warning(string.format("Function #%d recorded no runs; it has no statistics.", fnId))
+			break
+		end
+
+		statistics[fnId] = statistic
+		min = math.min(min, statistic.mean)
 	end
 
 	statistics.minMean = min

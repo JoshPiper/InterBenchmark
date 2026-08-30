@@ -1,11 +1,6 @@
---- The realm bridge's chunking and reassembly, driven end to end with the
---- net writes captured rather than sent. The transport itself still needs a
---- manual check (see the README).
+--- The realm bridge's chunking and reassembly, round-tripped with the net writes captured rather than sent. The transport itself still needs a manual check (see the README).
 
---- Captures each net message SendChunkedString produces, in order.
---- Field order follows the writes in SendChunkedString. stub is passed in
---- because GLuaTest injects it into a case function's own environment,
---- which a helper defined out here does not share.
+--- Captures each net message SendChunkedString produces, in order; stub is passed in because GLuaTest scopes it to a case function's own environment.
 local function captureNet(state, stub)
 	state.sent = {}
 

@@ -174,6 +174,61 @@ return {
 				local second = roundTrip(state, 9, "reused")
 				expect(second).to.equal("reused")
 			end
+		},
+
+		{
+			name = "Reports a reply that outgrows the reassembly limit",
+			func = function()
+				INTERNET_BENCHMARK.RealmMaxReplyBytes = 12
+
+				local payload, failure = INTERNET_BENCHMARK:TakeChunk(10, 1, 3, string.rep("a", 8))
+				expect(payload).to.beNil()
+				expect(failure).to.beNil()
+
+				payload, failure = INTERNET_BENCHMARK:TakeChunk(10, 2, 3, string.rep("b", 8))
+				expect(payload).to.beNil()
+				expect(failure.reason).to.equal("oversize")
+			end
+		},
+
+		{
+			name = "Reports the missing chunk when a reply's last one arrives without it",
+			func = function()
+				local payload, failure = INTERNET_BENCHMARK:TakeChunk(11, 2, 2, "second")
+
+				expect(payload).to.beNil()
+				expect(failure.reason).to.equal("incomplete")
+				expect(failure.position).to.equal(1)
+			end
+		},
+
+		{
+			name = "Drops the buffer of a reply that outgrew the limit, so the id starts clean",
+			func = function()
+				INTERNET_BENCHMARK.RealmMaxReplyBytes = 12
+
+				INTERNET_BENCHMARK:TakeChunk(12, 1, 2, string.rep("a", 8))
+				local _, failure = INTERNET_BENCHMARK:TakeChunk(12, 2, 2, string.rep("b", 8))
+				expect(failure.reason).to.equal("oversize")
+
+				INTERNET_BENCHMARK.RealmMaxReplyBytes = 12000
+				local payload = INTERNET_BENCHMARK:TakeChunk(12, 1, 1, "fresh")
+				expect(payload).to.equal("fresh")
+			end
+		},
+
+		{
+			name = "Counts a resent chunk once, not twice, against the limit",
+			func = function()
+				INTERNET_BENCHMARK.RealmMaxReplyBytes = 12
+
+				INTERNET_BENCHMARK:TakeChunk(13, 1, 2, string.rep("a", 8))
+				INTERNET_BENCHMARK:TakeChunk(13, 1, 2, string.rep("c", 8))
+
+				local payload, failure = INTERNET_BENCHMARK:TakeChunk(13, 2, 2, "dd")
+				expect(failure).to.beNil()
+				expect(payload).to.equal(string.rep("c", 8) .. "dd")
+			end
 		}
 	}
 }

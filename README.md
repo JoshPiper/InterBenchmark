@@ -13,6 +13,9 @@ produces a single self-contained HTML report — an overview, an environment
 statement and a page per trial with summary statistics, box-and-whisker plots,
 and the exact source code that was measured.
 
+Written with AI assistance — see [AI-DISCLOSURE.md](AI-DISCLOSURE.md) for
+the full statement.
+
 ## Installation
 
 Grab the latest packaged build from the
@@ -81,6 +84,21 @@ to the *other* realm from wherever you typed it, over the network:
   falls back to a case-insensitive substring match on nickname. The target
   runs it exactly as a local client run (its own viewer opens, its own disk
   copy is written), and a summary relays back to the server console.
+
+> **Trust, and production servers.** `--realm=client` hands a named client the
+> job of running a benchmark and relays what comes back into your server
+> console. A reply is only accepted from the exact player that request was sent
+> to, and only while that request is outstanding — anything else is dropped and
+> logged as an error, and a request that never gets answered is logged as a
+> warning once it times out. What a legitimate reply *contains*, though, is
+> still whatever that client chose to send: point `--realm=client` at clients
+> you trust, and read relayed output as their claim rather than as a
+> measurement you took.
+>
+> More broadly, this is a development and profiling tool. A run deliberately
+> pins a core for minutes and stops the garbage collector for the duration of
+> each trial, so it does not belong on a live, populated production server —
+> benchmark on a test server, or on a listen server, instead.
 
 Naming the realm the command is *already* running in is a no-op — `--realm`
 only does something when it names the opposite realm. If the requesting
@@ -337,6 +355,14 @@ gh attestation verify internet_benchmark-2.0.0.gma -R JoshPiper/InterBenchmark
 Inside the artifact, the environment statement's `Suite Build` row carries the
 same commit, closing the loop from a published benchmark report back to the
 exact source that produced its numbers.
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## Security
+
+See [SECURITY.md](SECURITY.md) for how to report a vulnerability.
 
 ## Licence
 

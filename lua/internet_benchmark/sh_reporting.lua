@@ -371,11 +371,7 @@ function BENCH:HTMLTab(id, timing, stats, trial)
 	lo = lo / 1.35
 	hi = hi * 1.1
 
-	-- A run too short for the clock to resolve reads as exactly zero, which
-	-- an unguarded log domain turns into an infinite span and every
-	-- coordinate into NaN. Floor the domain three decades below its top so
-	-- zeroes simply pin to the left edge, and flatten it entirely when
-	-- nothing measurable was recorded at all.
+	-- A zero lower bound would make the log domain infinite, and every coordinate NaN.
 	if lo <= 0 and hi > 0 then
 		lo = hi / 1000
 	end

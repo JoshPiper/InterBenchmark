@@ -1,0 +1,137 @@
+name: Benchmark
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: What to benchmark.
+        type: choice
+        required: true
+        default: all
+        options: [all, tag, trial]
+      trial:
+        description: "The trial to run (mode: trial)."
+        type: string
+        required: false
+      tags:
+        description: "Only run trials with these tags, comma-separated (mode: tag)."
+        type: string
+        required: false
+      skip-tags:
+        description: Never run trials with these tags, comma-separated.
+        type: string
+        required: false
+      iterations:
+        description: Iteration counts to measure with.
+        type: choice
+        required: true
+        default: default
+        options:
+          - default
+          - dynamic
+          - test
+      branch:
+        description: Which Garry's Mod branch to benchmark.
+        type: choice
+        required: true
+        default: live
+        options:
+          - live
+          - x86-64
+          - prerelease
+          - dev
+      timeout:
+        description: Minutes to let the server run before killing it.
+        type: string
+        required: true
+        default: "30"
+      sysinfo:
+        description: Install gm_sysinfo, for a fuller environment statement.
+        type: boolean
+        required: true
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  benchmark:
+    name: Benchmark
+    runs-on: ubuntu-latest
+    # The container's own timeout ends the run; this only stops a wedged job
+    # from sitting there once staging and collection have had their share.
+    timeout-minutes: ${{ fromJSON(inputs.timeout) + 20 }}
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "24"
+
+      - name: Test the harness
+        # Cheap, and it beats discovering a broken harness half an hour into a
+        # run that then has nothing to upload.
+        working-directory: tools/benchmark
+        run: node --test
+
+      - name: Install gm_sysinfo
+        if: inputs.sysinfo
+        env:
+          # Pinned and checksummed like every other third-party binary here;
+          # Dependabot cannot see curl downloads, so bumps are deliberate.
+          SYSINFO_VERSION: "v3.1.0"
+        run: |
+          mkdir -p sysinfo/lua/bin
+          base="https://github.com/JoshPiper/gm_sysinfo/releases/download/${SYSINFO_VERSION}"
+          curl -sSLf -o sysinfo/lua/bin/gmsv_sysinfo_linux.dll "$base/gmsv_sysinfo_linux.dll"
+          curl -sSLf -o sysinfo/lua/bin/gmsv_sysinfo_linux64.dll "$base/gmsv_sysinfo_linux64.dll"
+          sha256sum -c - <<'SUMS'
+          c531c3f5848dacaabc45e9d2669935f8aff046c80632ec969663ff09ec93d2e4  sysinfo/lua/bin/gmsv_sysinfo_linux.dll
+          cf2576bc1ce2755fcd580148fd97ec414d5ba762cece5212485032dfe6459e82  sysinfo/lua/bin/gmsv_sysinfo_linux64.dll
+          SUMS
+
+      - name: Allow core dumps
+        # The runner image's filesystem is read-only, so the pattern has to be
+        # set out here for a crash to leave anything behind.
+        run: echo "core" | sudo tee /proc/sys/kernel/core_pattern
+
+      - name: Run the benchmark
+        env:
+          MODE: ${{ inputs.mode }}
+          TRIAL: ${{ inputs.trial }}
+          TAGS: ${{ inputs.tags }}
+          SKIP_TAGS: ${{ inputs.skip-tags }}
+          ITERATIONS: ${{ inputs.iterations }}
+          BRANCH: ${{ inputs.branch }}
+          TIMEOUT: ${{ inputs.timeout }}
+        run: |
+          args=(--mode="$MODE" --iterations="$ITERATIONS" --branch="$BRANCH" --timeout="$TIMEOUT")
+
+          if [ -n "$TRIAL" ]; then
+            args+=(--trial="$TRIAL")
+          fi
+
+          if [ -n "$TAGS" ]; then
+            args+=(--tag="$TAGS")
+          fi
+
+          if [ -n "$SKIP_TAGS" ]; then
+            args+=(--skip-tag="$SKIP_TAGS")
+          fi
+
+          if [ -d sysinfo ]; then
+            args+=(--override=sysinfo)
+          fi
+
+          node tools/benchmark/harness.js "${args[@]}"
+
+      - name: Upload the report
+        # A failed run still leaves a server log, and often a crash log, which
+        # are the only things that explain why it failed.
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: benchmark-${{ inputs.mode }}-${{ github.run_id }}
+          path: benchmark-output
+          if-no-files-found: error

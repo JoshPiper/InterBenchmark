@@ -370,8 +370,22 @@ function BENCH:HTMLTab(id, timing, stats, trial)
 	-- plot share one log domain, padded either side of the data.
 	lo = lo / 1.35
 	hi = hi * 1.1
-	local span = math.log(hi / lo)
+
+	-- A run too short for the clock to resolve reads as exactly zero, which
+	-- an unguarded log domain turns into an infinite span and every
+	-- coordinate into NaN. Floor the domain three decades below its top so
+	-- zeroes simply pin to the left edge, and flatten it entirely when
+	-- nothing measurable was recorded at all.
+	if lo <= 0 and hi > 0 then
+		lo = hi / 1000
+	end
+
+	local span = lo > 0 and math.log(hi / lo) or 0
 	local function pos(v)
+		if span <= 0 then
+			return 0
+		end
+
 		return math.Clamp(math.log(v / lo) / span * 100, 0, 100)
 	end
 

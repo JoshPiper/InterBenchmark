@@ -31,8 +31,7 @@ local function captureLog(name, fn)
 	return messages
 end
 
---- A stand-in target, reporting itself valid for its first validFor checks.
---- A nil validFor stays valid throughout.
+--- A stand-in target, valid for its first validFor checks, or throughout when that is nil.
 local function leavingPlayer(validFor)
 	local ply = {checks = 0}
 	ply.IsValid = function()
@@ -43,9 +42,7 @@ local function leavingPlayer(validFor)
 	return ply
 end
 
---- Captures a chunk per net.Start, so a case can count what left the realm.
---- stub is passed in because GLuaTest injects it into a case function's own
---- environment, which a helper defined out here does not share.
+--- Captures a chunk per net.Start; stub is passed in because GLuaTest scopes it to a case function's own environment.
 local function captureNet(state, stub)
 	state.sent = {}
 

@@ -68,14 +68,15 @@ end
 --- Reassembly buffers for in-flight replies, keyed by request ID.
 local pending = {}
 
-net.Receive("ib_realm_result", function()
-	local requestId = net.ReadUInt(32)
-	local index = net.ReadUInt(16)
-	local count = net.ReadUInt(16)
-	local kind = net.ReadString()
-	local len = net.ReadUInt(32)
-	local chunk = net.ReadData(len)
-
+--- Take one chunk of a reply into its buffer, reassembling as they arrive.
+--- Net messages are delivered reliably and in order, so a reply is complete
+--- once its last chunk lands.
+--- @param requestId integer The request the chunk belongs to.
+--- @param index integer The chunk's position within the reply, from 1.
+--- @param count integer How many chunks the reply is split into.
+--- @param chunk string
+--- @return string? # The whole payload, once the last chunk has arrived.
+function BENCH:TakeChunk(requestId, index, count, chunk)
 	local buffer = pending[requestId]
 	if not buffer then
 		buffer = {}
@@ -84,11 +85,25 @@ net.Receive("ib_realm_result", function()
 	buffer[index] = chunk
 
 	if index < count then
-		return
+		return nil
 	end
 
 	pending[requestId] = nil
-	local payload = table.concat(buffer, "", 1, count)
+	return table.concat(buffer, "", 1, count)
+end
+
+net.Receive("ib_realm_result", function()
+	local requestId = net.ReadUInt(32)
+	local index = net.ReadUInt(16)
+	local count = net.ReadUInt(16)
+	local kind = net.ReadString()
+	local len = net.ReadUInt(32)
+	local chunk = net.ReadData(len)
+
+	local payload = BENCH:TakeChunk(requestId, index, count, chunk)
+	if not payload then
+		return
+	end
 
 	-- Set by whichever of sv_realm.lua/cl_realm.lua loaded for this realm.
 	if BENCH.OnRealmResult then

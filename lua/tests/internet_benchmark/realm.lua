@@ -3,9 +3,9 @@
 --- (see the README).
 
 --- Captures a chunk per net.Start, so a case can count what left the realm.
---- Called from each case rather than beforeEach: GLuaTest only puts stub in
---- a case function's environment.
-local function captureNet(state)
+--- stub is passed in because GLuaTest injects it into a case function's own
+--- environment, which a helper defined out here does not share.
+local function captureNet(state, stub)
 	state.sent = {}
 
 	stub(net, "Start").with(function()
@@ -46,7 +46,7 @@ return {
 		{
 			name = "Sends every chunk of a payload to a player who stays connected",
 			func = function(state)
-				captureNet(state)
+				captureNet(state, stub)
 
 				local sent = INTERNET_BENCHMARK:SendChunkedString(fakePlayer(), 1, "text", string.rep("a", 24))
 
@@ -58,7 +58,7 @@ return {
 		{
 			name = "Stops sending once the target player disconnects mid-payload",
 			func = function(state)
-				captureNet(state)
+				captureNet(state, stub)
 
 				local sent = INTERNET_BENCHMARK:SendChunkedString(fakePlayer(1), 2, "html", string.rep("a", 24))
 
@@ -70,7 +70,7 @@ return {
 		{
 			name = "Sends nothing at all when the target player has already left",
 			func = function(state)
-				captureNet(state)
+				captureNet(state, stub)
 
 				local sent = INTERNET_BENCHMARK:SendChunkedString(fakePlayer(0), 3, "text", "short")
 
@@ -82,7 +82,7 @@ return {
 		{
 			name = "Sends to the server without needing a player",
 			func = function(state)
-				captureNet(state)
+				captureNet(state, stub)
 
 				local sent = INTERNET_BENCHMARK:SendChunkedString(nil, 4, "text", string.rep("a", 16))
 

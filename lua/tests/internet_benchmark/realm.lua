@@ -1,4 +1,4 @@
---- The realm bridge's reply-acceptance gate and its rejection reporting. The net relay around it still needs a manual check (see the README).
+--- The realm bridge's reply-acceptance gate, its rejection reporting, and the delivery of a reply to a target that may leave mid-payload. The net relay around it still needs a manual check (see the README).
 
 local function fakePlayer(steamId, nick)
 	return {
@@ -29,6 +29,44 @@ local function captureLog(name, fn)
 	end
 
 	return messages
+end
+
+--- A stand-in target, valid for its first validFor checks, or throughout when that is nil.
+local function leavingPlayer(validFor)
+	local ply = {checks = 0}
+	ply.IsValid = function()
+		ply.checks = ply.checks + 1
+		return validFor == nil or ply.checks <= validFor
+	end
+
+	return ply
+end
+
+--- Captures a chunk per net.Start; stub is passed in because GLuaTest scopes it to a case function's own environment.
+local function captureNet(state, stub)
+	state.sent = {}
+
+	stub(net, "Start").with(function()
+		table.insert(state.sent, {})
+	end)
+	stub(net, "WriteUInt")
+	stub(net, "WriteString")
+	stub(net, "WriteData")
+	stub(net, "Send")
+	stub(net, "SendToServer")
+end
+
+--- Run fn with the chunk size shrunk, so a short payload spans several messages.
+local function withChunkSize(size, fn)
+	local original = INTERNET_BENCHMARK.RealmChunkSize
+	INTERNET_BENCHMARK.RealmChunkSize = size
+
+	local ok, err = pcall(fn)
+	INTERNET_BENCHMARK.RealmChunkSize = original
+
+	if not ok then
+		error(err)
+	end
 end
 
 return {
@@ -178,6 +216,62 @@ return {
 
 				expect(#messages).to.equal(2)
 				expect(string.find(messages[2], "2 further rejection(s) suppressed", 1, true) ~= nil).to.beTrue()
+			end
+		},
+
+		{
+			name = "Sends every chunk of a payload to a target that stays connected",
+			func = function(state)
+				captureNet(state, stub)
+
+				withChunkSize(8, function()
+					local sent = INTERNET_BENCHMARK:SendChunkedString(leavingPlayer(), 920001, "text", string.rep("a", 24))
+
+					expect(sent).to.beTrue()
+					expect(#state.sent).to.equal(3)
+				end)
+			end
+		},
+
+		{
+			name = "Stops sending once the target leaves mid-payload",
+			func = function(state)
+				captureNet(state, stub)
+
+				withChunkSize(8, function()
+					local sent = INTERNET_BENCHMARK:SendChunkedString(leavingPlayer(1), 920002, "html", string.rep("a", 24))
+
+					expect(sent).to.beFalse()
+					expect(#state.sent).to.equal(1)
+				end)
+			end
+		},
+
+		{
+			name = "Sends nothing at all when the target has already left",
+			func = function(state)
+				captureNet(state, stub)
+
+				withChunkSize(8, function()
+					local sent = INTERNET_BENCHMARK:SendChunkedString(leavingPlayer(0), 920003, "text", "short")
+
+					expect(sent).to.beFalse()
+					expect(#state.sent).to.equal(0)
+				end)
+			end
+		},
+
+		{
+			name = "Sends to the server without needing a player",
+			func = function(state)
+				captureNet(state, stub)
+
+				withChunkSize(8, function()
+					local sent = INTERNET_BENCHMARK:SendChunkedString(nil, 920004, "text", string.rep("a", 16))
+
+					expect(sent).to.beTrue()
+					expect(#state.sent).to.equal(2)
+				end)
 			end
 		}
 	}

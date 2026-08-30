@@ -140,6 +140,62 @@ return {
 		},
 
 		{
+			name = "ValidTrialName accepts a plain trial name",
+			func = function()
+				expect(INTERNET_BENCHMARK:ValidTrialName("local_vs_global")).to.beTrue()
+				expect(INTERNET_BENCHMARK:ValidTrialName("draw-rect2")).to.beTrue()
+			end
+		},
+
+		{
+			name = "ValidTrialName rejects anything that could leave the trials directory",
+			func = function()
+				expect(INTERNET_BENCHMARK:ValidTrialName("../autorun/internet_benchmarks")).to.beFalse()
+				expect(INTERNET_BENCHMARK:ValidTrialName("sub/dir")).to.beFalse()
+				expect(INTERNET_BENCHMARK:ValidTrialName("local_vs_global.meta")).to.beFalse()
+				expect(INTERNET_BENCHMARK:ValidTrialName("")).to.beFalse()
+			end
+		},
+
+		{
+			name = "ValidTrialName rejects a name that is not a string",
+			func = function()
+				expect(INTERNET_BENCHMARK:ValidTrialName(nil)).to.beFalse()
+				expect(INTERNET_BENCHMARK:ValidTrialName(true)).to.beFalse()
+				expect(INTERNET_BENCHMARK:ValidTrialName(12)).to.beFalse()
+				expect(INTERNET_BENCHMARK:ValidTrialName({})).to.beFalse()
+			end
+		},
+
+		{
+			name = "LoadTrial refuses a traversing name without touching the filesystem",
+			func = function()
+				local exists = stub(file, "Exists")
+
+				local trial = INTERNET_BENCHMARK:LoadTrial("../../autorun/internet_benchmarks")
+
+				exists:Restore()
+
+				expect(trial).to.beNil()
+				expect(exists).wasNot.called()
+			end
+		},
+
+		{
+			name = "LoadTrial refuses a name that is not a string",
+			func = function()
+				local exists = stub(file, "Exists")
+
+				local trial = INTERNET_BENCHMARK:LoadTrial({})
+
+				exists:Restore()
+
+				expect(trial).to.beNil()
+				expect(exists).wasNot.called()
+			end
+		},
+
+		{
 			name = "Every trial shipped with the suite is tagged 'default'",
 			func = function()
 				local names = INTERNET_BENCHMARK:TrialNames()

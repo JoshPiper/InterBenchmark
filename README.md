@@ -253,7 +253,9 @@ publish results.
 ## Writing trials
 
 Trials live in `lua/internet_benchmark/trials/`. Each trial is a Lua file which
-receives a fresh builder as the `TRIAL` global:
+receives a fresh builder as the `TRIAL` global. File names may only use letters,
+digits, underscores and hyphens — the name is used to build the trial's path, so
+anything else is refused rather than loaded.
 
 ```lua
 local tab = {1, 2, 3}

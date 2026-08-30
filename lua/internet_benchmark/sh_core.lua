@@ -158,12 +158,24 @@ function BENCH:BenchFunctions(functions, iterations, runs, preRun, postRun)
 	return results
 end
 
+--- Whether a name is safe to build a trial's file path out of; they arrive from console arguments and the realm bridge's JSON.
+--- @param name any The candidate trial name.
+--- @return boolean
+function BENCH:ValidTrialName(name)
+	return isstring(name) and name ~= "" and string.match(name, "^[%w_%-]+$") ~= nil
+end
+
 --- Load a trial from disk, without benchmarking it.
 --- The trial's meta file (if any) is included first, so its If() gate can
 --- stop the function file from being included in the wrong environment.
 --- @param name string The trial's file name, without extension.
 --- @return table? # The trial, or nil when missing, gated off, or empty.
 function BENCH:LoadTrial(name)
+	if not self:ValidTrialName(name) then
+		self.Logging.Warning(string.format("Trial name '%s' is not a valid trial name, skipping.", tostring(name)))
+		return nil
+	end
+
 	local path = string.format("trials/%s", name)
 	local metaPath, fnPath = path .. ".meta.lua", path .. ".lua"
 	local hasMeta = file.Exists("internet_benchmark/" .. metaPath, "LUA")

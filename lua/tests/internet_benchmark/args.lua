@@ -335,6 +335,15 @@ return {
 			func = function()
 				expect(INTERNET_BENCHMARK:TagsMatch({"default"}, {"default"}, {"default"})).to.beFalse()
 			end
+		},
+
+		{
+			name = "TagsMatch: a non-list filter is treated as no filter at all",
+			func = function()
+				expect(INTERNET_BENCHMARK:TagsMatch({"default"}, "default", "default")).to.beTrue()
+				expect(INTERNET_BENCHMARK:TagsMatch({"default"}, true, 7)).to.beTrue()
+				expect(INTERNET_BENCHMARK:TagsMatch("default", {}, {})).to.beTrue()
+			end
 		}
 	}
 }

@@ -32,6 +32,39 @@ local outstanding = {}
 --- Reassembly buffers for in-flight replies, keyed by request ID.
 local pending = {}
 
+--- How long repeated rejections stay quiet after one is logged, since an unthrottled report would recreate the console flood this gate exists to stop.
+BENCH.RealmRejectLogInterval = 10
+
+local lastRejectAt, suppressedRejects = 0, 0
+
+--- Identify a reply's sender for the log by SteamID only; a nickname is player-controlled text.
+--- @param ply Player?
+--- @return string
+local function senderName(ply)
+	if not IsValid(ply) then
+		return "the server"
+	end
+
+	return ply:SteamID() or "an unidentified player"
+end
+
+--- Report a dropped reply, immediately for the first in a burst and then at most once per RealmRejectLogInterval.
+--- @param message string
+local function reportRejection(message)
+	local now = SysTime()
+	if now - lastRejectAt < BENCH.RealmRejectLogInterval then
+		suppressedRejects = suppressedRejects + 1
+		return
+	end
+
+	if suppressedRejects > 0 then
+		message = string.format("%s (%d further rejection(s) suppressed)", message, suppressedRejects)
+	end
+
+	lastRejectAt, suppressedRejects = now, 0
+	BENCH.Logging.ForceError(message)
+end
+
 --- Record that this realm sent a request, so its reply can be told apart from an unsolicited one.
 --- @param requestId integer
 --- @param ply Player? The client the request went to, or nil when it went to the server.
@@ -46,28 +79,50 @@ function BENCH:ForgetRealmRequest(requestId)
 	pending[requestId] = nil
 end
 
---- Whether a reply may be acted on: it must answer a request this realm actually sent, and come from the party it was sent to.
---- Without this the server would act on any client's unsolicited "reply", since net receivers are open to every connected player.
+--- Whether a reply may be acted on: net receivers are open to every connected player, so it must answer a request this realm sent, from the party it went to.
 --- @param requestId integer
 --- @param ply Player? The sender, as passed to the net receiver (nil serverside means the server itself).
 --- @return boolean
 function BENCH:AcceptRealmReply(requestId, ply)
 	local request = outstanding[requestId]
 	if not request then
+		reportRejection(string.format("Dropped an unsolicited realm reply for request #%d from %s.", requestId, senderName(ply)))
 		return false
 	end
 
 	if SysTime() > request.expiry then
-		self:ForgetRealmRequest(requestId)
+		self:ExpireRealmRequest(requestId)
 		return false
 	end
 
-	if SERVER then
-		return IsValid(ply) and request.ply == ply
+	if SERVER and not (IsValid(ply) and request.ply == ply) then
+		reportRejection(string.format("Dropped a realm reply for request #%d from %s, which was not the player it was sent to.", requestId, senderName(ply)))
+		return false
 	end
 
 	return true
 end
+
+--- Drop a request that ran out of time, warning so a run that never reported back is visible rather than silent.
+--- @param requestId integer
+function BENCH:ExpireRealmRequest(requestId)
+	if not outstanding[requestId] then
+		return
+	end
+
+	self.Logging.ForceWarning(string.format("Realm request #%d timed out after %d seconds without a complete reply.", requestId, self.RealmRequestTimeout))
+	self:ForgetRealmRequest(requestId)
+end
+
+--- Sweep timed-out requests, so a reply that never arrives is reported rather than sitting outstanding.
+timer.Create("InternetBenchmarkRealmSweep", 60, 0, function()
+	local now = SysTime()
+	for requestId, request in pairs(outstanding) do
+		if now > request.expiry then
+			BENCH:ExpireRealmRequest(requestId)
+		end
+	end
+end)
 
 if SERVER then
 	hook.Add("PlayerDisconnected", "InternetBenchmarkRealmCleanup", function(ply)
@@ -139,6 +194,7 @@ net.Receive("ib_realm_result", function(_, ply)
 	end
 
 	if index < 1 or index > count or len > BENCH.RealmChunkSize then
+		reportRejection(string.format("Dropped a malformed realm reply for request #%d from %s: chunk %d of %d, %d bytes.", requestId, senderName(ply), index, count, len))
 		BENCH:ForgetRealmRequest(requestId)
 		return
 	end
@@ -158,6 +214,7 @@ net.Receive("ib_realm_result", function(_, ply)
 	buffer.size = buffer.size + #chunk
 
 	if buffer.size > BENCH.RealmMaxReplyBytes then
+		reportRejection(string.format("Realm reply for request #%d from %s exceeded the %d byte reassembly limit; dropped.", requestId, senderName(ply), BENCH.RealmMaxReplyBytes))
 		BENCH:ForgetRealmRequest(requestId)
 		return
 	end
@@ -168,6 +225,7 @@ net.Receive("ib_realm_result", function(_, ply)
 
 	for position = 1, count do
 		if not buffer[position] then
+			reportRejection(string.format("Dropped an incomplete realm reply for request #%d from %s: chunk %d of %d never arrived.", requestId, senderName(ply), position, count))
 			BENCH:ForgetRealmRequest(requestId)
 			return
 		end

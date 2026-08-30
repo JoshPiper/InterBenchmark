@@ -85,9 +85,12 @@ to the *other* realm from wherever you typed it, over the network:
 > **Trust, and production servers.** `--realm=client` hands a named client the
 > job of running a benchmark and relays what comes back into your server
 > console. A reply is only accepted from the exact player that request was sent
-> to, and only while that request is outstanding — but its *contents* are still
-> whatever that client chose to send. Point it at clients you trust, and read
-> relayed output as their claim rather than as a measurement you took.
+> to, and only while that request is outstanding — anything else is dropped and
+> logged as an error, and a request that never gets answered is logged as a
+> warning once it times out. What a legitimate reply *contains*, though, is
+> still whatever that client chose to send: point `--realm=client` at clients
+> you trust, and read relayed output as their claim rather than as a
+> measurement you took.
 >
 > More broadly, this is a development and profiling tool. A run deliberately
 > pins a core for minutes and stops the garbage collector for the duration of

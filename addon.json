@@ -10,6 +10,7 @@
 		".glualint.json",
 		".release-please-manifest.json",
 		"CHANGELOG.md",
+		"CONTRIBUTING.md",
 		"LICENSE",
 		"README.md",
 		"addon.json",

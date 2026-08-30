@@ -338,6 +338,10 @@ Inside the artifact, the environment statement's `Suite Build` row carries the
 same commit, closing the loop from a published benchmark report back to the
 exact source that produced its numbers.
 
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md).
+
 ## Licence
 
 [MIT](LICENSE).

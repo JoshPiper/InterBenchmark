@@ -345,7 +345,7 @@ it gates on the numbers: results from a shared CI runner describe that runner,
 not the candidates. See [tools/benchmark/README.md](tools/benchmark/README.md).
 
 The weekly run is published to
-[GitHub Pages](https://joshpiper.github.io/InterBenchmark/reports/), so the
+[GitHub Pages](https://doctor-internet.dev/InterBenchmark/reports/), so the
 suite's own results can be read without installing anything. It is measured on a
 shared Actions runner and the page says so at length — it is a fixed, repeatable
 vantage point, not an authoritative measurement. Client-only trials never appear

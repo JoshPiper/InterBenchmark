@@ -73,7 +73,7 @@ return {
 				INTERNET_BENCHMARK:TrackRealmRequest(910006, leaving)
 				INTERNET_BENCHMARK:TrackRealmRequest(910007, staying)
 
-				hook.Run("PlayerDisconnected", leaving)
+				hook.GetTable().PlayerDisconnected.InternetBenchmarkRealmCleanup(leaving)
 
 				local dropped = INTERNET_BENCHMARK:AcceptRealmReply(910006, leaving)
 				local kept = INTERNET_BENCHMARK:AcceptRealmReply(910007, staying)

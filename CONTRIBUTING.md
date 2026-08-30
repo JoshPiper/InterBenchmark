@@ -12,9 +12,10 @@ This document exists to:
 ## Conventional Commits
 
 release-please reads commit messages to drive versioning, changelogs and
-releases. PRs land squashed, so the **PR title** is the commit message that
-ends up on `main` — it has to carry the prefix, whatever the commits inside
-the branch look like.
+releases. PRs land squashed by default, so the **PR title** is normally the
+commit message that ends up on `main` — it has to carry the prefix, whatever
+the commits inside the branch look like. See
+[Merging and updating](#merging-and-updating) for the case where they don't.
 
 Format: `<type>[optional scope]: <description>`
 
@@ -45,6 +46,33 @@ If a PR mixes several logical changes, split the commits by type rather than
 reaching for whichever tag sounds biggest. release-please aggregates every
 commit into the changelog regardless, so there's no upside to lumping it all
 under one `feat:` — and smaller commits review better besides.
+
+---
+
+## Merging and updating
+
+Squash or rebase — not a merge commit.
+
+**Merging a PR**: squash is the default, and it's what makes the PR title the
+message release-please reads. Get the title right and the branch's own commit
+subjects don't matter. Rebase-and-merge is fine for a branch whose commits are
+each worth keeping on their own, but then every one of them lands on `main`
+individually and release-please parses every one, so each needs a valid prefix
+of its own.
+
+**Updating a branch that's fallen behind `main`**: rebase onto it, don't merge
+it in.
+
+```bash
+git fetch origin main
+git rebase origin/main
+git push --force-with-lease
+```
+
+Merging in the other direction buries your change among unrelated ones and
+leaves the PR carrying commits that are already on `main`. Prefer
+`--force-with-lease` over `--force`: it refuses the push if someone else has
+touched the branch since you last fetched.
 
 ---
 

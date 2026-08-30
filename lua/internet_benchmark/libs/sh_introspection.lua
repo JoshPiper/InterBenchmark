@@ -18,6 +18,9 @@ INTROSPECT.Blacklist = {
 }
 
 --- Cache of value to global route lookups.
+--- A false entry records a value already searched for, and not found,
+--- anywhere under _G; without it every unresolvable value re-walks the
+--- whole global table on each lookup.
 INTROSPECT.Cache = {}
 
 --- Read a range of lines from a file on the LUA search path.
@@ -42,9 +45,14 @@ end
 --- @param var any The value to search for.
 --- @return string|false # The route (such as "math.max"), or false when none was found.
 function INTROSPECT:Lookup(var, inTable, route, seen)
-	if self.Cache[var] then
-		return self.Cache[var]
+	local cached = self.Cache[var]
+	if cached ~= nil then
+		return cached
 	end
+
+	-- Only a search that started at _G can record a miss: one confined to a
+	-- caller-supplied table says nothing about the value's reachability.
+	local searchedGlobals = inTable == nil
 
 	if not seen then seen = {[_G] = true} end
 	if not route then route = {} end
@@ -85,6 +93,10 @@ function INTROSPECT:Lookup(var, inTable, route, seen)
 
 		seen[v] = nil
 		table.remove(route)
+	end
+
+	if searchedGlobals and var ~= nil then
+		self.Cache[var] = false
 	end
 
 	return false

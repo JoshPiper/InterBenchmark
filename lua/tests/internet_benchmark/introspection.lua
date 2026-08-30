@@ -257,6 +257,52 @@ return {
 		},
 
 		{
+			name = "Caches a failed search of the globals, so a miss is walked only once",
+			func = function(state)
+				state.missing = function() end
+
+				expect(INTERNET_BENCHMARK.Introspection:Lookup(state.missing)).to.beFalse()
+				expect(INTERNET_BENCHMARK.Introspection.Cache[state.missing]).to.beFalse()
+				expect(INTERNET_BENCHMARK.Introspection:Lookup(state.missing)).to.beFalse()
+			end,
+
+			cleanup = function(state)
+				INTERNET_BENCHMARK.Introspection.Cache[state.missing] = nil
+			end
+		},
+
+		{
+			name = "Answers from a cached miss without searching again",
+			func = function(state)
+				state.missing = {}
+				INTERNET_BENCHMARK.Introspection.Cache[state.missing] = false
+
+				local route = INTERNET_BENCHMARK.Introspection:Lookup(state.missing, {found = state.missing}, {}, {})
+				expect(route).to.beFalse()
+			end,
+
+			cleanup = function(state)
+				INTERNET_BENCHMARK.Introspection.Cache[state.missing] = nil
+			end
+		},
+
+		{
+			name = "Does not record a miss from a search confined to a caller's table",
+			func = function(state)
+				state.missing = {}
+
+				local route = INTERNET_BENCHMARK.Introspection:Lookup(state.missing, {other = {}}, {}, {})
+
+				expect(route).to.beFalse()
+				expect(INTERNET_BENCHMARK.Introspection.Cache[state.missing]).to.beNil()
+			end,
+
+			cleanup = function(state)
+				INTERNET_BENCHMARK.Introspection.Cache[state.missing] = nil
+			end
+		},
+
+		{
 			name = "Caches a route once found",
 			func = function()
 				local target = {}

@@ -41,7 +41,7 @@ The suite loads on both the server and the client.
 
 Run them from the server console, or from the client console (`F10` / tilde) to
 benchmark the client realm — rendering trials such as `draw_rect` only run there.
-On dedicated servers, benchmark commands are restricted to the server console and
+On dedicated servers, every command above is restricted to the server console and
 superadmins.
 
 Pass `--dynamic` to either command to recalibrate each trial's iteration count

@@ -247,7 +247,12 @@ logging:Build("Warning")
 logging:Build("Info")
 logging:Build("Debug")
 
-concommand.Add("internet_benchmark_logging_report", function()
+concommand.Add("internet_benchmark_logging_report", function(ply)
+	if not BENCH:CanRunHere(ply) then
+		logging.Warning("Only superadmins may print the server's logging configuration.")
+		return
+	end
+
 	local last = math.huge
 	local cur = logging.Level
 

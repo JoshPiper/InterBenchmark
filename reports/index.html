@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Internet's Benchmark Suite — CI reference report</title>
+		<style>
+			:root {
+				color-scheme: light dark;
+				--bg: #fbfbfd; --fg: #1c1c1f; --muted: #5c5c66; --line: #dcdce4;
+				--card: #ffffff; --warn-bg: #fff5e6; --warn-line: #d99a2b; --warn-fg: #6b4508;
+			}
+			@media (prefers-color-scheme: dark) {
+				:root {
+					--bg: #131316; --fg: #e8e8ec; --muted: #9a9aa6; --line: #2c2c34;
+					--card: #1b1b20; --warn-bg: #2c2313; --warn-line: #a8791f; --warn-fg: #f0cd8d;
+				}
+			}
+			* { box-sizing: border-box; }
+			body {
+				margin: 0; padding: 2.5rem 1.25rem 4rem; background: var(--bg); color: var(--fg);
+				font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+			}
+			main { max-width: 60rem; margin: 0 auto; }
+			h1 { font-size: 1.75rem; margin: 0 0 .35rem; letter-spacing: -.02em; }
+			h2 { font-size: 1.1rem; margin: 2.5rem 0 .75rem; letter-spacing: -.01em; }
+			.lede { color: var(--muted); margin: 0 0 2rem; }
+			.warning {
+				background: var(--warn-bg); border: 1px solid var(--warn-line); border-left-width: 4px;
+				border-radius: 6px; padding: 1rem 1.15rem; margin: 0 0 1.5rem; color: var(--warn-fg);
+			}
+			.warning p { margin: 0; }
+			.warning p + p { margin-top: .6rem; }
+			.note { color: var(--muted); font-size: .925rem; }
+			.links { display: flex; flex-wrap: wrap; gap: .6rem; padding: 0; margin: 0 0 1rem; list-style: none; }
+			.links a {
+				display: block; padding: .55rem .9rem; background: var(--card); border: 1px solid var(--line);
+				border-radius: 6px; text-decoration: none; color: inherit; font-weight: 500;
+			}
+			.links a:hover { border-color: var(--muted); }
+			.links span { display: block; font-weight: 400; font-size: .8rem; color: var(--muted); }
+			.scroll { overflow-x: auto; }
+			table { border-collapse: collapse; width: 100%; font-size: .925rem; }
+			th, td { text-align: left; padding: .5rem .7rem; border-bottom: 1px solid var(--line); white-space: nowrap; }
+			th { font-size: .75rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+			td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; }
+			dl.env { display: grid; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); gap: .1rem 1.5rem; margin: 0; }
+			.env-row { display: flex; justify-content: space-between; gap: 1rem; padding: .35rem 0; border-bottom: 1px solid var(--line); }
+			dt { color: var(--muted); font-size: .875rem; }
+			dd { margin: 0; font-size: .875rem; text-align: right; font-variant-numeric: tabular-nums; }
+			.provenance, footer { color: var(--muted); font-size: .875rem; }
+			footer { margin-top: 3rem; padding-top: 1.25rem; border-top: 1px solid var(--line); }
+			a { color: inherit; }
+			code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .9em; }
+		</style>
+	</head>
+	<body>
+		<main>
+			<h1>Internet's Benchmark Suite</h1>
+			<p class="lede">An automated reference run, measured 2026-08-30 17:45:44 UTC.</p>
+
+			<div class="warning">
+				<p><strong>These are not authoritative numbers.</strong> This report is produced on a shared
+				GitHub Actions runner — a virtual machine with neighbours, unpredictable clock speed and
+				thermal behaviour. Timings here are only meaningful <em>relative to each other within this
+				one run</em>.</p>
+				<p>Do not compare them against another run of this page, against your own machine, or against
+				any absolute figure. To learn how these candidates behave on hardware you care about, run the
+				suite there.</p>
+			</div>
+
+			<p class="note"><strong>3 trials were not measured here.</strong>
+			A trial can gate itself on the environment it needs — a realm, a gamemode, a particular engine
+			build — and these opted out of this one: <code>draw_rect</code>, <code>ns_accessors</code>, <code>set_draw_color</code>.
+			Note that this report comes from a dedicated server, which has no client realm at all, so
+			rendering trials can only ever be timed by running the suite from a client console.</p>
+
+			<h2>Report</h2>
+			<ul class="links">
+				<li><a href="report.html">Full report<span>Every trial, with sources and box plots</span></a></li>
+				<li><a href="results.json">results.json<span>The same statistics, machine-readable</span></a></li>
+				<li><a href="environment.txt">environment.txt<span>The machine that produced them</span></a></li>
+			</ul>
+
+			<h2>14 trials, 46 candidates</h2>
+			<div class="scroll">
+				<table>
+					<thead>
+						<tr>
+							<th>Trial</th><th class="n">Candidates</th><th>Fastest</th>
+							<th class="n">Per call</th><th class="n">Spread</th>
+						</tr>
+					</thead>
+					<tbody>
+					<tr>
+						<td>Local vs Global</td>
+						<td class="n">2</td>
+						<td>t(3)</td>
+						<td class="n">30ns</td>
+						<td class="n">104%</td>
+					</tr>
+					<tr>
+						<td>Local vs Global (including Table Index)</td>
+						<td class="n">2</td>
+						<td>s(3.14)</td>
+						<td class="n">30ns</td>
+						<td class="n">108%</td>
+					</tr>
+					<tr>
+						<td>Localised Method Calls</td>
+						<td class="n">2</td>
+						<td>Local Call</td>
+						<td class="n">32.1ns</td>
+						<td class="n">100%</td>
+					</tr>
+					<tr>
+						<td>Unpack</td>
+						<td class="n">3</td>
+						<td>unpack4</td>
+						<td class="n">31.9ns</td>
+						<td class="n">218%</td>
+					</tr>
+					<tr>
+						<td>Finding and Returning a Maximum Value</td>
+						<td class="n">4</td>
+						<td>if num &gt; y then</td>
+						<td class="n">30ns</td>
+						<td class="n">107%</td>
+					</tr>
+					<tr>
+						<td>'not a' vs 'a or b'</td>
+						<td class="n">2</td>
+						<td>a or b</td>
+						<td class="n">30.2ns</td>
+						<td class="n">100%</td>
+					</tr>
+					<tr>
+						<td>Calculating a Power</td>
+						<td class="n">3</td>
+						<td>x * x</td>
+						<td class="n">30ns</td>
+						<td class="n">100%</td>
+					</tr>
+					<tr>
+						<td>Calculating Negative Modulus</td>
+						<td class="n">3</td>
+						<td>% operator</td>
+						<td class="n">30ns</td>
+						<td class="n">152%</td>
+					</tr>
+					<tr>
+						<td>For Loops</td>
+						<td class="n">8</td>
+						<td>for i length</td>
+						<td class="n">87.7ns</td>
+						<td class="n">3064%</td>
+					</tr>
+					<tr>
+						<td>Array Insertion</td>
+						<td class="n">6</td>
+						<td>tab[i]</td>
+						<td class="n">6.71ns</td>
+						<td class="n">591%</td>
+					</tr>
+					<tr>
+						<td>Distance vs DistToSqr</td>
+						<td class="n">2</td>
+						<td>DistToSqr</td>
+						<td class="n">156ns</td>
+						<td class="n">103%</td>
+					</tr>
+					<tr>
+						<td>String Templating</td>
+						<td class="n">3</td>
+						<td>string sub</td>
+						<td class="n">1.05us</td>
+						<td class="n">118%</td>
+					</tr>
+					<tr>
+						<td>val == false vs not val</td>
+						<td class="n">2</td>
+						<td>== false</td>
+						<td class="n">30.1ns</td>
+						<td class="n">100%</td>
+					</tr>
+					<tr>
+						<td>HasValue vs Key Lookup in Table Construction vs Upvalues</td>
+						<td class="n">4</td>
+						<td>Constructed Key Lookup</td>
+						<td class="n">30.2ns</td>
+						<td class="n">367%</td>
+					</tr>
+					</tbody>
+				</table>
+			</div>
+
+			<h2>Environment</h2>
+			<dl class="env">
+					<div class="env-row"><dt>Suite Version</dt><dd>3.1.0</dd></div>
+					<div class="env-row"><dt>Suite Build</dt><dd>dev</dd></div>
+					<div class="env-row"><dt>Generated</dt><dd>2026-08-30 17:45:44 UTC</dd></div>
+					<div class="env-row"><dt>Game Branch</dt><dd>unknown</dd></div>
+					<div class="env-row"><dt>Game Version</dt><dd>250723 (2025.07.23)</dd></div>
+					<div class="env-row"><dt>Lua Runtime</dt><dd>LuaJIT 2.0.4</dd></div>
+					<div class="env-row"><dt>Architecture</dt><dd>Linux/x86</dd></div>
+					<div class="env-row"><dt>Operating System</dt><dd>Linux</dd></div>
+					<div class="env-row"><dt>Kernel</dt><dd>6.17.0-1022-azure</dd></div>
+					<div class="env-row"><dt>CPU Model</dt><dd>AMD EPYC 9V74 80-Core Processor</dd></div>
+					<div class="env-row"><dt>Physical Cores</dt><dd>2</dd></div>
+					<div class="env-row"><dt>Total Memory</dt><dd>15.61 GiB</dd></div>
+					<div class="env-row"><dt>Map</dt><dd>gm_construct</dd></div>
+			</dl>
+
+			<p class="provenance">Built from <a href="https://github.com/JoshPiper/InterBenchmark/commit/f17cffc8a9fb363ce551661b82bb5c7f67d948fd"><code>f17cffc</code></a> by <a href="https://github.com/JoshPiper/InterBenchmark/actions/runs/33326015558">run 33326015558</a>.</p>
+			<footer>
+				Generated by <code>tools/benchmark</code> in Internet's Benchmark Suite.
+			</footer>
+		</main>
+	</body>
+</html>

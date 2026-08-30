@@ -1,0 +1,32 @@
+Internet's Benchmark Suite: Environment Statement
+
+Suite Version: 3.1.0
+Suite Build: dev
+Generated: 2026-08-30 17:45:44 UTC
+Realm: Server
+Hosting: Dedicated Server
+Operating System: Linux
+Game Branch: unknown
+Game Version: 250723 (2025.07.23)
+Lua Runtime: LuaJIT 2.0.4
+Architecture: Linux/x86
+JIT Compiler: Enabled
+Map: gm_construct
+Tick Interval: 0.0150s (67 ticks/s)
+Players: 1
+System Info Module: gm_sysinfo 3.1.0
+OS Version: Linux
+Kernel: 6.17.0-1022-azure
+Distribution: linux
+CPU Model: AMD EPYC 9V74 80-Core Processor
+CPU Architecture: x86_64
+Physical Cores: 2
+Total Memory: 15.61 GiB
+Available Memory: 14.47 GiB
+Total Swap: 3.00 GiB
+Load Average: 0.78 / 0.44 / 0.18 (1/5/15 min)
+Host Uptime: 0d 0h 3m
+
+Host details above are provided by the gm_sysinfo binary module.
+CPU clock speed and GPU are not exposed by plain GLua or the
+module; record those by hand alongside this statement.

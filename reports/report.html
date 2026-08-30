@@ -1,0 +1,4564 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Benchmarking Report</title>
+		<style>@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600&display=swap');
+
+:root {
+	--bg: #FCFCFF;
+	--surface: #FFFFFF;
+	--border: #EEEEEE;
+	--ink: #10161A;
+	--muted: #868F9B;
+	--code: #F4F4F4;
+	--accent: #28285D;
+	--warn: #28285D;
+	--critical: #B4483A;
+
+	--sidebar-a: #1A1A3E;
+	--sidebar-b: #28285D;
+	--sidebar-ink: #FCFCFF;
+	--sidebar-muted: #A9B0C4;
+	--sidebar-faint: #868F9B;
+	--sidebar-hover: rgba(252, 252, 255, 0.14);
+	--sidebar-border: rgba(252, 252, 255, 0.14);
+}
+
+@media (prefers-color-scheme: dark) {
+	:root:not([data-theme="light"]) {
+		--bg: #12122B;
+		--surface: #1A1A3E;
+		--border: #2E2E58;
+		--ink: #FCFCFF;
+		--muted: #9BA3B4;
+		--code: #0E0E22;
+		--accent: #8B93D4;
+		--warn: #8B93D4;
+		--critical: #E0857A;
+	}
+}
+
+:root[data-theme="dark"] {
+	--bg: #12122B;
+	--surface: #1A1A3E;
+	--border: #2E2E58;
+	--ink: #FCFCFF;
+	--muted: #9BA3B4;
+	--code: #0E0E22;
+	--accent: #8B93D4;
+	--accent-ink: #12122B;
+	--warn: #8B93D4;
+	--critical: #E0857A;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+html, body {
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	font-family: Roboto, sans-serif;
+	background: var(--bg);
+	color: var(--ink);
+}
+
+a {
+	color: var(--accent);
+}
+
+.layout {
+	display: grid;
+	grid-template-columns: 300px minmax(0, 1fr);
+	min-height: 100vh;
+}
+
+/* Sidebar */
+
+.sidebar {
+	background: linear-gradient(30deg, var(--sidebar-a) 50%, var(--sidebar-b) 50%);
+	color: var(--sidebar-ink);
+	display: flex;
+	flex-direction: column;
+	position: sticky;
+	top: 0;
+	height: 100vh;
+}
+
+.sidebar-header {
+	padding: 28px 24px 20px;
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+	border-bottom: 1px solid var(--sidebar-border);
+}
+
+.sidebar-brand {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+.sidebar-brand-text {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+
+.sidebar-eyebrow {
+	font-size: 13px;
+	font-weight: 600;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+}
+
+.sidebar-eyebrow-sub {
+	font-size: 11px;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	color: var(--sidebar-muted);
+}
+
+.sidebar-summary {
+	font-size: 11px;
+	color: var(--sidebar-muted);
+	letter-spacing: 0.04em;
+}
+
+.sidebar-nav {
+	flex: 1;
+	overflow-y: auto;
+	padding: 12px 12px 24px;
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+
+.nav-link {
+	all: unset;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 10px 12px;
+	border-radius: 3px;
+	font-size: 12px;
+	font-weight: 600;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	color: var(--sidebar-ink);
+}
+
+.nav-link:hover {
+	opacity: 0.8;
+}
+
+.nav-link.active {
+	background: var(--sidebar-hover);
+}
+
+.nav-section-label {
+	padding: 18px 12px 8px;
+	font-size: 10px;
+	letter-spacing: 0.16em;
+	text-transform: uppercase;
+	color: var(--sidebar-faint);
+}
+
+.nav-trial {
+	all: unset;
+	cursor: pointer;
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 10px;
+	padding: 9px 12px;
+	border-radius: 3px;
+	font-size: 12.5px;
+	line-height: 1.35;
+	color: var(--sidebar-muted);
+}
+
+.nav-trial:hover {
+	opacity: 0.8;
+}
+
+.nav-trial.active {
+	background: var(--sidebar-hover);
+	color: var(--sidebar-ink);
+}
+
+.nav-trial-spread {
+	font-size: 10.5px;
+	font-variant-numeric: tabular-nums;
+	color: var(--sidebar-faint);
+	white-space: nowrap;
+}
+
+.nav-trial-spread.sev-critical {
+	color: var(--critical);
+}
+
+.sidebar-footer {
+	padding: 16px 20px;
+	border-top: 1px solid var(--sidebar-border);
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+}
+
+.sidebar-footer-label {
+	font-size: 10px;
+	letter-spacing: 0.16em;
+	text-transform: uppercase;
+	color: var(--sidebar-faint);
+}
+
+.theme-toggle {
+	appearance: none;
+	cursor: pointer;
+	border: 1px solid var(--sidebar-border);
+	background: transparent;
+	color: var(--sidebar-ink);
+	font: inherit;
+	font-size: 11px;
+	font-weight: 600;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	padding: 7px 14px;
+	border-radius: 3px;
+}
+
+.theme-toggle:hover {
+	opacity: 0.8;
+}
+
+/* Main */
+
+main {
+	min-width: 0;
+}
+
+.view {
+	display: none;
+}
+
+.view.active {
+	display: block;
+}
+
+.page {
+	padding: 56px 56px 80px;
+	max-width: 1180px;
+	display: flex;
+	flex-direction: column;
+	gap: 40px;
+}
+
+.page-header {
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+}
+
+.eyebrow {
+	font-size: 11px;
+	letter-spacing: 0.16em;
+	text-transform: uppercase;
+	color: var(--muted);
+}
+
+.page-header h1 {
+	margin: 0;
+	font-size: 42px;
+	font-weight: 600;
+	letter-spacing: -0.01em;
+	line-height: 1.1;
+}
+
+.page-header p {
+	margin: 0;
+	max-width: 62ch;
+	font-size: 14.5px;
+	line-height: 1.65;
+	color: var(--muted);
+}
+
+.section-title {
+	margin: 0;
+	font-size: 13px;
+	font-weight: 600;
+	letter-spacing: 0.16em;
+	text-transform: uppercase;
+	color: var(--muted);
+}
+
+.section-head {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 16px;
+	flex-wrap: wrap;
+}
+
+.section-note {
+	font-size: 11px;
+	color: var(--muted);
+}
+
+/* Tiles */
+
+.tiles {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+	gap: 16px;
+}
+
+.tile {
+	border: 1px solid var(--border);
+	background: var(--surface);
+	padding: 20px;
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
+.tile-label {
+	font-size: 10px;
+	letter-spacing: 0.16em;
+	text-transform: uppercase;
+	color: var(--muted);
+}
+
+.tile-value {
+	font-size: 30px;
+	font-weight: 600;
+	font-variant-numeric: tabular-nums;
+}
+
+.tile-value.tile-value-text {
+	font-size: 17px;
+	line-height: 1.35;
+	word-break: break-word;
+}
+
+.tile-note {
+	font-size: 11.5px;
+	color: var(--muted);
+}
+
+/* Overview table */
+
+.summary-table {
+	display: flex;
+	flex-direction: column;
+}
+
+.summary-head {
+	display: grid;
+	grid-template-columns: minmax(0, 2.1fr) minmax(0, 1.5fr) 96px minmax(0, 1.6fr);
+	gap: 20px;
+	padding: 0 4px 10px;
+	font-size: 10px;
+	letter-spacing: 0.16em;
+	text-transform: uppercase;
+	color: var(--muted);
+	border-bottom: 1px solid var(--border);
+}
+
+.summary-row {
+	all: unset;
+	cursor: pointer;
+	display: grid;
+	grid-template-columns: minmax(0, 2.1fr) minmax(0, 1.5fr) 96px minmax(0, 1.6fr);
+	gap: 20px;
+	align-items: center;
+	padding: 14px 4px;
+	border-bottom: 1px solid var(--border);
+}
+
+.summary-row:hover {
+	background: var(--code);
+}
+
+.summary-name {
+	display: flex;
+	flex-direction: column;
+	gap: 3px;
+	min-width: 0;
+}
+
+.summary-name-title {
+	font-size: 14px;
+	font-weight: 600;
+	line-height: 1.3;
+}
+
+.summary-name-sub {
+	font-size: 11px;
+	color: var(--muted);
+}
+
+.summary-winner {
+	display: flex;
+	flex-direction: column;
+	gap: 3px;
+	min-width: 0;
+}
+
+.summary-winner-name {
+	font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+	font-size: 12.5px;
+	color: var(--ink);
+}
+
+.summary-winner-sub {
+	font-size: 11px;
+	color: var(--muted);
+	font-variant-numeric: tabular-nums;
+}
+
+.summary-spread {
+	text-align: right;
+	font-size: 13px;
+	font-variant-numeric: tabular-nums;
+	color: var(--muted);
+}
+
+.summary-spread.sev-warn {
+	color: var(--warn);
+}
+
+.summary-spread.sev-critical {
+	color: var(--critical);
+}
+
+.summary-bar {
+	display: block;
+	height: 8px;
+	background: var(--code);
+	position: relative;
+	overflow: hidden;
+}
+
+.summary-bar > span {
+	position: absolute;
+	inset: 0 auto 0 0;
+	background: var(--muted);
+}
+
+.summary-bar.sev-warn > span {
+	background: var(--warn);
+}
+
+.summary-bar.sev-critical > span {
+	background: var(--critical);
+}
+
+/* Environment */
+
+.env-groups {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+	gap: 20px;
+	align-items: start;
+}
+
+.env-group {
+	border: 1px solid var(--border);
+	background: var(--surface);
+}
+
+.env-group h2 {
+	margin: 0;
+	padding: 14px 20px;
+	border-bottom: 1px solid var(--border);
+	font-size: 11px;
+	font-weight: 600;
+	letter-spacing: 0.16em;
+	text-transform: uppercase;
+	color: var(--muted);
+}
+
+.env-group dl {
+	margin: 0;
+	padding: 6px 20px 16px;
+	display: flex;
+	flex-direction: column;
+}
+
+.env-row {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr);
+	gap: 16px;
+	padding: 11px 0;
+	border-bottom: 1px solid var(--border);
+	align-items: baseline;
+}
+
+.env-row:last-child {
+	border-bottom: none;
+}
+
+.env-row dt {
+	font-size: 12.5px;
+	color: var(--muted);
+}
+
+.env-row dd {
+	margin: 0;
+	font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+	font-size: 12.5px;
+	font-variant-numeric: tabular-nums;
+	word-break: break-word;
+}
+
+/* Buttons & tags */
+
+.btn {
+	all: unset;
+	cursor: pointer;
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 8px 16px;
+	border: 1px solid var(--border);
+	font-size: 12px;
+	font-weight: 600;
+	letter-spacing: 0.04em;
+}
+
+.btn:hover {
+	opacity: 0.8;
+}
+
+.tag {
+	display: inline-flex;
+	align-items: center;
+	padding: 6px 12px;
+	border: 1px solid var(--border);
+	background: var(--surface);
+	font-size: 11px;
+	font-weight: 600;
+	letter-spacing: 0.04em;
+	color: var(--muted);
+}
+
+.tag.tag-accent {
+	border-color: var(--accent);
+	color: var(--accent);
+}
+
+.tag-row {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 4px;
+}
+
+/* Trial view */
+
+.trial-hero {
+	border: 1px solid var(--border);
+	background: linear-gradient(30deg, var(--sidebar-a) 50%, var(--sidebar-b) 50%);
+	color: var(--sidebar-ink);
+	padding: 30px 32px;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-end;
+	justify-content: space-between;
+	gap: 28px;
+}
+
+.trial-hero-winner {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	min-width: 0;
+}
+
+.trial-hero-label {
+	font-size: 10px;
+	letter-spacing: 0.18em;
+	text-transform: uppercase;
+	color: var(--sidebar-muted);
+}
+
+.trial-hero-name {
+	font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+	font-size: 28px;
+	font-weight: 600;
+	line-height: 1.2;
+}
+
+.trial-hero-note {
+	font-size: 13px;
+	color: var(--sidebar-muted);
+}
+
+.trial-hero-stats {
+	display: flex;
+	gap: 40px;
+	flex-wrap: wrap;
+}
+
+.trial-hero-stat {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
+.trial-hero-stat-label {
+	font-size: 10px;
+	letter-spacing: 0.16em;
+	text-transform: uppercase;
+	color: var(--sidebar-faint);
+}
+
+.trial-hero-stat-value {
+	font-size: 22px;
+	font-weight: 600;
+	font-variant-numeric: tabular-nums;
+}
+
+.result-rows {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.result-row {
+	border: 1px solid var(--border);
+	border-left: 3px solid var(--accent);
+	background: var(--surface);
+	padding: 16px 20px;
+	display: grid;
+	grid-template-columns: 26px minmax(0, 2fr) minmax(0, 1.5fr) 104px;
+	gap: 20px;
+	align-items: center;
+}
+
+.result-row.sev-warn {
+	border-left-color: var(--warn);
+}
+
+.result-row.sev-critical {
+	border-left-color: var(--critical);
+}
+
+.result-rank {
+	font-size: 13px;
+	font-variant-numeric: tabular-nums;
+	color: var(--muted);
+}
+
+.result-name {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	min-width: 0;
+}
+
+.result-name-value {
+	font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+	font-size: 14px;
+	word-break: break-word;
+}
+
+.result-name-sub {
+	font-size: 11px;
+	color: var(--muted);
+	font-variant-numeric: tabular-nums;
+}
+
+.result-bar {
+	display: block;
+	height: 10px;
+	background: var(--code);
+	position: relative;
+	overflow: hidden;
+}
+
+.result-bar > span {
+	position: absolute;
+	inset: 0 auto 0 0;
+	background: var(--accent);
+}
+
+.result-row.sev-warn .result-bar > span {
+	background: var(--warn);
+}
+
+.result-row.sev-critical .result-bar > span {
+	background: var(--critical);
+}
+
+.result-pct {
+	text-align: right;
+	display: flex;
+	flex-direction: column;
+	gap: 3px;
+}
+
+.result-pct-value {
+	font-size: 18px;
+	font-weight: 600;
+	font-variant-numeric: tabular-nums;
+}
+
+.result-pct-sub {
+	font-size: 11px;
+	color: var(--muted);
+	font-variant-numeric: tabular-nums;
+}
+
+.boxplot-legend {
+	display: flex;
+	gap: 18px;
+	align-items: center;
+	font-size: 11px;
+	color: var(--muted);
+}
+
+.boxplot-legend-item {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.boxplot-swatch-box {
+	width: 18px;
+	height: 9px;
+	background: var(--accent);
+	opacity: 0.35;
+}
+
+.boxplot-swatch-median {
+	width: 2px;
+	height: 12px;
+	background: var(--ink);
+}
+
+.boxplot-swatch-mean {
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	background: var(--accent);
+}
+
+.boxplot {
+	border: 1px solid var(--border);
+	background: var(--surface);
+	padding: 26px 28px;
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+}
+
+.boxplot-row {
+	display: grid;
+	grid-template-columns: 180px minmax(0, 1fr) 92px;
+	gap: 18px;
+	align-items: center;
+}
+
+.boxplot-row-name {
+	font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+	font-size: 12px;
+	color: var(--ink);
+	word-break: break-word;
+}
+
+.boxplot-track {
+	position: relative;
+	display: block;
+	height: 26px;
+}
+
+.boxplot-baseline {
+	position: absolute;
+	top: 50%;
+	height: 1px;
+	background: var(--border);
+	left: 0;
+	right: 0;
+}
+
+.boxplot-whisker {
+	position: absolute;
+	top: 50%;
+	height: 1px;
+	background: var(--muted);
+}
+
+.boxplot-cap {
+	position: absolute;
+	top: 25%;
+	bottom: 25%;
+	width: 1px;
+	background: var(--muted);
+}
+
+.boxplot-box {
+	position: absolute;
+	top: 15%;
+	bottom: 15%;
+	min-width: 2px;
+	background: var(--accent);
+	opacity: 0.35;
+}
+
+.boxplot-median {
+	position: absolute;
+	top: 8%;
+	bottom: 8%;
+	width: 2px;
+	background: var(--ink);
+}
+
+.boxplot-mean {
+	position: absolute;
+	top: 50%;
+	width: 8px;
+	height: 8px;
+	margin: -4px 0 0 -4px;
+	border-radius: 50%;
+	background: var(--accent);
+}
+
+.boxplot-row-range {
+	text-align: right;
+	font-size: 11.5px;
+	font-variant-numeric: tabular-nums;
+	color: var(--muted);
+}
+
+.boxplot-footnote {
+	font-size: 11px;
+	color: var(--muted);
+	border-top: 1px solid var(--border);
+	padding-top: 14px;
+}
+
+.definitions-layout {
+	display: grid;
+	grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+	gap: 32px;
+	align-items: start;
+}
+
+.definitions {
+	display: flex;
+	flex-direction: column;
+	gap: 18px;
+}
+
+.definition {
+	border: 1px solid var(--border);
+	background: var(--surface);
+}
+
+.definition-head {
+	padding: 12px 16px;
+	border-bottom: 1px solid var(--border);
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+}
+
+.definition-head-name {
+	font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+	font-size: 13px;
+	word-break: break-word;
+}
+
+.definition-description {
+	margin: 0;
+	padding: 12px 16px;
+	border-bottom: 1px solid var(--border);
+	font-size: 12.5px;
+	line-height: 1.6;
+	color: var(--muted);
+}
+
+.predefines {
+	display: flex;
+	flex-direction: column;
+	gap: 18px;
+}
+
+.predefines-note {
+	margin: 0;
+	font-size: 12px;
+	line-height: 1.6;
+	color: var(--muted);
+}
+
+pre {
+	margin: 0;
+	padding: 16px;
+	background: var(--code);
+	font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+	font-size: 12.5px;
+	line-height: 1.6;
+	overflow-x: auto;
+	color: var(--ink);
+}
+
+pre code {
+	background: none;
+	border: none;
+	padding: 0;
+	display: inline;
+}
+</style>
+	</head>
+
+	<body>
+		<div class="layout">
+			<aside class="sidebar">
+				<div class="sidebar-header">
+					<div class="sidebar-brand">
+						<div class="sidebar-brand-text">
+							<span class="sidebar-eyebrow">Benchmarking</span>
+							<span class="sidebar-eyebrow-sub">Report</span>
+						</div>
+					</div>
+					<span class="sidebar-summary">14 trials &middot; 46 candidates</span>
+				</div>
+
+				<nav class="sidebar-nav">
+					<button type="button" class="nav-link active" data-view="overview">Overview</button>
+					<button type="button" class="nav-link" data-view="environment">Environment</button>
+
+					<span class="nav-section-label">Trials</span>
+
+					<button type="button" class="nav-trial" data-view="trial:local_vs_global">
+	<span>Local Vs Global</span>
+	<span class="nav-trial-spread ">104%</span>
+</button>
+
+<button type="button" class="nav-trial" data-view="trial:local_vs_table_index">
+	<span>Local Vs Global (including Table Index)</span>
+	<span class="nav-trial-spread ">108%</span>
+</button>
+
+<button type="button" class="nav-trial" data-view="trial:localised_method">
+	<span>Localised Method Calls</span>
+	<span class="nav-trial-spread ">100%</span>
+</button>
+
+<button type="button" class="nav-trial" data-view="trial:unpack">
+	<span>Unpack</span>
+	<span class="nav-trial-spread sev-critical">218%</span>
+</button>
+
+<button type="button" class="nav-trial" data-view="trial:find_max">
+	<span>Finding And Returning A Maximum Value</span>
+	<span class="nav-trial-spread ">107%</span>
+</button>
+
+<button type="button" class="nav-trial" data-view="trial:nots">
+	<span>'not A' Vs 'a Or B'</span>
+	<span class="nav-trial-spread ">100%</span>
+</button>
+
+<button type="button" class="nav-trial" data-view="trial:powers">
+	<span>Calculating A Power</span>
+	<span class="nav-trial-spread ">100%</span>
+</button>
+
+<button type="button" class="nav-trial" data-view="trial:modulo">
+	<span>Calculating Negative Modulus</span>
+	<span class="nav-trial-spread ">152%</span>
+</button>
+
+<button type="button" class="nav-trial" data-view="trial:for_loops">
+	<span>For Loops</span>
+	<span class="nav-trial-spread sev-critical">3064%</span>
+</button>
+
+<button type="button" class="nav-trial" data-view="trial:array_insertion">
+	<span>Array Insertion</span>
+	<span class="nav-trial-spread sev-critical">591%</span>
+</button>
+
+<button type="button" class="nav-trial" data-view="trial:distances">
+	<span>Distance Vs DistToSqr</span>
+	<span class="nav-trial-spread ">103%</span>
+</button>
+
+<button type="button" class="nav-trial" data-view="trial:string_templating">
+	<span>String Templating</span>
+	<span class="nav-trial-spread ">118%</span>
+</button>
+
+<button type="button" class="nav-trial" data-view="trial:equals_false_vs_not">
+	<span>Val == False Vs Not Val</span>
+	<span class="nav-trial-spread ">100%</span>
+</button>
+
+<button type="button" class="nav-trial" data-view="trial:table_lookup">
+	<span>HasValue Vs Key Lookup In Table Construction Vs Upvalues</span>
+	<span class="nav-trial-spread sev-critical">367%</span>
+</button>
+
+				</nav>
+
+				<div class="sidebar-footer">
+					<span class="sidebar-footer-label">Appearance</span>
+					<button type="button" class="theme-toggle" data-theme-toggle>Dark</button>
+				</div>
+			</aside>
+
+			<main>
+				<section class="view active" data-view-section="overview">
+	<div class="page">
+		<header class="page-header">
+			<span class="eyebrow">Lua micro-benchmarks</span>
+			<h1>Benchmarking Report</h1>
+			<p>Every trial ranks its candidates by mean run time; percentages are relative to the fastest candidate in that trial.</p>
+		</header>
+
+		<div class="tiles">
+			<div class="tile">
+				<span class="tile-label">Trials</span>
+				<span class="tile-value">14</span>
+			</div>
+			<div class="tile">
+				<span class="tile-label">Candidates</span>
+				<span class="tile-value">46</span>
+			</div>
+			<div class="tile">
+				<span class="tile-label">Widest spread</span>
+				<span class="tile-value">3064%</span>
+				<span class="tile-note">For Loops</span>
+			</div>
+			<div class="tile">
+				<span class="tile-label">Ties (&lt;5%)</span>
+				<span class="tile-value">6</span>
+				<span class="tile-note">no meaningful winner</span>
+			</div>
+		</div>
+
+		<section class="summary-table">
+			<div class="summary-head">
+				<span>Trial</span>
+				<span>Fastest</span>
+				<span style="text-align: right;">Slowest</span>
+				<span>Spread</span>
+			</div>
+			<button type="button" class="summary-row" data-view="trial:local_vs_global">
+	<span class="summary-name">
+		<span class="summary-name-title">Local Vs Global</span>
+		<span class="summary-name-sub">2 candidates</span>
+	</span>
+	<span class="summary-winner">
+		<span class="summary-winner-name">t(3)</span>
+		<span class="summary-winner-sub">30.05ns / call</span>
+	</span>
+	<span class="summary-spread ">104%</span>
+	<span class="summary-bar ">
+		<span style="width: 3.3942558746736%;"></span>
+	</span>
+</button>
+
+<button type="button" class="summary-row" data-view="trial:local_vs_table_index">
+	<span class="summary-name">
+		<span class="summary-name-title">Local Vs Global (including Table Index)</span>
+		<span class="summary-name-sub">2 candidates</span>
+	</span>
+	<span class="summary-winner">
+		<span class="summary-winner-name">s(3.14)</span>
+		<span class="summary-winner-sub">30.02ns / call</span>
+	</span>
+	<span class="summary-spread sev-warn">108%</span>
+	<span class="summary-bar sev-warn">
+		<span style="width: 3.5248041775457%;"></span>
+	</span>
+</button>
+
+<button type="button" class="summary-row" data-view="trial:localised_method">
+	<span class="summary-name">
+		<span class="summary-name-title">Localised Method Calls</span>
+		<span class="summary-name-sub">2 candidates</span>
+	</span>
+	<span class="summary-winner">
+		<span class="summary-winner-name">Local Call</span>
+		<span class="summary-winner-sub">32.07ns / call</span>
+	</span>
+	<span class="summary-spread ">100%</span>
+	<span class="summary-bar ">
+		<span style="width: 3.2637075718016%;"></span>
+	</span>
+</button>
+
+<button type="button" class="summary-row" data-view="trial:unpack">
+	<span class="summary-name">
+		<span class="summary-name-title">Unpack</span>
+		<span class="summary-name-sub">3 candidates</span>
+	</span>
+	<span class="summary-winner">
+		<span class="summary-winner-name">unpack4</span>
+		<span class="summary-winner-sub">31.88ns / call</span>
+	</span>
+	<span class="summary-spread sev-critical">218%</span>
+	<span class="summary-bar sev-critical">
+		<span style="width: 7.1148825065274%;"></span>
+	</span>
+</button>
+
+<button type="button" class="summary-row" data-view="trial:find_max">
+	<span class="summary-name">
+		<span class="summary-name-title">Finding And Returning A Maximum Value</span>
+		<span class="summary-name-sub">4 candidates</span>
+	</span>
+	<span class="summary-winner">
+		<span class="summary-winner-name">if num &gt; y then</span>
+		<span class="summary-winner-sub">29.99ns / call</span>
+	</span>
+	<span class="summary-spread sev-warn">107%</span>
+	<span class="summary-bar sev-warn">
+		<span style="width: 3.4921671018277%;"></span>
+	</span>
+</button>
+
+<button type="button" class="summary-row" data-view="trial:nots">
+	<span class="summary-name">
+		<span class="summary-name-title">'not A' Vs 'a Or B'</span>
+		<span class="summary-name-sub">2 candidates</span>
+	</span>
+	<span class="summary-winner">
+		<span class="summary-winner-name">a or b</span>
+		<span class="summary-winner-sub">30.17ns / call</span>
+	</span>
+	<span class="summary-spread ">100%</span>
+	<span class="summary-bar ">
+		<span style="width: 3.2637075718016%;"></span>
+	</span>
+</button>
+
+<button type="button" class="summary-row" data-view="trial:powers">
+	<span class="summary-name">
+		<span class="summary-name-title">Calculating A Power</span>
+		<span class="summary-name-sub">3 candidates</span>
+	</span>
+	<span class="summary-winner">
+		<span class="summary-winner-name">x * x</span>
+		<span class="summary-winner-sub">29.98ns / call</span>
+	</span>
+	<span class="summary-spread ">100%</span>
+	<span class="summary-bar ">
+		<span style="width: 3.2637075718016%;"></span>
+	</span>
+</button>
+
+<button type="button" class="summary-row" data-view="trial:modulo">
+	<span class="summary-name">
+		<span class="summary-name-title">Calculating Negative Modulus</span>
+		<span class="summary-name-sub">3 candidates</span>
+	</span>
+	<span class="summary-winner">
+		<span class="summary-winner-name">% operator</span>
+		<span class="summary-winner-sub">29.99ns / call</span>
+	</span>
+	<span class="summary-spread sev-warn">152%</span>
+	<span class="summary-bar sev-warn">
+		<span style="width: 4.9608355091384%;"></span>
+	</span>
+</button>
+
+<button type="button" class="summary-row" data-view="trial:for_loops">
+	<span class="summary-name">
+		<span class="summary-name-title">For Loops</span>
+		<span class="summary-name-sub">8 candidates</span>
+	</span>
+	<span class="summary-winner">
+		<span class="summary-winner-name">for i length</span>
+		<span class="summary-winner-sub">87.72ns / call</span>
+	</span>
+	<span class="summary-spread sev-critical">3064%</span>
+	<span class="summary-bar sev-critical">
+		<span style="width: 100%;"></span>
+	</span>
+</button>
+
+<button type="button" class="summary-row" data-view="trial:array_insertion">
+	<span class="summary-name">
+		<span class="summary-name-title">Array Insertion</span>
+		<span class="summary-name-sub">6 candidates</span>
+	</span>
+	<span class="summary-winner">
+		<span class="summary-winner-name">tab[i]</span>
+		<span class="summary-winner-sub">6.71ns / call</span>
+	</span>
+	<span class="summary-spread sev-critical">591%</span>
+	<span class="summary-bar sev-critical">
+		<span style="width: 19.288511749347%;"></span>
+	</span>
+</button>
+
+<button type="button" class="summary-row" data-view="trial:distances">
+	<span class="summary-name">
+		<span class="summary-name-title">Distance Vs DistToSqr</span>
+		<span class="summary-name-sub">2 candidates</span>
+	</span>
+	<span class="summary-winner">
+		<span class="summary-winner-name">DistToSqr</span>
+		<span class="summary-winner-sub">156.19ns / call</span>
+	</span>
+	<span class="summary-spread ">103%</span>
+	<span class="summary-bar ">
+		<span style="width: 3.3616187989556%;"></span>
+	</span>
+</button>
+
+<button type="button" class="summary-row" data-view="trial:string_templating">
+	<span class="summary-name">
+		<span class="summary-name-title">String Templating</span>
+		<span class="summary-name-sub">3 candidates</span>
+	</span>
+	<span class="summary-winner">
+		<span class="summary-winner-name">string sub</span>
+		<span class="summary-winner-sub">1.05µs / call</span>
+	</span>
+	<span class="summary-spread sev-warn">118%</span>
+	<span class="summary-bar sev-warn">
+		<span style="width: 3.8511749347258%;"></span>
+	</span>
+</button>
+
+<button type="button" class="summary-row" data-view="trial:equals_false_vs_not">
+	<span class="summary-name">
+		<span class="summary-name-title">Val == False Vs Not Val</span>
+		<span class="summary-name-sub">2 candidates</span>
+	</span>
+	<span class="summary-winner">
+		<span class="summary-winner-name">== false</span>
+		<span class="summary-winner-sub">30.09ns / call</span>
+	</span>
+	<span class="summary-spread ">100%</span>
+	<span class="summary-bar ">
+		<span style="width: 3.2637075718016%;"></span>
+	</span>
+</button>
+
+<button type="button" class="summary-row" data-view="trial:table_lookup">
+	<span class="summary-name">
+		<span class="summary-name-title">HasValue Vs Key Lookup In Table Construction Vs Upvalues</span>
+		<span class="summary-name-sub">4 candidates</span>
+	</span>
+	<span class="summary-winner">
+		<span class="summary-winner-name">Constructed Key Lookup</span>
+		<span class="summary-winner-sub">30.22ns / call</span>
+	</span>
+	<span class="summary-spread sev-critical">367%</span>
+	<span class="summary-bar sev-critical">
+		<span style="width: 11.977806788512%;"></span>
+	</span>
+</button>
+
+		</section>
+	</div>
+</section>
+
+				<section class="view" data-view-section="environment">
+	<div class="page">
+		<header class="page-header">
+			<span class="eyebrow">Where these numbers came from</span>
+			<h1>Environment</h1>
+			<p>Captured by the suite at generation time. Timings are only comparable against runs from the same realm, branch and Lua runtime.</p>
+		</header>
+
+		<div class="tiles">
+			<div class="tile">
+	<span class="tile-label">Lua runtime</span>
+	<span class="tile-value tile-value-text">LuaJIT 2.0.4, JIT enabled</span>
+</div>
+
+<div class="tile">
+	<span class="tile-label">Processor</span>
+	<span class="tile-value tile-value-text">AMD EPYC 9V74 80-Core Processor, 2 cores</span>
+</div>
+
+<div class="tile">
+	<span class="tile-label">Realm</span>
+	<span class="tile-value tile-value-text">Server, dedicated server</span>
+</div>
+
+<div class="tile">
+	<span class="tile-label">Generated</span>
+	<span class="tile-value tile-value-text">2026-08-30 17:45:44 UTC</span>
+</div>
+
+		</div>
+
+		<div class="env-groups">
+			<section class="env-group">
+	<h2>Suite</h2>
+	<dl>
+		<div class="env-row">
+	<dt>Suite Version</dt>
+	<dd>3.1.0</dd>
+</div>
+
+<div class="env-row">
+	<dt>Suite Build</dt>
+	<dd>dev</dd>
+</div>
+
+<div class="env-row">
+	<dt>Generated</dt>
+	<dd>2026-08-30 17:45:44 UTC</dd>
+</div>
+
+<div class="env-row">
+	<dt>Realm</dt>
+	<dd>Server</dd>
+</div>
+
+<div class="env-row">
+	<dt>Hosting</dt>
+	<dd>Dedicated Server</dd>
+</div>
+
+<div class="env-row">
+	<dt>Players</dt>
+	<dd>1</dd>
+</div>
+
+	</dl>
+</section>
+
+<section class="env-group">
+	<h2>Game</h2>
+	<dl>
+		<div class="env-row">
+	<dt>Operating System</dt>
+	<dd>Linux</dd>
+</div>
+
+<div class="env-row">
+	<dt>Game Branch</dt>
+	<dd>unknown</dd>
+</div>
+
+<div class="env-row">
+	<dt>Game Version</dt>
+	<dd>250723 (2025.07.23)</dd>
+</div>
+
+<div class="env-row">
+	<dt>Map</dt>
+	<dd>gm_construct</dd>
+</div>
+
+<div class="env-row">
+	<dt>Tick Interval</dt>
+	<dd>0.0150s (67 ticks/s)</dd>
+</div>
+
+	</dl>
+</section>
+
+<section class="env-group">
+	<h2>Lua runtime</h2>
+	<dl>
+		<div class="env-row">
+	<dt>Lua Runtime</dt>
+	<dd>LuaJIT 2.0.4</dd>
+</div>
+
+<div class="env-row">
+	<dt>Architecture</dt>
+	<dd>Linux/x86</dd>
+</div>
+
+<div class="env-row">
+	<dt>JIT Compiler</dt>
+	<dd>Enabled</dd>
+</div>
+
+	</dl>
+</section>
+
+<section class="env-group">
+	<h2>Operating system</h2>
+	<dl>
+		<div class="env-row">
+	<dt>System Info Module</dt>
+	<dd>gm_sysinfo 3.1.0</dd>
+</div>
+
+<div class="env-row">
+	<dt>OS Version</dt>
+	<dd>Linux</dd>
+</div>
+
+<div class="env-row">
+	<dt>Kernel</dt>
+	<dd>6.17.0-1022-azure</dd>
+</div>
+
+<div class="env-row">
+	<dt>Distribution</dt>
+	<dd>linux</dd>
+</div>
+
+	</dl>
+</section>
+
+<section class="env-group">
+	<h2>Processor</h2>
+	<dl>
+		<div class="env-row">
+	<dt>CPU Model</dt>
+	<dd>AMD EPYC 9V74 80-Core Processor</dd>
+</div>
+
+<div class="env-row">
+	<dt>CPU Architecture</dt>
+	<dd>x86_64</dd>
+</div>
+
+<div class="env-row">
+	<dt>Physical Cores</dt>
+	<dd>2</dd>
+</div>
+
+	</dl>
+</section>
+
+<section class="env-group">
+	<h2>Memory &amp; host</h2>
+	<dl>
+		<div class="env-row">
+	<dt>Total Memory</dt>
+	<dd>15.61 GiB</dd>
+</div>
+
+<div class="env-row">
+	<dt>Available Memory</dt>
+	<dd>14.47 GiB</dd>
+</div>
+
+<div class="env-row">
+	<dt>Total Swap</dt>
+	<dd>3.00 GiB</dd>
+</div>
+
+<div class="env-row">
+	<dt>Load Average</dt>
+	<dd>0.78 / 0.44 / 0.18 (1/5/15 min)</dd>
+</div>
+
+<div class="env-row">
+	<dt>Host Uptime</dt>
+	<dd>0d 0h 3m</dd>
+</div>
+
+	</dl>
+</section>
+
+		</div>
+	</div>
+</section>
+
+				<section class="view" data-view-section="trial:local_vs_global">
+	<div class="page">
+		<header class="page-header">
+			<span><button type="button" class="btn" data-view="overview">&larr; All trials</button></span>
+			<h1>Local Vs Global</h1>
+			<p>Whether caching a global function in a local before calling it is worth the extra local, for a single call. The global lookup goes through _G's hash table; the local capture turns it into a plain upvalue read.</p>
+			<div class="tag-row">
+				<span class="tag">Run count 100</span>
+				<span class="tag">Iterations / run 100000</span>
+				<span class="tag">2 candidates</span>
+			</div>
+		</header>
+
+		<section class="trial-hero">
+			<div class="trial-hero-winner">
+				<span class="trial-hero-label">Fastest</span>
+				<span class="trial-hero-name">t(3)</span>
+				<span class="trial-hero-note">Within 4% of the next candidate — effectively a tie at this sample size.</span>
+			</div>
+			<div class="trial-hero-stats">
+				<span class="trial-hero-stat">
+					<span class="trial-hero-stat-label">Mean run</span>
+					<span class="trial-hero-stat-value">3.00ms</span>
+				</span>
+				<span class="trial-hero-stat">
+					<span class="trial-hero-stat-label">Per call</span>
+					<span class="trial-hero-stat-value">30.05ns</span>
+				</span>
+				<span class="trial-hero-stat">
+					<span class="trial-hero-stat-label">Slowest</span>
+					<span class="trial-hero-stat-value">104%</span>
+				</span>
+			</div>
+		</section>
+
+		<section>
+			<div class="section-head">
+				<h2 class="section-title">Results</h2>
+				<span class="section-note">Bars are log-scaled mean run time; percentages are relative to the fastest candidate.</span>
+			</div>
+			<div class="result-rows">
+				<div class="result-row sev-warn">
+	<span class="result-rank">1</span>
+	<span class="result-name">
+		<span class="result-name-value">t(3)</span>
+		<span class="result-name-sub">median 3.00ms &middot; min 2.97ms &middot; max 3.04ms &middot; 30.05ns / call</span>
+	</span>
+	<span class="result-bar">
+		<span style="width: 66.541550061554%;"></span>
+	</span>
+	<span class="result-pct">
+		<span class="result-pct-value">100%</span>
+		<span class="result-pct-sub">3.00ms mean</span>
+	</span>
+</div>
+
+<div class="result-row ">
+	<span class="result-rank">2</span>
+	<span class="result-name">
+		<span class="result-name-value">type(3)</span>
+		<span class="result-name-sub">median 3.14ms &middot; min 3.10ms &middot; max 3.19ms &middot; 31.39ns / call</span>
+	</span>
+	<span class="result-bar">
+		<span style="width: 75.883375553441%;"></span>
+	</span>
+	<span class="result-pct">
+		<span class="result-pct-value">104%</span>
+		<span class="result-pct-sub">3.14ms mean</span>
+	</span>
+</div>
+
+			</div>
+		</section>
+
+		<section>
+			<div class="section-head">
+				<h2 class="section-title">Run distribution</h2>
+				<div class="boxplot-legend">
+					<span class="boxplot-legend-item"><span class="boxplot-swatch-box"></span>Q1&ndash;Q3</span>
+					<span class="boxplot-legend-item"><span class="boxplot-swatch-median"></span>Median</span>
+					<span class="boxplot-legend-item"><span class="boxplot-swatch-mean"></span>Mean</span>
+				</div>
+			</div>
+			<div class="boxplot">
+				<div class="boxplot-row">
+	<span class="boxplot-row-name">t(3)</span>
+	<span class="boxplot-track">
+		<span class="boxplot-baseline"></span>
+		<span class="boxplot-whisker" style="left: 64.092912628957%; width: 4.9780489166408%;"></span>
+		<span class="boxplot-cap" style="left: 64.092912628957%;"></span>
+		<span class="boxplot-cap" style="left: 69.070961545597%;"></span>
+		<span class="boxplot-box" style="left: 65.454440455103%; width: 1.4573359156089%;"></span>
+		<span class="boxplot-median" style="left: 66.135132113355%;"></span>
+		<span class="boxplot-mean" style="left: 66.541550061554%;"></span>
+	</span>
+	<span class="boxplot-row-range">2.97ms – 3.04ms</span>
+</div>
+
+<div class="boxplot-row">
+	<span class="boxplot-row-name">type(3)</span>
+	<span class="boxplot-track">
+		<span class="boxplot-baseline"></span>
+		<span class="boxplot-whisker" style="left: 72.889324513349%; width: 6.7554154189139%;"></span>
+		<span class="boxplot-cap" style="left: 72.889324513349%;"></span>
+		<span class="boxplot-cap" style="left: 79.644739932263%;"></span>
+		<span class="boxplot-box" style="left: 74.530973147762%; width: 2.1456390372888%;"></span>
+		<span class="boxplot-median" style="left: 75.616756425882%;"></span>
+		<span class="boxplot-mean" style="left: 75.883375553441%;"></span>
+	</span>
+	<span class="boxplot-row-range">3.10ms – 3.19ms</span>
+</div>
+
+				<span class="boxplot-footnote">Logarithmic scale, 2.20ms to 3.51ms per run.</span>
+			</div>
+		</section>
+
+		<section class="definitions-layout">
+			<div class="definitions">
+				<h2 class="section-title">Test definitions</h2>
+				<div class="definition">
+	<div class="definition-head">
+		<span class="definition-head-name">type(3)</span>
+		
+	</div>
+	
+	<pre><code>local function a()
+	type(3)
+end</code></pre>
+
+</div>
+
+<div class="definition">
+	<div class="definition-head">
+		<span class="definition-head-name">t(3)</span>
+		<span class="tag tag-accent">Fastest</span>
+	</div>
+	
+	<pre><code>local function b()
+	t(3)
+end</code></pre>
+
+</div>
+
+			</div>
+			<div class="predefines">
+				<h2 class="section-title">Pre-definitions</h2>
+				<pre><code>local t = type</code></pre>
+
+				<p class="predefines-note">Shared setup, run once before timing starts. Locals declared here are upvalues to every candidate in this trial.</p>
+			</div>
+		</section>
+	</div>
+</section>
+
+<section class="view" data-view-section="trial:local_vs_table_index">
+	<div class="page">
+		<header class="page-header">
+			<span><button type="button" class="btn" data-view="overview">&larr; All trials</button></span>
+			<h1>Local Vs Global (including Table Index)</h1>
+			<p>The same comparison as 'Local vs Global', but through a table field instead of a plain global: math.sin(3.14) pays for a global lookup of math AND a table index into it on every call, while the local capture pays for neither.</p>
+			<div class="tag-row">
+				<span class="tag">Run count 100</span>
+				<span class="tag">Iterations / run 100000</span>
+				<span class="tag">2 candidates</span>
+			</div>
+		</header>
+
+		<section class="trial-hero">
+			<div class="trial-hero-winner">
+				<span class="trial-hero-label">Fastest</span>
+				<span class="trial-hero-name">s(3.14)</span>
+				<span class="trial-hero-note">Beats the other option by 8%.</span>
+			</div>
+			<div class="trial-hero-stats">
+				<span class="trial-hero-stat">
+					<span class="trial-hero-stat-label">Mean run</span>
+					<span class="trial-hero-stat-value">3.00ms</span>
+				</span>
+				<span class="trial-hero-stat">
+					<span class="trial-hero-stat-label">Per call</span>
+					<span class="trial-hero-stat-value">30.02ns</span>
+				</span>
+				<span class="trial-hero-stat">
+					<span class="trial-hero-stat-label">Slowest</span>
+					<span class="trial-hero-stat-value">108%</span>
+				</span>
+			</div>
+		</section>
+
+		<section>
+			<div class="section-head">
+				<h2 class="section-title">Results</h2>
+				<span class="section-note">Bars are log-scaled mean run time; percentages are relative to the fastest candidate.</span>
+			</div>
+			<div class="result-rows">
+				<div class="result-row sev-warn">
+	<span class="result-rank">1</span>
+	<span class="result-name">
+		<span class="result-name-value">s(3.14)</span>
+		<span class="result-name-sub">median 2.99ms &middot; min 2.97ms &middot; max 3.04ms &middot; 30.02ns / call</span>
+	</span>
+	<span class="result-bar">
+		<span style="width: 62.132588369332%;"></span>
+	</span>
+	<span class="result-pct">
+		<span class="result-pct-value">100%</span>
+		<span class="result-pct-sub">3.00ms mean</span>
+	</span>
+</div>
+
+<div class="result-row sev-warn">
+	<span class="result-rank">2</span>
+	<span class="result-name">
+		<span class="result-name-value">math.sin(3.14)</span>
+		<span class="result-name-sub">median 3.25ms &middot; min 3.21ms &middot; max 3.30ms &middot; 32.51ns / call</span>
+	</span>
+	<span class="result-bar">
+		<span style="width: 78.081616729514%;"></span>
+	</span>
+	<span class="result-pct">
+		<span class="result-pct-value">108%</span>
+		<span class="result-pct-sub">3.25ms mean</span>
+	</span>
+</div>
+
+			</div>
+		</section>
+
+		<section>
+			<div class="section-head">
+				<h2 class="section-title">Run distribution</h2>
+				<div class="boxplot-legend">
+					<span class="boxplot-legend-item"><span class="boxplot-swatch-box"></span>Q1&ndash;Q3</span>
+					<span class="boxplot-legend-item"><span class="boxplot-swatch-median"></span>Median</span>
+					<span class="boxplot-legend-item"><span class="boxplot-swatch-mean"></span>Mean</span>
+				</div>
+			</div>
+			<div class="boxplot">
+				<div class="boxplot-row">
+	<span class="boxplot-row-name">s(3.14)</span>
+	<span class="boxplot-track">
+		<span class="boxplot-baseline"></span>
+		<span class="boxplot-whisker" style="left: 59.950628898899%; width: 4.6570709270751%;"></span>
+		<span class="boxplot-cap" style="left: 59.950628898899%;"></span>
+		<span class="boxplot-cap" style="left: 64.607699825974%;"></span>
+		<span class="boxplot-box" style="left: 61.150846789444%; width: 1.4760132522001%;"></span>
+		<span class="boxplot-median" style="left: 61.594847052065%;"></span>
+		<span class="boxplot-mean" style="left: 62.132588369332%;"></span>
+	</span>
+	<span class="boxplot-row-range">2.97ms – 3.04ms</span>
+</div>
+
+<div class="boxplot-row">
+	<span class="boxplot-row-name">math.sin(3.14)</span>
+	<span class="boxplot-track">
+		<span class="boxplot-baseline"></span>
+		<span class="boxplot-whisker" style="left: 75.401814193359%; width: 5.5584731082026%;"></span>
+		<span class="boxplot-cap" style="left: 75.401814193359%;"></span>
+		<span class="boxplot-cap" style="left: 80.960287301561%;"></span>
+		<span class="boxplot-box" style="left: 77.233490135575%; width: 1.5398431356135%;"></span>
+		<span class="boxplot-median" style="left: 77.813522887973%;"></span>
+		<span class="boxplot-mean" style="left: 78.081616729514%;"></span>
+	</span>
+	<span class="boxplot-row-range">3.21ms – 3.30ms</span>
+</div>
+
+				<span class="boxplot-footnote">Logarithmic scale, 2.20ms to 3.63ms per run.</span>
+			</div>
+		</section>
+
+		<section class="definitions-layout">
+			<div class="definitions">
+				<h2 class="section-title">Test definitions</h2>
+				<div class="definition">
+	<div class="definition-head">
+		<span class="definition-head-name">math.sin(3.14)</span>
+		
+	</div>
+	
+	<pre><code>local function a()
+	math.sin(3.14)
+end</code></pre>
+
+</div>
+
+<div class="definition">
+	<div class="definition-head">
+		<span class="definition-head-name">s(3.14)</span>
+		<span class="tag tag-accent">Fastest</span>
+	</div>
+	
+	<pre><code>local function b()
+	s(3.14)
+end</code></pre>
+
+</div>
+
+			</div>
+			<div class="predefines">
+				<h2 class="section-title">Pre-definitions</h2>
+				<pre><code>local s = math.sin</code></pre>
+
+				<p class="predefines-note">Shared setup, run once before timing starts. Locals declared here are upvalues to every candidate in this trial.</p>
+			</div>
+		</section>
+	</div>
+</section>
+
+<section class="view" data-view-section="trial:localised_method">
+	<div class="page">
+		<header class="page-header">
+			<span><button type="button" class="btn" data-view="overview">&larr; All trials</button></span>
+			<h1>Localised Method Calls</h1>
+			<p>Whether hoisting a repeatedly-called method into a local pays off, called three times per candidate to give the saved lookups something to add up against.</p>
+			<div class="tag-row">
+				<span class="tag">Run count 100</span>
+				<span class="tag">Iterations / run 100000</span>
+				<span class="tag">2 candidates</span>
+			</div>
+		</header>
+
+		<section class="trial-hero">
+			<div class="trial-hero-winner">
+				<span class="trial-hero-label">Fastest</span>
+				<span class="trial-hero-name">Local Call</span>
+				<span class="trial-hero-note">Within 0% of the next candidate — effectively a tie at this sample size.</span>
+			</div>
+			<div class="trial-hero-stats">
+				<span class="trial-hero-stat">
+					<span class="trial-hero-stat-label">Mean run</span>
+					<span class="trial-hero-stat-value">3.21ms</span>
+				</span>
+				<span class="trial-hero-stat">
+					<span class="trial-hero-stat-label">Per call</span>
+					<span class="trial-hero-stat-value">32.07ns</span>
+				</span>
+				<span class="trial-hero-stat">
+					<span class="trial-hero-stat-label">Slowest</span>
+					<span class="trial-hero-stat-value">100%</span>
+				</span>
+			</div>
+		</section>
+
+		<section>
+			<div class="section-head">
+				<h2 class="section-title">Results</h2>
+				<span class="section-note">Bars are log-scaled mean run time; percentages are relative to the fastest candidate.</span>
+			</div>
+			<div class="result-rows">
+				<div class="result-row sev-warn">
+	<span class="result-rank">1</span>
+	<span class="result-name">
+		<span class="result-name-value">Local Call</span>
+		<span class="result-name-sub">median 3.20ms &middot; min 3.17ms &middot; max 3.25ms &middot; 32.07ns / call</span>
+	</span>
+	<span class="result-bar">
+		<span style="width: 74.09070877553%;"></span>
+	</span>
+	<span class="result-pct">
+		<span class="result-pct-value">100%</span>
+		<span class="result-pct-sub">3.21ms mean</span>
+	</span>
+</div>
+
+<div class="result-row ">
+	<span class="result-rank">2</span>
+	<span class="result-name">
+		<span class="result-name-value">Direct Call</span>
+		<span class="result-name-sub">median 3.21ms &middot; min 3.16ms &middot; max 3.25ms &middot; 32.08ns / call</span>
+	</span>
+	<span class="result-bar">
+		<span style="width: 74.124873560201%;"></span>
+	</span>
+	<span class="result-pct">
+		<span class="result-pct-value">100%</span>
+		<span class="result-pct-sub">3.21ms mean</span>
+	</span>
+</div>
+
+			</div>
+		</section>
+
+		<section>
+			<div class="section-head">
+				<h2 class="section-title">Run distribution</h2>
+				<div class="boxplot-legend">
+					<span class="boxplot-legend-item"><span class="boxplot-swatch-box"></span>Q1&ndash;Q3</span>
+					<span class="boxplot-legend-item"><span class="boxplot-swatch-median"></span>Median</span>
+					<span class="boxplot-legend-item"><span class="boxplot-swatch-mean"></span>Mean</span>
+				</div>
+			</div>
+			<div class="boxplot">
+				<div class="boxplot-row">
+	<span class="boxplot-row-name">Local Call</span>
+	<span class="boxplot-track">
+		<span class="boxplot-baseline"></span>
+		<span class="boxplot-whisker" style="left: 71.084139364074%; width: 5.9642504333432%;"></span>
+		<span class="boxplot-cap" style="left: 71.084139364074%;"></span>
+		<span class="boxplot-cap" style="left: 77.048389797418%;"></span>
+		<span class="boxplot-box" style="left: 73.017728588634%; width: 1.6270676335391%;"></span>
+		<span class="boxplot-median" style="left: 73.87050555913%;"></span>
+		<span class="boxplot-mean" style="left: 74.09070877553%;"></span>
+	</span>
+	<span class="boxplot-row-range">3.17ms – 3.25ms</span>
+</div>
+
+<div class="boxplot-row">
+	<span class="boxplot-row-name">Direct Call</span>
+	<span class="boxplot-track">
+		<span class="boxplot-baseline"></span>
+		<span class="boxplot-whisker" style="left: 70.856987850007%; width: 6.6395502827954%;"></span>
+		<span class="boxplot-cap" style="left: 70.856987850007%;"></span>
+		<span class="boxplot-cap" style="left: 77.496538132802%;"></span>
+		<span class="boxplot-box" style="left: 73.008410176441%; width: 2.0225445881513%;"></span>
+		<span class="boxplot-median" style="left: 73.960129474223%;"></span>
+		<span class="boxplot-mean" style="left: 74.124873560201%;"></span>
+	</span>
+	<span class="boxplot-row-range">3.16ms – 3.25ms</span>
+</div>
+
+				<span class="boxplot-footnote">Logarithmic scale, 2.34ms to 3.58ms per run.</span>
+			</div>
+		</section>
+
+		<section class="definitions-layout">
+			<div class="definitions">
+				<h2 class="section-title">Test definitions</h2>
+				<div class="definition">
+	<div class="definition-head">
+		<span class="definition-head-name">Direct Call</span>
+		
+	</div>
+	
+	<pre><code>local function a()
+	class.test()
+	class.test()
+	class.test()
+end</code></pre>
+
+</div>
+
+<div class="definition">
+	<div class="definition-head">
+		<span class="definition-head-name">Local Call</span>
+		<span class="tag tag-accent">Fastest</span>
+	</div>
+	
+	<pre><code>local function b()
+	local test = class.test
+	test()
+	test()
+	test()
+end</code></pre>
+
+</div>
+
+			</div>
+			<div class="predefines">
+				<h2 class="section-title">Pre-definitions</h2>
+				<pre><code>local class = {
+	test = function() return 1 end
+}</code></pre>
+
+				<p class="predefines-note">Shared setup, run once before timing starts. Locals declared here are upvalues to every candidate in this trial.</p>
+			</div>
+		</section>
+	</div>
+</section>
+
+<section class="view" data-view-section="trial:unpack">
+	<div class="page">
+		<header class="page-header">
+			<span><button type="button" class="btn" data-view="overview">&larr; All trials</button></span>
+			<h1>Unpack</h1>
+			<p>Three ways to pass a fixed-size table's contents as separate arguments to math.min: indexing each slot by hand, letting the generic unpack() walk the table, and a hand-written unpack4() specialised to exactly four elements.</p>
+			<div class="tag-row">
+				<span class="tag">Run count 100</span>
+				<span class="tag">Iterations / run 100000</span>
+				<span class="tag">3 candidates</span>
+			</div>
+		</header>
+
+		<section class="trial-hero">
+			<div class="trial-hero-winner">
+				<span class="trial-hero-label">Fastest</span>
+				<span class="trial-hero-name">unpack4</span>
+				<span class="trial-hero-note">Within 0% of the next candidate — effectively a tie at this sample size.</span>
+			</div>
+			<div class="trial-hero-stats">
+				<span class="trial-hero-stat">
+					<span class="trial-hero-stat-label">Mean run</span>
+					<span class="trial-hero-stat-value">3.19ms</span>
+				</span>
+				<span class="trial-hero-stat">
+					<span class="trial-hero-stat-label">Per call</span>
+					<span class="trial-hero-stat-value">31.88ns</span>
+				</span>
+				<span class="trial-hero-stat">
+					<span class="trial-hero-stat-label">Slowest</span>
+					<span class="trial-hero-stat-value">218%</span>
+				</span>
+			</div>
+		</section>
+
+		<section>
+			<div class="section-head">
+				<h2 class="section-title">Results</h2>
+				<span class="section-note">Bars are log-scaled mean run time; percentages are relative to the fastest candidate.</span>
+			</div>
+			<div class="result-rows">
+				<div class="result-row sev-warn">
+	<span class="result-rank">1</span>
+	<span class="result-name">
+		<span class="result-name-value">unpack4</span>
+		<span class="result-name-sub">median 3.19ms &middot; min 3.16ms &middot; max 3.21ms &middot; 31.88ns / call</span>
+	</span>
+	<span class="result-bar">
+		<span style="width: 26.106631101653%;"></span>
+	</span>
+	<span class="result-pct">
+		<span class="result-pct-value">100%</span>
+		<span class="result-pct-sub">3.19ms mean</span>
+	</span>
+</div>
+
+<div class="result-row ">
+	<span class="result-rank">2</span>
+	<span class="result-name">
+		<span class="result-name-value">table index</span>
+		<span class="result-name-sub">median 3.19ms &middot; min 3.15ms &middot; max 3.23ms &middot; 31.94ns / call</span>
+	</span>
+	<span class="result-bar">
+		<span style="width: 26.261933941652%;"></span>
+	</span>
+	<span class="result-pct">
+		<span class="result-pct-value">100%</span>
+		<span class="result-pct-sub">3.19ms mean</span>
+	</span>
+</div>
+
+<div class="result-row sev-critical">
+	<span class="result-rank">3</span>
+	<span class="result-name">
+		<span class="result-name-value">unpack</span>
+		<span class="result-name-sub">median 6.96ms &middot; min 6.91ms &middot; max 7.01ms &middot; 69.65ns / call</span>
+	</span>
+	<span class="result-bar">
+		<span style="width: 91.483533926506%;"></span>
+	</span>
+	<span class="result-pct">
+		<span class="result-pct-value">218%</span>
+		<span class="result-pct-sub">6.97ms mean</span>
+	</span>
+</div>
+
+			</div>
+		</section>
+
+		<section>
+			<div class="section-head">
+				<h2 class="section-title">Run distribution</h2>
+				<div class="boxplot-legend">
+					<span class="boxplot-legend-item"><span class="boxplot-swatch-box"></span>Q1&ndash;Q3</span>
+					<span class="boxplot-legend-item"><span class="boxplot-swatch-median"></span>Median</span>
+					<span class="boxplot-legend-item"><span class="boxplot-swatch-mean"></span>Mean</span>
+				</div>
+			</div>
+			<div class="boxplot">
+				<div class="boxplot-row">
+	<span class="boxplot-row-name">unpack4</span>
+	<span class="boxplot-track">
+		<span class="boxplot-baseline"></span>
+		<span class="boxplot-whisker" style="left: 25.414072012309%; width: 1.2834373525315%;"></span>
+		<span class="boxplot-cap" style="left: 25.414072012309%;"></span>
+		<span class="boxplot-cap" style="left: 26.697509364841%;"></span>
+		<span class="boxplot-box" style="left: 25.866302371417%; width: 0.35313297792239%;"></span>
+		<span class="boxplot-median" style="left: 26.056151374744%;"></span>
+		<span class="boxplot-mean" style="left: 26.106631101653%;"></span>
+	</span>
+	<span class="boxplot-row-range">3.16ms – 3.21ms</span>
+</div>
+
+<div class="boxplot-row">
+	<span class="boxplot-row-name">table index</span>
+	<span class="boxplot-track">
+		<span class="boxplot-baseline"></span>
+		<span class="boxplot-whisker" style="left: 25.106830872335%; width: 2.1258876641855%;"></span>
+		<span class="boxplot-cap" style="left: 25.106830872335%;"></span>
+		<span class="boxplot-cap" style="left: 27.23271853652%;"></span>
+		<span class="boxplot-box" style="left: 25.959368415089%; width: 0.56800832812734%;"></span>
+		<span class="boxplot-median" style="left: 26.251058537011%;"></span>
+		<span class="boxplot-mean" style="left: 26.261933941652%;"></span>
+	</span>
+	<span class="boxplot-row-range">3.15ms – 3.23ms</span>
+</div>
+
+<div class="boxplot-row">
+	<span class="boxplot-row-name">unpack</span>
+	<span class="boxplot-track">
+		<span class="boxplot-baseline"></span>
+		<span class="boxplot-whisker" style="left: 90.853860547657%; width: 1.1724641905927%;"></span>
+		<span class="boxplot-cap" style="left: 90.853860547657%;"></span>
+		<span class="boxplot-cap" style="left: 92.026324738249%;"></span>
+		<span class="boxplot-box" style="left: 91.263129228442%; width: 0.32402770951646%;"></span>
+		<span class="boxplot-median" style="left: 91.441605806666%;"></span>
+		<span class="boxplot-mean" style="left: 91.483533926506%;"></span>
+	</span>
+	<span class="boxplot-row-range">6.91ms – 7.01ms</span>
+</div>
+
+				<span class="boxplot-footnote">Logarithmic scale, 2.33ms to 7.71ms per run.</span>
+			</div>
+		</section>
+
+		<section class="definitions-layout">
+			<div class="definitions">
+				<h2 class="section-title">Test definitions</h2>
+				<div class="definition">
+	<div class="definition-head">
+		<span class="definition-head-name">table index</span>
+		
+	</div>
+	
+	<pre><code>local function a()
+	min(tbl[1], tbl[2], tbl[3], tbl[4])
+end</code></pre>
+
+</div>
+
+<div class="definition">
+	<div class="definition-head">
+		<span class="definition-head-name">unpack</span>
+		
+	</div>
+	<p class="definition-description">unpack() doesn't know tbl has exactly four elements - it has to walk it (and work out its length) every call, unlike the fixed-size alternatives either side of it.</p>
+	<pre><code>local function b()
+	min(unpack(tbl))
+end</code></pre>
+
+</div>
+
+<div class="definition">
+	<div class="definition-head">
+		<span class="definition-head-name">unpack4</span>
+		<span class="tag tag-accent">Fastest</span>
+	</div>
+	<p class="definition-description">Hard-codes the assumption that tbl always has exactly four elements - silently wrong the moment that changes.</p>
+	<pre><code>local function c()
+	min(unpack4(tbl))
+end</code></pre>
+
+</div>
+
+			</div>
+			<div class="predefines">
+				<h2 class="section-title">Pre-definitions</h2>
+				<pre><code>local tbl = {100, 200, 300, 400}
+local min = math.min
+local unpack = unpack
+local function unpack4(tbl)
+	return tbl[1], tbl[2], tbl[3], tbl[4]
+end</code></pre>
+
+				<p class="predefines-note">Shared setup, run once before timing starts. Locals declared here are upvalues to every candidate in this trial.</p>
+			</div>
+		</section>
+	</div>
+</section>
+
+<section class="view" data-view-section="trial:find_max">
+	<div class="page">
+		<header class="page-header">
+			<span><button type="button" class="btn" data-view="overview">&larr; All trials</button></span>
+			<h1>Finding And Returning A Maximum Value</h1>
+			<p>Four ways to pick the larger of two numbers: the standard library function, an explicit branch, the 'and/or' ternary idiom, and GMod's Either() helper.</p>
+			<div class="tag-row">
+				<span class="tag">Run count 100</span>
+				<span class="tag">Iterations / run 100000</span>
+				<span class="tag">4 candidates</span>
+			</div>
+		</header>
+
+		<section class="trial-hero">
+			<div class="trial-hero-winner">
+				<span class="trial-hero-label">Fastest</span>
+				<span class="trial-hero-name">if num &gt; y then</span>
+				<span class="trial-hero-note">Within 0% of the next candidate — effectively a tie at this sample size.</span>
+			</div>
+			<div class="trial-hero-stats">
+				<span class="trial-hero-stat">
+					<span class="trial-hero-stat-label">Mean run</span>
+					<span class="trial-hero-stat-value">3.00ms</span>
+				</span>
+				<span class="trial-hero-stat">
+					<span class="trial-hero-stat-label">Per call</span>
+					<span class="trial-hero-stat-value">29.99ns</span>
+				</span>
+				<span class="trial-hero-stat">
+					<span class="trial-hero-stat-label">Slowest</span>
+					<span class="trial-hero-stat-value">107%</span>
+				</span>
+			</div>
+		</section>
+
+		<section>
+			<div class="section-head">
+				<h2 class="section-title">Results</h2>
+				<span class="section-note">Bars are log-scaled mean run time; percentages are relative to the fastest candidate.</span>
+			</div>
+			<div class="result-rows">
+				<div class="result-row sev-warn">
+	<span class="result-rank">1</span>
+	<span class="result-name">
+		<span class="result-name-value">if num &gt; y then</span>
+		<span class="result-name-sub">median 3.00ms &middot; min 2.97ms &middot; max 3.03ms &middot; 29.99ns / call</span>
+	</span>
+	<span class="result-bar">
+		<span style="width: 63.592361811014%;"></span>
+	</span>
+	<span class="result-pct">
+		<span class="result-pct-value">100%</span>
+		<span class="result-pct-sub">3.00ms mean</span>
+	</span>
+</div>
+
+<div class="result-row ">
+	<span class="result-rank">2</span>
+	<span class="result-name">
+		<span class="result-name-value">num &gt; y and num or y</span>
+		<span class="result-name-sub">median 3.00ms &middot; min 2.97ms &middot; max 3.03ms &middot; 30.02ns / call</span>
+	</span>
+	<span class="result-bar">
+		<span style="width: 63.782652266285%;"></span>
+	</span>
+	<span class="result-pct">
+		<span class="result-pct-value">100%</span>
+		<span class="result-pct-sub">3.00ms mean</span>
+	</span>
+</div>
+
+<div class="result-row ">
+	<span class="result-rank">3</span>
+	<span class="result-name">
+		<span class="result-name-value">math.max</span>
+		<span class="result-name-sub">median 3.01ms &middot; min 2.98ms &middot; max 3.05ms &middot; 30.22ns / call</span>
+	</span>
+	<span class="result-bar">
+		<span style="width: 65.147631285777%;"></span>
+	</span>
+	<span class="result-pct">
+		<span class="result-pct-value">101%</span>
+		<span class="result-pct-sub">3.02ms mean</span>
+	</span>
+</div>
+
+<div class="result-row sev-warn">
+	<span class="result-rank">4</span>
+	<span class="result-name">
+		<span class="result-name-value">Either(num &gt; y, num, y)</span>
+		<span class="result-name-sub">median 3.21ms &middot; min 3.17ms &middot; max 3.26ms &middot; 32.15ns / call</span>
+	</span>
+	<span class="result-bar">
+		<span style="width: 77.822329683884%;"></span>
+	</span>
+	<span class="result-pct">
+		<span class="result-pct-value">107%</span>
+		<span class="result-pct-sub">3.22ms mean</span>
+	</span>
+</div>
+
+			</div>
+		</section>
+
+		<section>
+			<div class="section-head">
+				<h2 class="section-title">Run distribution</h2>
+				<div class="boxplot-legend">
+					<span class="boxplot-legend-item"><span class="boxplot-swatch-box"></span>Q1&ndash;Q3</span>
+					<span class="boxplot-legend-item"><span class="boxplot-swatch-median"></span>Median</span>
+					<span class="boxplot-legend-item"><span class="boxplot-swatch-mean"></span>Mean</span>
+				</div>
+			</div>
+			<div class="boxplot">
+				<div class="boxplot-row">
+	<span class="boxplot-row-name">if num &gt; y then</span>
+	<span class="boxplot-track">
+		<span class="boxplot-baseline"></span>
+		<span class="boxplot-whisker" style="left: 61.27814089003%; width: 4.5454969785272%;"></span>
+		<span class="boxplot-cap" style="left: 61.27814089003%;"></span>
+		<span class="boxplot-cap" style="left: 65.823637868557%;"></span>
+		<span class="boxplot-box" style="left: 62.819362991899%; width: 1.2233790303196%;"></span>
+		<span class="boxplot-median" style="left: 63.360341619412%;"></span>
+		<span class="boxplot-mean" style="left: 63.592361811014%;"></span>
+	</span>
+	<span class="boxplot-row-range">2.97ms – 3.03ms</span>
+</div>
+
+<div class="boxplot-row">
+	<span class="boxplot-row-name">num &gt; y and num or y</span>
+	<span class="boxplot-track">
+		<span class="boxplot-baseline"></span>
+		<span class="boxplot-whisker" style="left: 61.567569174373%; width: 4.4481836902804%;"></span>
+		<span class="boxplot-cap" style="left: 61.567569174373%;"></span>
+		<span class="boxplot-cap" style="left: 66.015752864654%;"></span>
+		<span class="boxplot-box" style="left: 62.946785103182%; width: 1.2632824424888%;"></span>
+		<span class="boxplot-median" style="left: 63.484088737985%;"></span>
+		<span class="boxplot-mean" style="left: 63.782652266285%;"></span>
+	</span>
+	<span class="boxplot-row-range">2.97ms – 3.03ms</span>
+</div>
+
+<div class="boxplot-row">
+	<span class="boxplot-row-name">math.max</span>
+	<span class="boxplot-track">
+		<span class="boxplot-baseline"></span>
+		<span class="boxplot-whisker" style="left: 62.46325289014%; width: 4.3255252955068%;"></span>
+		<span class="boxplot-cap" style="left: 62.46325289014%;"></span>
+		<span class="boxplot-cap" style="left: 66.788778185646%;"></span>
+		<span class="boxplot-box" style="left: 64.062034911476%; width: 1.1204402417861%;"></span>
+		<span class="boxplot-median" style="left: 64.546883017969%;"></span>
+		<span class="boxplot-mean" style="left: 65.147631285777%;"></span>
+	</span>
+	<span class="boxplot-row-range">2.98ms – 3.05ms</span>
+</div>
+
+<div class="boxplot-row">
+	<span class="boxplot-row-name">Either(num &gt; y, num, y)</span>
+	<span class="boxplot-track">
+		<span class="boxplot-baseline"></span>
+		<span class="boxplot-whisker" style="left: 74.885286298656%; width: 5.6533966364606%;"></span>
+		<span class="boxplot-cap" style="left: 74.885286298656%;"></span>
+		<span class="boxplot-cap" style="left: 80.538682935117%;"></span>
+		<span class="boxplot-box" style="left: 76.953181454017%; width: 1.5169741988541%;"></span>
+		<span class="boxplot-median" style="left: 77.481052948654%;"></span>
+		<span class="boxplot-mean" style="left: 77.822329683884%;"></span>
+	</span>
+	<span class="boxplot-row-range">3.17ms – 3.26ms</span>
+</div>
+
+				<span class="boxplot-footnote">Logarithmic scale, 2.20ms to 3.58ms per run.</span>
+			</div>
+		</section>
+
+		<section class="definitions-layout">
+			<div class="definitions">
+				<h2 class="section-title">Test definitions</h2>
+				<div class="definition">
+	<div class="definition-head">
+		<span class="definition-head-name">math.max</span>
+		
+	</div>
+	<p class="definition-description">A C function call, with all the calling overhead that implies compared to inlined Lua.</p>
+	<pre><code>local function a()
+	local x = max(num, y)
+end</code></pre>
+
+</div>
+
+<div class="definition">
+	<div class="definition-head">
+		<span class="definition-head-name">if num &gt; y then</span>
+		<span class="tag tag-accent">Fastest</span>
+	</div>
+	
+	<pre><code>local function b()
+	local x
+	if num &gt; y then
+		x = num
+	else
+		x = y
+	end
+end</code></pre>
+
+</div>
+
+<div class="definition">
+	<div class="definition-head">
+		<span class="definition-head-name">num &gt; y and num or y</span>
+		
+	</div>
+	<p class="definition-description">The classic Lua ternary idiom - but it silently breaks if the 'true' branch value can be false or nil, since 'or' would then fall through to the other side. Safe here because the values are always numbers.</p>
+	<pre><code>local function c()
+	local x = num &gt; y and num or y
+end</code></pre>
+
+</div>
+
+<div class="definition">
+	<div class="definition-head">
+		<span class="definition-head-name">Either(num &gt; y, num, y)</span>
+		
+	</div>
+	<p class="definition-description">Unlike 'and/or' or the branch, both num and y are evaluated eagerly before Either() is even called - the branch only decides which one to return, not which one to compute. Fine here since both are cheap plain reads.</p>
+	<pre><code>local function d()
+	local x = Either(num &gt; y, num, y)
+end</code></pre>
+
+</div>
+
+			</div>
+			<div class="predefines">
+				<h2 class="section-title">Pre-definitions</h2>
+				<pre><code>local max = math.Max
+local num = 100
+local y = 0</code></pre>
+
+				<p class="predefines-note">Shared setup, run once before timing starts. Locals declared here are upvalues to every candidate in this trial.</p>
+			</div>
+		</section>
+	</div>
+</section>
+
+<section class="view" data-view-section="trial:nots">
+	<div class="page">
+		<header class="page-header">
+			<span><button type="button" class="btn" data-view="overview">&larr; All trials</button></span>
+			<h1>'not A' Vs 'a Or B'</h1>
+			<p>Two ways to substitute a default when a value is falsy: an explicit if/not branch, and the 'or' idiom.</p>
+			<div class="tag-row">
+				<span class="tag">Run count 100</span>
+				<span class="tag">Iterations / run 100000</span>
+				<span class="tag">2 candidates</span>
+			</div>
+		</header>
+
+		<section class="trial-hero">
+			<div class="trial-hero-winner">
+				<span class="trial-hero-label">Fastest</span>
+				<span class="trial-hero-name">a or b</span>
+				<span class="trial-hero-note">Within 0% of the next candidate — effectively a tie at this sample size.</span>
+			</div>
+			<div class="trial-hero-stats">
+				<span class="trial-hero-stat">
+					<span class="trial-hero-stat-label">Mean run</span>
+					<span class="trial-hero-stat-value">3.02ms</span>
+				</span>
+				<span class="trial-hero-stat">
+					<span class="trial-hero-stat-label">Per call</span>
+					<span class="trial-hero-stat-value">30.17ns</span>
+				</span>
+				<span class="trial-hero-stat">
+					<span class="trial-hero-stat-label">Slowest</span>
+					<span class="trial-hero-stat-value">100%</span>
+				</span>
+			</div>
+		</section>
+
+		<section>
+			<div class="section-head">
+				<h2 class="section-title">Results</h2>
+				<span class="section-note">Bars are log-scaled mean run time; percentages are relative to the fastest candidate.</span>
+			</div>
+			<div class="result-rows">
+				<div class="result-row sev-warn">
+	<span class="result-rank">1</span>
+	<span class="result-name">
+		<span class="result-name-value">a or b</span>
+		<span class="result-name-sub">median 3.01ms &middot; min 2.99ms &middot; max 3.04ms &middot; 30.17ns / call</span>
+	</span>
+	<span class="result-bar">
+		<span style="width: 74.961095279747%;"></span>
+	</span>
+	<span class="result-pct">
+		<span class="result-pct-value">100%</span>
+		<span class="result-pct-sub">3.02ms mean</span>
+	</span>
+</div>
+
+<div class="result-row ">
+	<span class="result-rank">2</span>
+	<span class="result-name">
+		<span class="result-name-value">not a</span>
+		<span class="result-name-sub">median 3.01ms &middot; min 2.98ms &middot; max 3.04ms &middot; 30.18ns / call</span>
+	</span>
+	<span class="result-bar">
+		<span style="width: 75.088942827765%;"></span>
+	</span>
+	<span class="result-pct">
+		<span class="result-pct-value">100%</span>
+		<span class="result-pct-sub">3.02ms mean</span>
+	</span>
+</div>
+
+			</div>
+		</section>
+
+		<section>
+			<div class="section-head">
+				<h2 class="section-title">Run distribution</h2>
+				<div class="boxplot-legend">
+					<span class="boxplot-legend-item"><span class="boxplot-swatch-box"></span>Q1&ndash;Q3</span>
+					<span class="boxplot-legend-item"><span class="boxplot-swatch-median"></span>Median</span>
+					<span class="boxplot-legend-item"><span class="boxplot-swatch-mean"></span>Mean</span>
+				</div>
+			</div>
+			<div class="boxplot">
+				<div class="boxplot-row">
+	<span class="boxplot-row-name">a or b</span>
+	<span class="boxplot-track">
+		<span class="boxplot-baseline"></span>
+		<span class="boxplot-whisker" style="left: 72.459224864669%; width: 4.6217839132896%;"></span>
+		<span class="boxplot-cap" style="left: 72.459224864669%;"></span>
+		<span class="boxplot-cap" style="left: 77.081008777959%;"></span>
+		<span class="boxplot-box" style="left: 73.779703290049%; width: 1.3787064748277%;"></span>
+		<span class="boxplot-median" style="left: 74.471023099231%;"></span>
+		<span class="boxplot-mean" style="left: 74.961095279747%;"></span>
+	</span>
+	<span class="boxplot-row-range">2.99ms – 3.04ms</span>
+</div>
+
+<div class="boxplot-row">
+	<span class="boxplot-row-name">not a</span>
+	<span class="boxplot-track">
+		<span class="boxplot-baseline"></span>
+		<span class="boxplot-whisker" style="left: 72.165371361008%; width: 4.8119492487283%;"></span>
+		<span class="boxplot-cap" style="left: 72.165371361008%;"></span>
+		<span class="boxplot-cap" style="left: 76.977320609737%;"></span>
+		<span class="boxplot-box" style="left: 73.955311203949%; width: 1.5295127381462%;"></span>
+		<span class="boxplot-median" style="left: 74.72485434483%;"></span>
+		<span class="boxplot-mean" style="left: 75.088942827765%;"></span>
+	</span>
+	<span class="boxplot-row-range">2.98ms – 3.04ms</span>
+</div>
+
+				<span class="boxplot-footnote">Logarithmic scale, 2.21ms to 3.35ms per run.</span>
+			</div>
+		</section>
+
+		<section class="definitions-layout">
+			<div class="definitions">
+				<h2 class="section-title">Test definitions</h2>
+				<div class="definition">
+	<div class="definition-head">
+		<span class="definition-head-name">not a</span>
+		
+	</div>
+	
+	<pre><code>local function a()
+	local x
+	if not y then
+		x = 1
+	else
+		x = y
+	end
+end</code></pre>
+
+</div>
+
+<div class="definition">
+	<div class="definition-head">
+		<span class="definition-head-name">a or b</span>
+		<span class="tag tag-accent">Fastest</span>
+	</div>
+	<p class="definition-description">Relies on 'or' returning its right operand whenever the left is falsy (nil or false) - concise, but only correct when explicit false is never a valid value for y.</p>
+	<pre><code>local function b()
+	local x = y or 1
+end</code></pre>
+
+</div>
+
+			</div>
+			<div class="predefines">
+				<h2 class="section-title">Pre-definitions</h2>
+				<pre><code>local y</code></pre>
+
+				<p class="predefines-note">Shared setup, run once before timing starts. Locals declared here are upvalues to every candidate in this trial.</p>
+			</div>
+		</section>
+	</div>
+</section>
+
+<section class="view" data-view-section="trial:powers">
+	<div class="page">
+		<header class="page-header">
+			<span><button type="button" class="btn" data-view="overview">&larr; All trials</button></span>
+			<h1>Calculating A Power</h1>
+			<p>Three ways to square a number - useful context for when a variable exponent (not just squaring) is unavoidable and ^ can't be hand-expanded into repeated multiplication.</p>
+			<div class="tag-row">
+				<span class="tag">Run count 100</span>
+				<span class="tag">Iterations / run 100000</span>
+				<span class="tag">3 candidates</span>
+			</div>
+		</header>
+
+		<section class="trial-hero">
+			<div class="trial-hero-winner">
+				<span class="trial-hero-label">Fastest</span>
+				<span class="trial-hero-name">x * x</span>
+				<span class="trial-hero-note">Within 0% of the next candidate — effectively a tie at this sample size.</span>
+			</div>
+			<div class="trial-hero-stats">
+				<span class="trial-hero-stat">
+					<span class="trial-hero-stat-label">Mean run</span>
+					<span class="trial-hero-stat-value">3.00ms</span>
+				</span>
+				<span class="trial-hero-stat">
+					<span class="trial-hero-stat-label">Per call</span>
+					<span class="trial-hero-stat-value">29.98ns</span>
+				</span>
+				<span class="trial-hero-stat">
+					<span class="trial-hero-stat-label">Slowest</span>
+					<span class="trial-hero-stat-value">100%</span>
+				</span>
+			</div>
+		</section>
+
+		<section>
+			<div class="section-head">
+				<h2 class="section-title">Results</h2>
+				<span class="section-note">Bars are log-scaled mean run time; percentages are relative to the fastest candidate.</span>
+			</div>
+			<div class="result-rows">
+				<div class="result-row sev-warn">
+	<span class="result-rank">1</span>
+	<span class="result-name">
+		<span class="result-name-value">x * x</span>
+		<span class="result-name-sub">median 2.99ms &middot; min 2.96ms &middot; max 3.04ms &middot; 29.98ns / call</span>
+	</span>
+	<span class="result-bar">
+		<span style="width: 73.73676124975%;"></span>
+	</span>
+	<span class="result-pct">
+		<span class="result-pct-value">100%</span>
+		<span class="result-pct-sub">3.00ms mean</span>
+	</span>
+</div>
+
+<div class="result-row ">
+	<span class="result-rank">2</span>
+	<span class="result-name">
+		<span class="result-name-value">pow(x, 2)</span>
+		<span class="result-name-sub">median 2.99ms &middot; min 2.96ms &middot; max 3.04ms &middot; 29.98ns / call</span>
+	</span>
+	<span class="result-bar">
+		<span style="width: 73.742944954845%;"></span>
+	</span>
+	<span class="result-pct">
+		<span class="result-pct-value">100%</span>
+		<span class="result-pct-sub">3.00ms mean</span>
+	</span>
+</div>
+
+<div class="result-row ">
+	<span class="result-rank">3</span>
+	<span class="result-name">
+		<span class="result-name-value">x ^ 2</span>
+		<span class="result-name-sub">median 3.00ms &middot; min 2.96ms &middot; max 3.05ms &middot; 30.07ns / call</span>
+	</span>
+	<span class="result-bar">
+		<span style="width: 74.431255726003%;"></span>
+	</span>
+	<span class="result-pct">
+		<span class="result-pct-value">100%</span>
+		<span class="result-pct-sub">3.01ms mean</span>
+	</span>
+</div>
+
+			</div>
+		</section>
+
+		<section>
+			<div class="section-head">
+				<h2 class="section-title">Run distribution</h2>
+				<div class="boxplot-legend">
+					<span class="boxplot-legend-item"><span class="boxplot-swatch-box"></span>Q1&ndash;Q3</span>
+					<span class="boxplot-legend-item"><span class="boxplot-swatch-median"></span>Median</span>
+					<span class="boxplot-legend-item"><span class="boxplot-swatch-mean"></span>Mean</span>
+				</div>
+			</div>
+			<div class="boxplot">
+				<div class="boxplot-row">
+	<span class="boxplot-row-name">x * x</span>
+	<span class="boxplot-track">
+		<span class="boxplot-baseline"></span>
+		<span class="boxplot-whisker" style="left: 70.858923030028%; width: 5.8407129794512%;"></span>
+		<span class="boxplot-cap" style="left: 70.858923030028%;"></span>
+		<span class="boxplot-cap" style="left: 76.699636009479%;"></span>
+		<span class="boxplot-box" style="left: 72.861504009413%; width: 1.5855201743477%;"></span>
+		<span class="boxplot-median" style="left: 73.394546535439%;"></span>
+		<span class="boxplot-mean" style="left: 73.73676124975%;"></span>
+	</span>
+	<span class="boxplot-row-range">2.96ms – 3.04ms</span>
+</div>
+
+<div class="boxplot-row">
+	<span class="boxplot-row-name">pow(x, 2)</span>
+	<span class="boxplot-track">
+		<span class="boxplot-baseline"></span>
+		<span class="boxplot-whisker" style="left: 70.92842867191%; width: 6.3973758546777%;"></span>
+		<span class="boxplot-cap" style="left: 70.92842867191%;"></span>
+		<span class="boxplot-cap" style="left: 77.325804526588%;"></span>
+		<span class="boxplot-box" style="left: 72.781969575827%; width: 1.828511195776%;"></span>
+		<span class="boxplot-median" style="left: 73.292981491341%;"></span>
+		<span class="boxplot-mean" style="left: 73.742944954845%;"></span>
+	</span>
+	<span class="boxplot-row-range">2.96ms – 3.04ms</span>
+</div>
+
+<div class="boxplot-row">
+	<span class="boxplot-row-name">x ^ 2</span>
+	<span class="boxplot-track">
+		<span class="boxplot-baseline"></span>
+		<span class="boxplot-whisker" style="left: 70.968751694379%; width: 6.5271718448438%;"></span>
+		<span class="boxplot-cap" style="left: 70.968751694379%;"></span>
+		<span class="boxplot-cap" style="left: 77.495923539223%;"></span>
+		<span class="boxplot-box" style="left: 73.033289156471%; width: 2.1874751628707%;"></span>
+		<span class="boxplot-median" style="left: 74.016354476211%;"></span>
+		<span class="boxplot-mean" style="left: 74.431255726003%;"></span>
+	</span>
+	<span class="boxplot-row-range">2.96ms – 3.05ms</span>
+</div>
+
+				<span class="boxplot-footnote">Logarithmic scale, 2.19ms to 3.35ms per run.</span>
+			</div>
+		</section>
+
+		<section class="definitions-layout">
+			<div class="definitions">
+				<h2 class="section-title">Test definitions</h2>
+				<div class="definition">
+	<div class="definition-head">
+		<span class="definition-head-name">x ^ 2</span>
+		
+	</div>
+	<p class="definition-description">A general power operator, good for any exponent - x*x below only applies because the exponent here happens to be the literal 2.</p>
+	<pre><code>local function a()
+	local y = x ^ 2
+end</code></pre>
+
+</div>
+
+<div class="definition">
+	<div class="definition-head">
+		<span class="definition-head-name">x * x</span>
+		<span class="tag tag-accent">Fastest</span>
+	</div>
+	
+	<pre><code>local function b()
+	local y = x * x
+end</code></pre>
+
+</div>
+
+<div class="definition">
+	<div class="definition-head">
+		<span class="definition-head-name">pow(x, 2)</span>
+		
+	</div>
+	<p class="definition-description">math.pow isn't part of standard Lua; where present it's a plain C function call, and offers no advantage over ^ for a fixed exponent like this.</p>
+	<pre><code>local function c()
+	local y = pow(x, 2)
+end</code></pre>
+
+</div>
+
+			</div>
+			<div class="predefines">
+				<h2 class="section-title">Pre-definitions</h2>
+				<pre><code>local x = 10
+local pow = math.pow</code></pre>
+
+				<p class="predefines-note">Shared setup, run once before timing starts. Locals declared here are upvalues to every candidate in this trial.</p>
+			</div>
+		</section>
+	</div>
+</section>
+
+<section class="view" data-view-section="trial:modulo">
+	<div class="page">
+		<header class="page-header">
+			<span><button type="button" class="btn" data-view="overview">&larr; All trials</button></span>
+			<h1>Calculating Negative Modulus</h1>
+			<p>Three ways to compute a modulus that also needs to handle negative inputs correctly: math.fmod, the % operator, and a hand-written wrapper that reconciles the two operators' different rounding behaviour. The point here is correctness as much as speed - the three are not interchangeable.</p>
+			<div class="tag-row">
+				<span class="tag">Run count 100</span>
+				<span class="tag">Iterations / run 100000</span>
+				<span class="tag">3 candidates</span>
+			</div>
+		</header>
+
+		<section class="trial-hero">
+			<div class="trial-hero-winner">
+				<span class="trial-hero-label">Fastest</span>
+				<span class="trial-hero-name">% operator</span>
+				<span class="trial-hero-note">Within 0% of the next candidate — effectively a tie at this sample size.</span>
+			</div>
+			<div class="trial-hero-stats">
+				<span class="trial-hero-stat">
+					<span class="trial-hero-stat-label">Mean run</span>
+					<span class="trial-hero-stat-value">3.00ms</span>
+				</span>
+				<span class="trial-hero-stat">
+					<span class="trial-hero-stat-label">Per call</span>
+					<span class="trial-hero-stat-value">29.99ns</span>
+				</span>
+				<span class="trial-hero-stat">
+					<span class="trial-hero-stat-label">Slowest</span>
+					<span class="trial-hero-stat-value">152%</span>
+				</span>
+			</div>
+		</section>
+
+		<section>
+			<div class="section-head">
+				<h2 class="section-title">Results</h2>
+				<span class="section-note">Bars are log-scaled mean run time; percentages are relative to the fastest candidate.</span>
+			</div>
+			<div class="result-rows">
+				<div class="result-row sev-warn">
+	<span class="result-rank">1</span>
+	<span class="result-name">
+		<span class="result-name-value">% operator</span>
+		<span class="result-name-sub">median 2.99ms &middot; min 2.98ms &middot; max 3.03ms &middot; 29.99ns / call</span>
+	</span>
+	<span class="result-bar">
+		<span style="width: 36.55733016365%;"></span>
+	</span>
+	<span class="result-pct">
+		<span class="result-pct-value">100%</span>
+		<span class="result-pct-sub">3.00ms mean</span>
+	</span>
+</div>
+
+<div class="result-row ">
+	<span class="result-rank">2</span>
+	<span class="result-name">
+		<span class="result-name-value">jit'd fmod</span>
+		<span class="result-name-sub">median 3.00ms &middot; min 2.97ms &middot; max 3.04ms &middot; 30.07ns / call</span>
+	</span>
+	<span class="result-bar">
+		<span style="width: 36.858483687411%;"></span>
+	</span>
+	<span class="result-pct">
+		<span class="result-pct-value">100%</span>
+		<span class="result-pct-sub">3.01ms mean</span>
+	</span>
+</div>
+
+<div class="result-row sev-warn">
+	<span class="result-rank">3</span>
+	<span class="result-name">
+		<span class="result-name-value">math.fmod</span>
+		<span class="result-name-sub">median 4.57ms &middot; min 4.47ms &middot; max 4.68ms &middot; 45.63ns / call</span>
+	</span>
+	<span class="result-bar">
+		<span style="width: 85.854986575794%;"></span>
+	</span>
+	<span class="result-pct">
+		<span class="result-pct-value">152%</span>
+		<span class="result-pct-sub">4.56ms mean</span>
+	</span>
+</div>
+
+			</div>
+		</section>
+
+		<section>
+			<div class="section-head">
+				<h2 class="section-title">Run distribution</h2>
+				<div class="boxplot-legend">
+					<span class="boxplot-legend-item"><span class="boxplot-swatch-box"></span>Q1&ndash;Q3</span>
+					<span class="boxplot-legend-item"><span class="boxplot-swatch-median"></span>Median</span>
+					<span class="boxplot-legend-item"><span class="boxplot-swatch-mean"></span>Mean</span>
+				</div>
+			</div>
+			<div class="boxplot">
+				<div class="boxplot-row">
+	<span class="boxplot-row-name">% operator</span>
+	<span class="boxplot-track">
+		<span class="boxplot-baseline"></span>
+		<span class="boxplot-whisker" style="left: 35.72570566239%; width: 2.0402557711928%;"></span>
+		<span class="boxplot-cap" style="left: 35.72570566239%;"></span>
+		<span class="boxplot-cap" style="left: 37.765961433583%;"></span>
+		<span class="boxplot-box" style="left: 36.138728249057%; width: 0.66994896354657%;"></span>
+		<span class="boxplot-median" style="left: 36.384905043739%;"></span>
+		<span class="boxplot-mean" style="left: 36.55733016365%;"></span>
+	</span>
+	<span class="boxplot-row-range">2.98ms – 3.03ms</span>
+</div>
+
+<div class="boxplot-row">
+	<span class="boxplot-row-name">jit'd fmod</span>
+	<span class="boxplot-track">
+		<span class="boxplot-baseline"></span>
+		<span class="boxplot-whisker" style="left: 35.255092023491%; width: 2.8219547901167%;"></span>
+		<span class="boxplot-cap" style="left: 35.255092023491%;"></span>
+		<span class="boxplot-cap" style="left: 38.077046813608%;"></span>
+		<span class="boxplot-box" style="left: 36.295326318922%; width: 0.79898331529596%;"></span>
+		<span class="boxplot-median" style="left: 36.687475857509%;"></span>
+		<span class="boxplot-mean" style="left: 36.858483687411%;"></span>
+	</span>
+	<span class="boxplot-row-range">2.97ms – 3.04ms</span>
+</div>
+
+<div class="boxplot-row">
+	<span class="boxplot-row-name">math.fmod</span>
+	<span class="boxplot-track">
+		<span class="boxplot-baseline"></span>
+		<span class="boxplot-whisker" style="left: 83.410892698169%; width: 5.3924470563438%;"></span>
+		<span class="boxplot-cap" style="left: 83.410892698169%;"></span>
+		<span class="boxplot-cap" style="left: 88.803339754512%;"></span>
+		<span class="boxplot-box" style="left: 85.205089827598%; width: 1.5710038610057%;"></span>
+		<span class="boxplot-median" style="left: 85.936991879592%;"></span>
+		<span class="boxplot-mean" style="left: 85.854986575794%;"></span>
+	</span>
+	<span class="boxplot-row-range">4.47ms – 4.68ms</span>
+</div>
+
+				<span class="boxplot-footnote">Logarithmic scale, 2.20ms to 5.15ms per run.</span>
+			</div>
+		</section>
+
+		<section class="definitions-layout">
+			<div class="definitions">
+				<h2 class="section-title">Test definitions</h2>
+				<div class="definition">
+	<div class="definition-head">
+		<span class="definition-head-name">math.fmod</span>
+		
+	</div>
+	<p class="definition-description">Matches C's fmod: the result takes the sign of the dividend (num), which differs from Lua's % for negative numbers.</p>
+	<pre><code>local function a()
+	local x = fmod(num, 30)
+end</code></pre>
+
+</div>
+
+<div class="definition">
+	<div class="definition-head">
+		<span class="definition-head-name">% operator</span>
+		<span class="tag tag-accent">Fastest</span>
+	</div>
+	<p class="definition-description">Lua's % is a floored modulus (its result takes the sign of the divisor) - a different convention to math.fmod for negative inputs, despite both being called 'modulus'.</p>
+	<pre><code>local function b()
+	local x = num % 30
+end</code></pre>
+
+</div>
+
+<div class="definition">
+	<div class="definition-head">
+		<span class="definition-head-name">jit'd fmod</span>
+		
+	</div>
+	<p class="definition-description">A hand-written function that reproduces math.fmod's sign convention using %, avoiding fmod's call overhead - but only for negative dividends; positive ones fall straight through to plain %.</p>
+	<pre><code>local function c()
+	local x = jit_fmod(num, 30)
+end</code></pre>
+
+</div>
+
+			</div>
+			<div class="predefines">
+				<h2 class="section-title">Pre-definitions</h2>
+				<pre><code>local fmod = math.fmod
+local num = 1000
+local function jit_fmod(a, b)
+	if b &lt; 0 then b = -b end
+	if a &lt; 0 then
+		return -(-a % b)
+	else
+		return a % b
+	end
+end</code></pre>
+
+				<p class="predefines-note">Shared setup, run once before timing starts. Locals declared here are upvalues to every candidate in this trial.</p>
+			</div>
+		</section>
+	</div>
+</section>
+
+<section class="view" data-view-section="trial:for_loops">
+	<div class="page">
+		<header class="page-header">
+			<span><button type="button" class="btn" data-view="overview">&larr; All trials</button></span>
+			<h1>For Loops</h1>
+			<p>Eight ways to walk a 100-element sequential table, from generic iteration to a hard-coded numeric bound. Lua only evaluates a numeric for loop's limit once, before the loop starts - not on every iteration - which is why the tab.n/#tab/tab[0]/length variants all land close together despite reading their bound differently.</p>
+			<div class="tag-row">
+				<span class="tag">Run count 100</span>
+				<span class="tag">Iterations / run 100000</span>
+				<span class="tag">8 candidates</span>
+			</div>
+		</header>
+
+		<section class="trial-hero">
+			<div class="trial-hero-winner">
+				<span class="trial-hero-label">Fastest</span>
+				<span class="trial-hero-name">for i length</span>
+				<span class="trial-hero-note">Within 3% of the next candidate — effectively a tie at this sample size.</span>
+			</div>
+			<div class="trial-hero-stats">
+				<span class="trial-hero-stat">
+					<span class="trial-hero-stat-label">Mean run</span>
+					<span class="trial-hero-stat-value">8.77ms</span>
+				</span>
+				<span class="trial-hero-stat">
+					<span class="trial-hero-stat-label">Per call</span>
+					<span class="trial-hero-stat-value">87.72ns</span>
+				</span>
+				<span class="trial-hero-stat">
+					<span class="trial-hero-stat-label">Slowest</span>
+					<span class="trial-hero-stat-value">3064%</span>
+				</span>
+			</div>
+		</section>
+
+		<section>
+			<div class="section-head">
+				<h2 class="section-title">Results</h2>
+				<span class="section-note">Bars are log-scaled mean run time; percentages are relative to the fastest candidate.</span>
+			</div>
+			<div class="result-rows">
+				<div class="result-row sev-warn">
+	<span class="result-rank">1</span>
+	<span class="result-name">
+		<span class="result-name-value">for i length</span>
+		<span class="result-name-sub">median 8.74ms &middot; min 8.68ms &middot; max 8.81ms &middot; 87.72ns / call</span>
+	</span>
+	<span class="result-bar">
+		<span style="width: 8.1046540108429%;"></span>
+	</span>
+	<span class="result-pct">
+		<span class="result-pct-value">100%</span>
+		<span class="result-pct-sub">8.77ms mean</span>
+	</span>
+</div>
+
+<div class="result-row ">
+	<span class="result-rank">2</span>
+	<span class="result-name">
+		<span class="result-name-value">for i tab[0]</span>
+		<span class="result-name-sub">median 9.03ms &middot; min 8.98ms &middot; max 9.08ms &middot; 90.45ns / call</span>
+	</span>
+	<span class="result-bar">
+		<span style="width: 8.903836633861%;"></span>
+	</span>
+	<span class="result-pct">
+		<span class="result-pct-value">103%</span>
+		<span class="result-pct-sub">9.04ms mean</span>
+	</span>
+</div>
+
+<div class="result-row sev-warn">
+	<span class="result-rank">3</span>
+	<span class="result-name">
+		<span class="result-name-value">for i fixed max</span>
+		<span class="result-name-sub">median 9.28ms &middot; min 9.22ms &middot; max 9.37ms &middot; 93.42ns / call</span>
+	</span>
+	<span class="result-bar">
+		<span style="width: 9.7475322435418%;"></span>
+	</span>
+	<span class="result-pct">
+		<span class="result-pct-value">106%</span>
+		<span class="result-pct-sub">9.34ms mean</span>
+	</span>
+</div>
+
+<div class="result-row sev-warn">
+	<span class="result-rank">4</span>
+	<span class="result-name">
+		<span class="result-name-value">for i tab.n</span>
+		<span class="result-name-sub">median 9.69ms &middot; min 9.64ms &middot; max 9.77ms &middot; 96.95ns / call</span>
+	</span>
+	<span class="result-bar">
+		<span style="width: 10.716461239179%;"></span>
+	</span>
+	<span class="result-pct">
+		<span class="result-pct-value">111%</span>
+		<span class="result-pct-sub">9.70ms mean</span>
+	</span>
+</div>
+
+<div class="result-row sev-warn">
+	<span class="result-rank">5</span>
+	<span class="result-name">
+		<span class="result-name-value">for i #tab</span>
+		<span class="result-name-sub">median 11.91ms &middot; min 11.80ms &middot; max 12.46ms &middot; 120.74ns / call</span>
+	</span>
+	<span class="result-bar">
+		<span style="width: 16.445778554446%;"></span>
+	</span>
+	<span class="result-pct">
+		<span class="result-pct-value">138%</span>
+		<span class="result-pct-sub">12.07ms mean</span>
+	</span>
+</div>
+
+<div class="result-row sev-warn">
+	<span class="result-rank">6</span>
+	<span class="result-name">
+		<span class="result-name-value">ipairs</span>
+		<span class="result-name-sub">median 14.47ms &middot; min 14.29ms &middot; max 14.82ms &middot; 144.85ns / call</span>
+	</span>
+	<span class="result-bar">
+		<span style="width: 21.20015518916%;"></span>
+	</span>
+	<span class="result-pct">
+		<span class="result-pct-value">165%</span>
+		<span class="result-pct-sub">14.48ms mean</span>
+	</span>
+</div>
+
+<div class="result-row sev-critical">
+	<span class="result-rank">7</span>
+	<span class="result-name">
+		<span class="result-name-value">pairs</span>
+		<span class="result-name-sub">median 49.61ms &middot; min 49.40ms &middot; max 49.96ms &middot; 497.00ns / call</span>
+	</span>
+	<span class="result-bar">
+		<span style="width: 53.393157326908%;"></span>
+	</span>
+	<span class="result-pct">
+		<span class="result-pct-value">567%</span>
+		<span class="result-pct-sub">49.70ms mean</span>
+	</span>
+</div>
+
+<div class="result-row sev-critical">
+	<span class="result-rank">8</span>
+	<span class="result-name">
+		<span class="result-name-value">jit pairs</span>
+		<span class="result-name-sub">median 268.66ms &middot; min 268.24ms &middot; max 269.24ms &middot; 2687.74ns / call</span>
+	</span>
+	<span class="result-bar">
+		<span style="width: 97.466433090454%;"></span>
+	</span>
+	<span class="result-pct">
+		<span class="result-pct-value">3064%</span>
+		<span class="result-pct-sub">268.77ms mean</span>
+	</span>
+</div>
+
+			</div>
+		</section>
+
+		<section>
+			<div class="section-head">
+				<h2 class="section-title">Run distribution</h2>
+				<div class="boxplot-legend">
+					<span class="boxplot-legend-item"><span class="boxplot-swatch-box"></span>Q1&ndash;Q3</span>
+					<span class="boxplot-legend-item"><span class="boxplot-swatch-median"></span>Median</span>
+					<span class="boxplot-legend-item"><span class="boxplot-swatch-mean"></span>Mean</span>
+				</div>
+			</div>
+			<div class="boxplot">
+				<div class="boxplot-row">
+	<span class="boxplot-row-name">for i length</span>
+	<span class="boxplot-track">
+		<span class="boxplot-baseline"></span>
+		<span class="boxplot-whisker" style="left: 7.836278881069%; width: 0.37809502347745%;"></span>
+		<span class="boxplot-cap" style="left: 7.836278881069%;"></span>
+		<span class="boxplot-cap" style="left: 8.2143739045465%;"></span>
+		<span class="boxplot-box" style="left: 7.9543160275432%; width: 0.10896877828987%;"></span>
+		<span class="boxplot-median" style="left: 7.9941482991063%;"></span>
+		<span class="boxplot-mean" style="left: 8.1046540108429%;"></span>
+	</span>
+	<span class="boxplot-row-range">8.68ms – 8.81ms</span>
+</div>
+
+<div class="boxplot-row">
+	<span class="boxplot-row-name">for i tab[0]</span>
+	<span class="boxplot-track">
+		<span class="boxplot-baseline"></span>
+		<span class="boxplot-whisker" style="left: 8.71751458629%; width: 0.29075557078031%;"></span>
+		<span class="boxplot-cap" style="left: 8.71751458629%;"></span>
+		<span class="boxplot-cap" style="left: 9.0082701570703%;"></span>
+		<span class="boxplot-box" style="left: 8.8150240582531%; width: 0.087175157692341%;"></span>
+		<span class="boxplot-median" style="left: 8.8571723797119%;"></span>
+		<span class="boxplot-mean" style="left: 8.903836633861%;"></span>
+	</span>
+	<span class="boxplot-row-range">8.98ms – 9.08ms</span>
+</div>
+
+<div class="boxplot-row">
+	<span class="boxplot-row-name">for i fixed max</span>
+	<span class="boxplot-track">
+		<span class="boxplot-baseline"></span>
+		<span class="boxplot-whisker" style="left: 9.4142248632827%; width: 0.40748387721299%;"></span>
+		<span class="boxplot-cap" style="left: 9.4142248632827%;"></span>
+		<span class="boxplot-cap" style="left: 9.8217087404957%;"></span>
+		<span class="boxplot-box" style="left: 9.496627602973%; width: 0.13077010871517%;"></span>
+		<span class="boxplot-median" style="left: 9.5663448840279%;"></span>
+		<span class="boxplot-mean" style="left: 9.7475322435418%;"></span>
+	</span>
+	<span class="boxplot-row-range">9.22ms – 9.37ms</span>
+</div>
+
+<div class="boxplot-row">
+	<span class="boxplot-row-name">for i tab.n</span>
+	<span class="boxplot-track">
+		<span class="boxplot-baseline"></span>
+		<span class="boxplot-whisker" style="left: 10.572613358308%; width: 0.35260478806526%;"></span>
+		<span class="boxplot-cap" style="left: 10.572613358308%;"></span>
+		<span class="boxplot-cap" style="left: 10.925218146374%;"></span>
+		<span class="boxplot-box" style="left: 10.657892631546%; width: 0.11290551217327%;"></span>
+		<span class="boxplot-median" style="left: 10.70069754582%;"></span>
+		<span class="boxplot-mean" style="left: 10.716461239179%;"></span>
+	</span>
+	<span class="boxplot-row-range">9.64ms – 9.77ms</span>
+</div>
+
+<div class="boxplot-row">
+	<span class="boxplot-row-name">for i #tab</span>
+	<span class="boxplot-track">
+		<span class="boxplot-baseline"></span>
+		<span class="boxplot-whisker" style="left: 15.84316958181%; width: 1.4268997047976%;"></span>
+		<span class="boxplot-cap" style="left: 15.84316958181%;"></span>
+		<span class="boxplot-cap" style="left: 17.270069286607%;"></span>
+		<span class="boxplot-box" style="left: 15.973196150541%; width: 1.0344424418233%;"></span>
+		<span class="boxplot-median" style="left: 16.08993265949%;"></span>
+		<span class="boxplot-mean" style="left: 16.445778554446%;"></span>
+	</span>
+	<span class="boxplot-row-range">11.80ms – 12.46ms</span>
+</div>
+
+<div class="boxplot-row">
+	<span class="boxplot-row-name">ipairs</span>
+	<span class="boxplot-track">
+		<span class="boxplot-baseline"></span>
+		<span class="boxplot-whisker" style="left: 20.847456612861%; width: 0.9506996373824%;"></span>
+		<span class="boxplot-cap" style="left: 20.847456612861%;"></span>
+		<span class="boxplot-cap" style="left: 21.798156250243%;"></span>
+		<span class="boxplot-box" style="left: 20.993848824422%; width: 0.3561360245349%;"></span>
+		<span class="boxplot-median" style="left: 21.165651209307%;"></span>
+		<span class="boxplot-mean" style="left: 21.20015518916%;"></span>
+	</span>
+	<span class="boxplot-row-range">14.29ms – 14.82ms</span>
+</div>
+
+<div class="boxplot-row">
+	<span class="boxplot-row-name">pairs</span>
+	<span class="boxplot-track">
+		<span class="boxplot-baseline"></span>
+		<span class="boxplot-whisker" style="left: 53.233950313669%; width: 0.29627063580046%;"></span>
+		<span class="boxplot-cap" style="left: 53.233950313669%;"></span>
+		<span class="boxplot-cap" style="left: 53.53022094947%;"></span>
+		<span class="boxplot-box" style="left: 53.303485265291%; width: 0.10180108968456%;"></span>
+		<span class="boxplot-median" style="left: 53.345594403806%;"></span>
+		<span class="boxplot-mean" style="left: 53.393157326908%;"></span>
+	</span>
+	<span class="boxplot-row-range">49.40ms – 49.96ms</span>
+</div>
+
+<div class="boxplot-row">
+	<span class="boxplot-row-name">jit pairs</span>
+	<span class="boxplot-track">
+		<span class="boxplot-baseline"></span>
+		<span class="boxplot-whisker" style="left: 97.414660079656%; width: 0.096617095233498%;"></span>
+		<span class="boxplot-cap" style="left: 97.414660079656%;"></span>
+		<span class="boxplot-cap" style="left: 97.51127717489%;"></span>
+		<span class="boxplot-box" style="left: 97.439254288297%; width: 0.032492994310573%;"></span>
+		<span class="boxplot-median" style="left: 97.455479257503%;"></span>
+		<span class="boxplot-mean" style="left: 97.466433090454%;"></span>
+	</span>
+	<span class="boxplot-row-range">268.24ms – 269.24ms</span>
+</div>
+
+				<span class="boxplot-footnote">Logarithmic scale, 6.43ms to 296.16ms per run.</span>
+			</div>
+		</section>
+
+		<section class="definitions-layout">
+			<div class="definitions">
+				<h2 class="section-title">Test definitions</h2>
+				<div class="definition">
+	<div class="definition-head">
+		<span class="definition-head-name">pairs</span>
+		
+	</div>
+	<p class="definition-description">Generic iteration that has to handle both the array and hash parts of the table, and works even when the table isn't a sequential array.</p>
+	<pre><code>local function a()
+	for k, v in pairs(tab) do
+		local x = v
+	end
+end</code></pre>
+
+</div>
+
+<div class="definition">
+	<div class="definition-head">
+		<span class="definition-head-name">jit pairs</span>
+		
+	</div>
+	<p class="definition-description">Returns Lua's raw next as the iterator directly, instead of calling pairs() to get it - which sounds like it should save a function call, but tends to lose the loop specialisation LuaJIT applies to a literal pairs()/ipairs() call.</p>
+	<pre><code>local function b()
+	for k, v in jit_pairs(tab) do
+		local x = v
+	end
+end</code></pre>
+
+</div>
+
+<div class="definition">
+	<div class="definition-head">
+		<span class="definition-head-name">ipairs</span>
+		
+	</div>
+	
+	<pre><code>local function c()
+	for k, v in ipairs(tab) do
+		local x = v
+	end
+end</code></pre>
+
+</div>
+
+<div class="definition">
+	<div class="definition-head">
+		<span class="definition-head-name">for i fixed max</span>
+		
+	</div>
+	<p class="definition-description">Hard-codes the loop bound as a literal 100 - silently wrong the moment the table's size changes.</p>
+	<pre><code>local function d()
+	for i = 1, 100 do
+		local x = tab[i]
+	end
+end</code></pre>
+
+</div>
+
+<div class="definition">
+	<div class="definition-head">
+		<span class="definition-head-name">for i #tab</span>
+		
+	</div>
+	
+	<pre><code>local function e()
+	for i = 1, #tab do
+		local x = tab[i]
+	end
+end</code></pre>
+
+</div>
+
+<div class="definition">
+	<div class="definition-head">
+		<span class="definition-head-name">for i length</span>
+		<span class="tag tag-accent">Fastest</span>
+	</div>
+	
+	<pre><code>local function f()
+	for i = 1, length do
+		local x = tab[i]
+	end
+end</code></pre>
+
+</div>
+
+<div class="definition">
+	<div class="definition-head">
+		<span class="definition-head-name">for i tab.n</span>
+		
+	</div>
+	
+	<pre><code>local function g()
+	for i = 1, tab.n do
+		local x = tab[i]
+	end
+end</code></pre>
+
+</div>
+
+<div class="definition">
+	<div class="definition-head">
+		<span class="definition-head-name">for i tab[0]</span>
+		
+	</div>
+	
+	<pre><code>local function h()
+	for i = 1, tab[0] do
+		local x = tab[i]
+	end
+end</code></pre>
+
+</div>
+
+			</div>
+			<div class="predefines">
+				<h2 class="section-title">Pre-definitions</h2>
+				<pre><code>local tab = {}
+for i = 1, 100 do
+	tab[i] = i
+end
+
+tab.n = 100
+tab[0] = 100
+local function jit_pairs(t)
+	return nxt, t
+end
+local length = 100</code></pre>
+
+				<p class="predefines-note">Shared setup, run once before timing starts. Locals declared here are upvalues to every candidate in this trial.</p>
+			</div>
+		</section>
+	</div>
+</section>
+
+<section class="view" data-view-section="trial:array_insertion">
+	<div class="page">
+		<header class="page-header">
+			<span><button type="button" class="btn" data-view="overview">&larr; All trials</button></span>
+			<h1>Array Insertion</h1>
+			<p>Six ways to grow an array-style table by one element per call, comparing table.insert() with direct indexed writes and the various count-tracking patterns people reach for to avoid it.</p>
+			<div class="tag-row">
+				<span class="tag">Run count 100</span>
+				<span class="tag">Iterations / run 100000</span>
+				<span class="tag">6 candidates</span>
+			</div>
+		</header>
+
+		<section class="trial-hero">
+			<div class="trial-hero-winner">
+				<span class="trial-hero-label">Fastest</span>
+				<span class="trial-hero-name">tab[i]</span>
+				<span class="trial-hero-note">Beats the next candidate by 14%, and the slowest by 491%.</span>
+			</div>
+			<div class="trial-hero-stats">
+				<span class="trial-hero-stat">
+					<span class="trial-hero-stat-label">Mean run</span>
+					<span class="trial-hero-stat-value">671.44µs</span>
+				</span>
+				<span class="trial-hero-stat">
+					<span class="trial-hero-stat-label">Per call</span>
+					<span class="trial-hero-stat-value">6.71ns</span>
+				</span>
+				<span class="trial-hero-stat">
+					<span class="trial-hero-stat-label">Slowest</span>
+					<span class="trial-hero-stat-value">591%</span>
+				</span>
+			</div>
+		</section>
+
+		<section>
+			<div class="section-head">
+				<h2 class="section-title">Results</h2>
+				<span class="section-note">Bars are log-scaled mean run time; percentages are relative to the fastest candidate.</span>
+			</div>
+			<div class="result-rows">
+				<div class="result-row sev-warn">
+	<span class="result-rank">1</span>
+	<span class="result-name">
+		<span class="result-name-value">tab[i]</span>
+		<span class="result-name-sub">median 0.67ms &middot; min 0.63ms &middot; max 0.72ms &middot; 6.71ns / call</span>
+	</span>
+	<span class="result-bar">
+		<span style="width: 15.975709757419%;"></span>
+	</span>
+	<span class="result-pct">
+		<span class="result-pct-value">100%</span>
+		<span class="result-pct-sub">0.67ms mean</span>
+	</span>
+</div>
+
+<div class="result-row sev-warn">
+	<span class="result-rank">2</span>
+	<span class="result-name">
+		<span class="result-name-value">tab[count]</span>
+		<span class="result-name-sub">median 0.77ms &middot; min 0.74ms &middot; max 0.79ms &middot; 7.68ns / call</span>
+	</span>
+	<span class="result-bar">
+		<span style="width: 21.883554989546%;"></span>
+	</span>
+	<span class="result-pct">
+		<span class="result-pct-value">114%</span>
+		<span class="result-pct-sub">0.77ms mean</span>
+	</span>
+</div>
+
+<div class="result-row sev-critical">
+	<span class="result-rank">3</span>
+	<span class="result-name">
+		<span class="result-name-value">tab[tab.n]</span>
+		<span class="result-name-sub">median 2.61ms &middot; min 2.58ms &middot; max 2.66ms &middot; 26.20ns / call</span>
+	</span>
+	<span class="result-bar">
+		<span style="width: 75.945853083429%;"></span>
+	</span>
+	<span class="result-pct">
+		<span class="result-pct-value">390%</span>
+		<span class="result-pct-sub">2.62ms mean</span>
+	</span>
+</div>
+
+<div class="result-row sev-critical">
+	<span class="result-rank">4</span>
+	<span class="result-name">
+		<span class="result-name-value">tab[0]</span>
+		<span class="result-name-sub">median 2.68ms &middot; min 2.63ms &middot; max 2.75ms &middot; 26.81ns / call</span>
+	</span>
+	<span class="result-bar">
+		<span style="width: 76.9658795851%;"></span>
+	</span>
+	<span class="result-pct">
+		<span class="result-pct-value">399%</span>
+		<span class="result-pct-sub">2.68ms mean</span>
+	</span>
+</div>
+
+<div class="result-row sev-critical">
+	<span class="result-rank">5</span>
+	<span class="result-name">
+		<span class="result-name-value">tab[#tab + 1]</span>
+		<span class="result-name-sub">median 3.91ms &middot; min 3.83ms &middot; max 4.08ms &middot; 39.28ns / call</span>
+	</span>
+	<span class="result-bar">
+		<span style="width: 93.794094905711%;"></span>
+	</span>
+	<span class="result-pct">
+		<span class="result-pct-value">585%</span>
+		<span class="result-pct-sub">3.93ms mean</span>
+	</span>
+</div>
+
+<div class="result-row sev-critical">
+	<span class="result-rank">6</span>
+	<span class="result-name">
+		<span class="result-name-value">table.insert</span>
+		<span class="result-name-sub">median 3.92ms &middot; min 3.85ms &middot; max 4.11ms &middot; 39.71ns / call</span>
+	</span>
+	<span class="result-bar">
+		<span style="width: 94.270409062828%;"></span>
+	</span>
+	<span class="result-pct">
+		<span class="result-pct-value">591%</span>
+		<span class="result-pct-sub">3.97ms mean</span>
+	</span>
+</div>
+
+			</div>
+		</section>
+
+		<section>
+			<div class="section-head">
+				<h2 class="section-title">Run distribution</h2>
+				<div class="boxplot-legend">
+					<span class="boxplot-legend-item"><span class="boxplot-swatch-box"></span>Q1&ndash;Q3</span>
+					<span class="boxplot-legend-item"><span class="boxplot-swatch-median"></span>Median</span>
+					<span class="boxplot-legend-item"><span class="boxplot-swatch-mean"></span>Mean</span>
+				</div>
+			</div>
+			<div class="boxplot">
+				<div class="boxplot-row">
+	<span class="boxplot-row-name">tab[i]</span>
+	<span class="boxplot-track">
+		<span class="boxplot-baseline"></span>
+		<span class="boxplot-whisker" style="left: 13.219588934912%; width: 5.5430029413732%;"></span>
+		<span class="boxplot-cap" style="left: 13.219588934912%;"></span>
+		<span class="boxplot-cap" style="left: 18.762591876285%;"></span>
+		<span class="boxplot-box" style="left: 14.6871058939%; width: 2.1043449059604%;"></span>
+		<span class="boxplot-median" style="left: 15.666599370901%;"></span>
+		<span class="boxplot-mean" style="left: 15.975709757419%;"></span>
+	</span>
+	<span class="boxplot-row-range">630.71µs – 715.29µs</span>
+</div>
+
+<div class="boxplot-row">
+	<span class="boxplot-row-name">tab[count]</span>
+	<span class="boxplot-track">
+		<span class="boxplot-baseline"></span>
+		<span class="boxplot-whisker" style="left: 20.037884620718%; width: 3.2330359377438%;"></span>
+		<span class="boxplot-cap" style="left: 20.037884620718%;"></span>
+		<span class="boxplot-cap" style="left: 23.270920558462%;"></span>
+		<span class="boxplot-box" style="left: 21.359927805613%; width: 0.88527331454994%;"></span>
+		<span class="boxplot-median" style="left: 21.740874001686%;"></span>
+		<span class="boxplot-mean" style="left: 21.883554989546%;"></span>
+	</span>
+	<span class="boxplot-row-range">736.30µs – 792.37µs</span>
+</div>
+
+<div class="boxplot-row">
+	<span class="boxplot-row-name">tab[tab.n]</span>
+	<span class="boxplot-track">
+		<span class="boxplot-baseline"></span>
+		<span class="boxplot-whisker" style="left: 75.203791597866%; width: 1.4737388910452%;"></span>
+		<span class="boxplot-cap" style="left: 75.203791597866%;"></span>
+		<span class="boxplot-cap" style="left: 76.677530488911%;"></span>
+		<span class="boxplot-box" style="left: 75.601275929038%; width: 0.53884873302532%;"></span>
+		<span class="boxplot-median" style="left: 75.778697229826%;"></span>
+		<span class="boxplot-mean" style="left: 75.945853083429%;"></span>
+	</span>
+	<span class="boxplot-row-range">2.58ms – 2.66ms</span>
+</div>
+
+<div class="boxplot-row">
+	<span class="boxplot-row-name">tab[0]</span>
+	<span class="boxplot-track">
+		<span class="boxplot-baseline"></span>
+		<span class="boxplot-whisker" style="left: 76.1107769276%; width: 1.9125075107593%;"></span>
+		<span class="boxplot-cap" style="left: 76.1107769276%;"></span>
+		<span class="boxplot-cap" style="left: 78.02328443836%;"></span>
+		<span class="boxplot-box" style="left: 76.572971297483%; width: 0.78754183011793%;"></span>
+		<span class="boxplot-median" style="left: 76.910342961455%;"></span>
+		<span class="boxplot-mean" style="left: 76.9658795851%;"></span>
+	</span>
+	<span class="boxplot-row-range">2.63ms – 2.75ms</span>
+</div>
+
+<div class="boxplot-row">
+	<span class="boxplot-row-name">tab[#tab + 1]</span>
+	<span class="boxplot-track">
+		<span class="boxplot-baseline"></span>
+		<span class="boxplot-whisker" style="left: 92.7107826401%; width: 2.7459061665944%;"></span>
+		<span class="boxplot-cap" style="left: 92.7107826401%;"></span>
+		<span class="boxplot-cap" style="left: 95.456688806695%;"></span>
+		<span class="boxplot-box" style="left: 93.201543996467%; width: 0.92353766632306%;"></span>
+		<span class="boxplot-median" style="left: 93.614237316332%;"></span>
+		<span class="boxplot-mean" style="left: 93.794094905711%;"></span>
+	</span>
+	<span class="boxplot-row-range">3.83ms – 4.08ms</span>
+</div>
+
+<div class="boxplot-row">
+	<span class="boxplot-row-name">table.insert</span>
+	<span class="boxplot-track">
+		<span class="boxplot-baseline"></span>
+		<span class="boxplot-whisker" style="left: 92.893163456423%; width: 2.9084289549486%;"></span>
+		<span class="boxplot-cap" style="left: 92.893163456423%;"></span>
+		<span class="boxplot-cap" style="left: 95.801592411372%;"></span>
+		<span class="boxplot-box" style="left: 93.350669937489%; width: 1.0372660855966%;"></span>
+		<span class="boxplot-median" style="left: 93.704058470441%;"></span>
+		<span class="boxplot-mean" style="left: 94.270409062828%;"></span>
+	</span>
+	<span class="boxplot-row-range">3.85ms – 4.11ms</span>
+</div>
+
+				<span class="boxplot-footnote">Logarithmic scale, 467.19µs to 4.52ms per run.</span>
+			</div>
+		</section>
+
+		<section class="definitions-layout">
+			<div class="definitions">
+				<h2 class="section-title">Test definitions</h2>
+				<div class="definition">
+	<div class="definition-head">
+		<span class="definition-head-name">table.insert</span>
+		
+	</div>
+	<p class="definition-description">A full function call that also has to work out where to insert (the end of the table, by default) - direct indexing below skips both costs.</p>
+	<pre><code>local function a(times)
+	insert(tab, times)
+end</code></pre>
+
+</div>
+
+<div class="definition">
+	<div class="definition-head">
+		<span class="definition-head-name">tab[i]</span>
+		<span class="tag tag-accent">Fastest</span>
+	</div>
+	
+	<pre><code>local function b(times)
+	tab[times] = times
+end</code></pre>
+
+</div>
+
+<div class="definition">
+	<div class="definition-head">
+		<span class="definition-head-name">tab[#tab + 1]</span>
+		
+	</div>
+	<p class="definition-description">Recomputes the table's length with # on every single call, rather than tracking it separately.</p>
+	<pre><code>local function c(times)
+	tab[#tab + 1] = times
+end</code></pre>
+
+</div>
+
+<div class="definition">
+	<div class="definition-head">
+		<span class="definition-head-name">tab[count]</span>
+		
+	</div>
+	
+	<pre><code>local function d(times)
+	tab[count] = times
+	count = count + 1
+end</code></pre>
+
+</div>
+
+<div class="definition">
+	<div class="definition-head">
+		<span class="definition-head-name">tab[tab.n]</span>
+		
+	</div>
+	<p class="definition-description">Tracks the count as a field on the table itself instead of a separate local - convenient to pass around as one value, but every call now pays for an extra table read (tab.n) on top of the write.</p>
+	<pre><code>local function e(times)
+	tab.n = tab.n + 1
+	tab[tab.n] = times
+end</code></pre>
+
+</div>
+
+<div class="definition">
+	<div class="definition-head">
+		<span class="definition-head-name">tab[0]</span>
+		
+	</div>
+	<p class="definition-description">The same idea as tab.n, but the counter lives at index 0 of the same array instead of a named field.</p>
+	<pre><code>local function f(times)
+	tab[0] = tab[0] + 1
+	tab[tab[0]] = times
+end</code></pre>
+
+</div>
+
+			</div>
+			<div class="predefines">
+				<h2 class="section-title">Pre-definitions</h2>
+				<pre><code>local tab = {
+	[0] = 0,
+	n = 0
+}
+local insert = table.insert
+local count = 1</code></pre>
+
+				<p class="predefines-note">Shared setup, run once before timing starts. Locals declared here are upvalues to every candidate in this trial.</p>
+			</div>
+		</section>
+	</div>
+</section>
+
+<section class="view" data-view-section="trial:distances">
+	<div class="page">
+		<header class="page-header">
+			<span><button type="button" class="btn" data-view="overview">&larr; All trials</button></span>
+			<h1>Distance Vs DistToSqr</h1>
+			<p>Whether the square root in Distance() is worth paying for when only a comparison (e.g. a nearest-neighbour or range check) is needed, not the actual distance value.</p>
+			<div class="tag-row">
+				<span class="tag">Run count 100</span>
+				<span class="tag">Iterations / run 100000</span>
+				<span class="tag">2 candidates</span>
+			</div>
+		</header>
+
+		<section class="trial-hero">
+			<div class="trial-hero-winner">
+				<span class="trial-hero-label">Fastest</span>
+				<span class="trial-hero-name">DistToSqr</span>
+				<span class="trial-hero-note">Within 3% of the next candidate — effectively a tie at this sample size.</span>
+			</div>
+			<div class="trial-hero-stats">
+				<span class="trial-hero-stat">
+					<span class="trial-hero-stat-label">Mean run</span>
+					<span class="trial-hero-stat-value">15.62ms</span>
+				</span>
+				<span class="trial-hero-stat">
+					<span class="trial-hero-stat-label">Per call</span>
+					<span class="trial-hero-stat-value">156.19ns</span>
+				</span>
+				<span class="trial-hero-stat">
+					<span class="trial-hero-stat-label">Slowest</span>
+					<span class="trial-hero-stat-value">103%</span>
+				</span>
+			</div>
+		</section>
+
+		<section>
+			<div class="section-head">
+				<h2 class="section-title">Results</h2>
+				<span class="section-note">Bars are log-scaled mean run time; percentages are relative to the fastest candidate.</span>
+			</div>
+			<div class="result-rows">
+				<div class="result-row sev-warn">
+	<span class="result-rank">1</span>
+	<span class="result-name">
+		<span class="result-name-value">DistToSqr</span>
+		<span class="result-name-sub">median 15.61ms &middot; min 15.41ms &middot; max 15.82ms &middot; 156.19ns / call</span>
+	</span>
+	<span class="result-bar">
+		<span style="width: 69.712755912491%;"></span>
+	</span>
+	<span class="result-pct">
+		<span class="result-pct-value">100%</span>
+		<span class="result-pct-sub">15.62ms mean</span>
+	</span>
+</div>
+
+<div class="result-row ">
+	<span class="result-rank">2</span>
+	<span class="result-name">
+		<span class="result-name-value">Distance</span>
+		<span class="result-name-sub">median 16.08ms &middot; min 15.80ms &middot; max 16.27ms &middot; 160.78ns / call</span>
+	</span>
+	<span class="result-bar">
+		<span style="width: 76.149322002463%;"></span>
+	</span>
+	<span class="result-pct">
+		<span class="result-pct-value">103%</span>
+		<span class="result-pct-sub">16.08ms mean</span>
+	</span>
+</div>
+
+			</div>
+		</section>
+
+		<section>
+			<div class="section-head">
+				<h2 class="section-title">Run distribution</h2>
+				<div class="boxplot-legend">
+					<span class="boxplot-legend-item"><span class="boxplot-swatch-box"></span>Q1&ndash;Q3</span>
+					<span class="boxplot-legend-item"><span class="boxplot-swatch-median"></span>Median</span>
+					<span class="boxplot-legend-item"><span class="boxplot-swatch-mean"></span>Mean</span>
+				</div>
+			</div>
+			<div class="boxplot">
+				<div class="boxplot-row">
+	<span class="boxplot-row-name">DistToSqr</span>
+	<span class="boxplot-track">
+		<span class="boxplot-baseline"></span>
+		<span class="boxplot-whisker" style="left: 66.733177474451%; width: 5.8074203387694%;"></span>
+		<span class="boxplot-cap" style="left: 66.733177474451%;"></span>
+		<span class="boxplot-cap" style="left: 72.540597813221%;"></span>
+		<span class="boxplot-box" style="left: 68.640400729387%; width: 2.0142031400962%;"></span>
+		<span class="boxplot-median" style="left: 69.554994766421%;"></span>
+		<span class="boxplot-mean" style="left: 69.712755912491%;"></span>
+	</span>
+	<span class="boxplot-row-range">15.41ms – 15.82ms</span>
+</div>
+
+<div class="boxplot-row">
+	<span class="boxplot-row-name">Distance</span>
+	<span class="boxplot-track">
+		<span class="boxplot-baseline"></span>
+		<span class="boxplot-whisker" style="left: 72.210371486138%; width: 6.5958470656276%;"></span>
+		<span class="boxplot-cap" style="left: 72.210371486138%;"></span>
+		<span class="boxplot-cap" style="left: 78.806218551766%;"></span>
+		<span class="boxplot-box" style="left: 74.980035627584%; width: 2.2549124947493%;"></span>
+		<span class="boxplot-median" style="left: 76.219906971809%;"></span>
+		<span class="boxplot-mean" style="left: 76.149322002463%;"></span>
+	</span>
+	<span class="boxplot-row-range">15.80ms – 16.27ms</span>
+</div>
+
+				<span class="boxplot-footnote">Logarithmic scale, 11.42ms to 17.90ms per run.</span>
+			</div>
+		</section>
+
+		<section class="definitions-layout">
+			<div class="definitions">
+				<h2 class="section-title">Test definitions</h2>
+				<div class="definition">
+	<div class="definition-head">
+		<span class="definition-head-name">Distance</span>
+		
+	</div>
+	<p class="definition-description">Includes a square root - only actually necessary when the real distance value is needed, not just its relative size.</p>
+	<pre><code>:Function(function()
+		return vector1:Distance(vector2)
+	end)</code></pre>
+
+</div>
+
+<div class="definition">
+	<div class="definition-head">
+		<span class="definition-head-name">DistToSqr</span>
+		<span class="tag tag-accent">Fastest</span>
+	</div>
+	<p class="definition-description">Skips the square root entirely; fine whenever only relative distance matters, since squaring preserves ordering.</p>
+	<pre><code>:Function(function()
+		return vector1:DistToSqr(vector2)
+	end)</code></pre>
+
+</div>
+
+			</div>
+			<div class="predefines">
+				<h2 class="section-title">Pre-definitions</h2>
+				<pre><code>local vector1, vector2 = Vector(), Vector()</code></pre>
+
+				<p class="predefines-note">Shared setup, run once before timing starts. Locals declared here are upvalues to every candidate in this trial.</p>
+			</div>
+		</section>
+	</div>
+</section>
+
+<section class="view" data-view-section="trial:string_templating">
+	<div class="page">
+		<header class="page-header">
+			<span><button type="button" class="btn" data-view="overview">&larr; All trials</button></span>
+			<h1>String Templating</h1>
+			<p>Three implementations of ${...} string interpolation, all built on string.gsub. The capture-group variants only differ in how they'd rebuild an unmatched placeholder - string.format vs concatenation - a fallback path this particular test string never actually exercises, worth keeping in mind when reading how close their results are.</p>
+			<div class="tag-row">
+				<span class="tag">Run count 100</span>
+				<span class="tag">Iterations / run 100000</span>
+				<span class="tag">3 candidates</span>
+			</div>
+		</header>
+
+		<section class="trial-hero">
+			<div class="trial-hero-winner">
+				<span class="trial-hero-label">Fastest</span>
+				<span class="trial-hero-name">string sub</span>
+				<span class="trial-hero-note">Beats the next candidate by 7%, and the slowest by 18%.</span>
+			</div>
+			<div class="trial-hero-stats">
+				<span class="trial-hero-stat">
+					<span class="trial-hero-stat-label">Mean run</span>
+					<span class="trial-hero-stat-value">104.67ms</span>
+				</span>
+				<span class="trial-hero-stat">
+					<span class="trial-hero-stat-label">Per call</span>
+					<span class="trial-hero-stat-value">1.05µs</span>
+				</span>
+				<span class="trial-hero-stat">
+					<span class="trial-hero-stat-label">Slowest</span>
+					<span class="trial-hero-stat-value">118%</span>
+				</span>
+			</div>
+		</section>
+
+		<section>
+			<div class="section-head">
+				<h2 class="section-title">Results</h2>
+				<span class="section-note">Bars are log-scaled mean run time; percentages are relative to the fastest candidate.</span>
+			</div>
+			<div class="result-rows">
+				<div class="result-row sev-warn">
+	<span class="result-rank">1</span>
+	<span class="result-name">
+		<span class="result-name-value">string sub</span>
+		<span class="result-name-sub">median 104.61ms &middot; min 103.42ms &middot; max 105.80ms &middot; 1.05µs / call</span>
+	</span>
+	<span class="result-bar">
+		<span style="width: 52.716499167023%;"></span>
+	</span>
+	<span class="result-pct">
+		<span class="result-pct-value">100%</span>
+		<span class="result-pct-sub">104.67ms mean</span>
+	</span>
+</div>
+
+<div class="result-row sev-warn">
+	<span class="result-rank">2</span>
+	<span class="result-name">
+		<span class="result-name-value">concating capture group</span>
+		<span class="result-name-sub">median 111.81ms &middot; min 109.67ms &middot; max 114.01ms &middot; 1.12µs / call</span>
+	</span>
+	<span class="result-bar">
+		<span style="width: 63.878047938824%;"></span>
+	</span>
+	<span class="result-pct">
+		<span class="result-pct-value">107%</span>
+		<span class="result-pct-sub">111.82ms mean</span>
+	</span>
+</div>
+
+<div class="result-row sev-warn">
+	<span class="result-rank">3</span>
+	<span class="result-name">
+		<span class="result-name-value">capture group</span>
+		<span class="result-name-sub">median 123.92ms &middot; min 121.59ms &middot; max 125.89ms &middot; 1.24µs / call</span>
+	</span>
+	<span class="result-bar">
+		<span style="width: 81.176752866318%;"></span>
+	</span>
+	<span class="result-pct">
+		<span class="result-pct-value">118%</span>
+		<span class="result-pct-sub">123.87ms mean</span>
+	</span>
+</div>
+
+			</div>
+		</section>
+
+		<section>
+			<div class="section-head">
+				<h2 class="section-title">Run distribution</h2>
+				<div class="boxplot-legend">
+					<span class="boxplot-legend-item"><span class="boxplot-swatch-box"></span>Q1&ndash;Q3</span>
+					<span class="boxplot-legend-item"><span class="boxplot-swatch-median"></span>Median</span>
+					<span class="boxplot-legend-item"><span class="boxplot-swatch-mean"></span>Mean</span>
+				</div>
+			</div>
+			<div class="boxplot">
+				<div class="boxplot-row">
+	<span class="boxplot-row-name">string sub</span>
+	<span class="boxplot-track">
+		<span class="boxplot-baseline"></span>
+		<span class="boxplot-whisker" style="left: 50.690407916319%; width: 3.8409743523294%;"></span>
+		<span class="boxplot-cap" style="left: 50.690407916319%;"></span>
+		<span class="boxplot-cap" style="left: 54.531382268648%;"></span>
+		<span class="boxplot-box" style="left: 52.127081080059%; width: 1.0774199695358%;"></span>
+		<span class="boxplot-median" style="left: 52.624489107396%;"></span>
+		<span class="boxplot-mean" style="left: 52.716499167023%;"></span>
+	</span>
+	<span class="boxplot-row-range">103.42ms – 105.80ms</span>
+</div>
+
+<div class="boxplot-row">
+	<span class="boxplot-row-name">concating capture group</span>
+	<span class="boxplot-track">
+		<span class="boxplot-baseline"></span>
+		<span class="boxplot-whisker" style="left: 60.602829293635%; width: 6.5615272663144%;"></span>
+		<span class="boxplot-cap" style="left: 60.602829293635%;"></span>
+		<span class="boxplot-cap" style="left: 67.164356559949%;"></span>
+		<span class="boxplot-box" style="left: 62.845716928606%; width: 1.9497626963446%;"></span>
+		<span class="boxplot-median" style="left: 63.874737658348%;"></span>
+		<span class="boxplot-mean" style="left: 63.878047938824%;"></span>
+	</span>
+	<span class="boxplot-row-range">109.67ms – 114.01ms</span>
+</div>
+
+<div class="boxplot-row">
+	<span class="boxplot-row-name">capture group</span>
+	<span class="boxplot-track">
+		<span class="boxplot-baseline"></span>
+		<span class="boxplot-whisker" style="left: 78.034666805525%; width: 5.866572914229%;"></span>
+		<span class="boxplot-cap" style="left: 78.034666805525%;"></span>
+		<span class="boxplot-cap" style="left: 83.901239719754%;"></span>
+		<span class="boxplot-box" style="left: 80.457700441004%; width: 1.6058331552309%;"></span>
+		<span class="boxplot-median" style="left: 81.233619073895%;"></span>
+		<span class="boxplot-mean" style="left: 81.176752866318%;"></span>
+	</span>
+	<span class="boxplot-row-range">121.59ms – 125.89ms</span>
+</div>
+
+				<span class="boxplot-footnote">Logarithmic scale, 76.61ms to 138.48ms per run.</span>
+			</div>
+		</section>
+
+		<section class="definitions-layout">
+			<div class="definitions">
+				<h2 class="section-title">Test definitions</h2>
+				<div class="definition">
+	<div class="definition-head">
+		<span class="definition-head-name">string sub</span>
+		<span class="tag tag-accent">Fastest</span>
+	</div>
+	<p class="definition-description">Matches the whole ${...} token and strips the delimiters by hand with :sub(), rather than capturing just the inner name.</p>
+	<pre><code>local function testA()
+	a(testString, testTab)
+end</code></pre>
+
+</div>
+
+<div class="definition">
+	<div class="definition-head">
+		<span class="definition-head-name">capture group</span>
+		
+	</div>
+	<p class="definition-description">Rebuilds an unmatched placeholder with string.format ('${%s}') - a path this test string never triggers, since every placeholder here resolves.</p>
+	<pre><code>local function testB()
+	b(testString, testTab)
+end</code></pre>
+
+</div>
+
+<div class="definition">
+	<div class="definition-head">
+		<span class="definition-head-name">concating capture group</span>
+		
+	</div>
+	
+	<pre><code>local function testC()
+	c(testString, testTab)
+end</code></pre>
+
+</div>
+
+			</div>
+			<div class="predefines">
+				<h2 class="section-title">Pre-definitions</h2>
+				<pre><code>local testTab = {name = "Billster", cash = "$1337"}
+local function a(s, tab)
+	return s:gsub("($%b{})", function(w) return tab[w:sub(3, -2)] or w end)
+end
+local testString = "${name} hat ${cash} in seiner Brieftasche und ${bank} auf seiner Bank."
+local function b(s, tab)
+	return s:gsub("%${(.-)}", function(w) return tab[w] or ("${%s}"):format(w) end)
+end
+local function c(s, tab)
+	return s:gsub("%${(.-)}", function(w) return tab[w] or ("${" .. w .. "}") end)
+end</code></pre>
+
+				<p class="predefines-note">Shared setup, run once before timing starts. Locals declared here are upvalues to every candidate in this trial.</p>
+			</div>
+		</section>
+	</div>
+</section>
+
+<section class="view" data-view-section="trial:equals_false_vs_not">
+	<div class="page">
+		<header class="page-header">
+			<span><button type="button" class="btn" data-view="overview">&larr; All trials</button></span>
+			<h1>Val == False Vs Not Val</h1>
+			<p>Whether checking == false instead of not costs anything, for a value that's always exactly false. The two aren't generally interchangeable: not also treats nil as falsy, which == false alone would miss.</p>
+			<div class="tag-row">
+				<span class="tag">Run count 100</span>
+				<span class="tag">Iterations / run 100000</span>
+				<span class="tag">2 candidates</span>
+			</div>
+		</header>
+
+		<section class="trial-hero">
+			<div class="trial-hero-winner">
+				<span class="trial-hero-label">Fastest</span>
+				<span class="trial-hero-name">== false</span>
+				<span class="trial-hero-note">Within 0% of the next candidate — effectively a tie at this sample size.</span>
+			</div>
+			<div class="trial-hero-stats">
+				<span class="trial-hero-stat">
+					<span class="trial-hero-stat-label">Mean run</span>
+					<span class="trial-hero-stat-value">3.01ms</span>
+				</span>
+				<span class="trial-hero-stat">
+					<span class="trial-hero-stat-label">Per call</span>
+					<span class="trial-hero-stat-value">30.09ns</span>
+				</span>
+				<span class="trial-hero-stat">
+					<span class="trial-hero-stat-label">Slowest</span>
+					<span class="trial-hero-stat-value">100%</span>
+				</span>
+			</div>
+		</section>
+
+		<section>
+			<div class="section-head">
+				<h2 class="section-title">Results</h2>
+				<span class="section-note">Bars are log-scaled mean run time; percentages are relative to the fastest candidate.</span>
+			</div>
+			<div class="result-rows">
+				<div class="result-row sev-warn">
+	<span class="result-rank">1</span>
+	<span class="result-name">
+		<span class="result-name-value">== false</span>
+		<span class="result-name-sub">median 3.00ms &middot; min 2.98ms &middot; max 3.04ms &middot; 30.09ns / call</span>
+	</span>
+	<span class="result-bar">
+		<span style="width: 74.673346376512%;"></span>
+	</span>
+	<span class="result-pct">
+		<span class="result-pct-value">100%</span>
+		<span class="result-pct-sub">3.01ms mean</span>
+	</span>
+</div>
+
+<div class="result-row ">
+	<span class="result-rank">2</span>
+	<span class="result-name">
+		<span class="result-name-value">not val</span>
+		<span class="result-name-sub">median 3.00ms &middot; min 2.97ms &middot; max 3.04ms &middot; 30.17ns / call</span>
+	</span>
+	<span class="result-bar">
+		<span style="width: 75.299618488289%;"></span>
+	</span>
+	<span class="result-pct">
+		<span class="result-pct-value">100%</span>
+		<span class="result-pct-sub">3.02ms mean</span>
+	</span>
+</div>
+
+			</div>
+		</section>
+
+		<section>
+			<div class="section-head">
+				<h2 class="section-title">Run distribution</h2>
+				<div class="boxplot-legend">
+					<span class="boxplot-legend-item"><span class="boxplot-swatch-box"></span>Q1&ndash;Q3</span>
+					<span class="boxplot-legend-item"><span class="boxplot-swatch-median"></span>Median</span>
+					<span class="boxplot-legend-item"><span class="boxplot-swatch-mean"></span>Mean</span>
+				</div>
+			</div>
+			<div class="boxplot">
+				<div class="boxplot-row">
+	<span class="boxplot-row-name">== false</span>
+	<span class="boxplot-track">
+		<span class="boxplot-baseline"></span>
+		<span class="boxplot-whisker" style="left: 72.507628797294%; width: 4.6855155179288%;"></span>
+		<span class="boxplot-cap" style="left: 72.507628797294%;"></span>
+		<span class="boxplot-cap" style="left: 77.193144315223%;"></span>
+		<span class="boxplot-box" style="left: 73.574027705816%; width: 1.5951642428311%;"></span>
+		<span class="boxplot-median" style="left: 74.136594019334%;"></span>
+		<span class="boxplot-mean" style="left: 74.673346376512%;"></span>
+	</span>
+	<span class="boxplot-row-range">2.98ms – 3.04ms</span>
+</div>
+
+<div class="boxplot-row">
+	<span class="boxplot-row-name">not val</span>
+	<span class="boxplot-track">
+		<span class="boxplot-baseline"></span>
+		<span class="boxplot-whisker" style="left: 71.812288513206%; width: 5.2894055077175%;"></span>
+		<span class="boxplot-cap" style="left: 71.812288513206%;"></span>
+		<span class="boxplot-cap" style="left: 77.101694020924%;"></span>
+		<span class="boxplot-box" style="left: 73.634852286741%; width: 1.415120125422%;"></span>
+		<span class="boxplot-median" style="left: 74.09674207035%;"></span>
+		<span class="boxplot-mean" style="left: 75.299618488289%;"></span>
+	</span>
+	<span class="boxplot-row-range">2.97ms – 3.04ms</span>
+</div>
+
+				<span class="boxplot-footnote">Logarithmic scale, 2.20ms to 3.35ms per run.</span>
+			</div>
+		</section>
+
+		<section class="definitions-layout">
+			<div class="definitions">
+				<h2 class="section-title">Test definitions</h2>
+				<div class="definition">
+	<div class="definition-head">
+		<span class="definition-head-name">== false</span>
+		<span class="tag tag-accent">Fastest</span>
+	</div>
+	<p class="definition-description">Would not catch a nil value, only literal false - safe here because testVal is only ever set to false or left at its initial false.</p>
+	<pre><code>local function a()
+	if testVal == false then
+		setVal = 1
+	end
+end</code></pre>
+
+</div>
+
+<div class="definition">
+	<div class="definition-head">
+		<span class="definition-head-name">not val</span>
+		
+	</div>
+	
+	<pre><code>local function b()
+	if not testVal then
+		setVal = 1
+	end
+end</code></pre>
+
+</div>
+
+			</div>
+			<div class="predefines">
+				<h2 class="section-title">Pre-definitions</h2>
+				<pre><code>local testVal = false
+local setVal</code></pre>
+
+				<p class="predefines-note">Shared setup, run once before timing starts. Locals declared here are upvalues to every candidate in this trial.</p>
+			</div>
+		</section>
+	</div>
+</section>
+
+<section class="view" data-view-section="trial:table_lookup">
+	<div class="page">
+		<header class="page-header">
+			<span><button type="button" class="btn" data-view="overview">&larr; All trials</button></span>
+			<h1>HasValue Vs Key Lookup In Table Construction Vs Upvalues</h1>
+			<p>Four ways to check membership, crossing two independent choices: a linear scan (table.HasValue) vs a direct key lookup, and building the lookup table fresh on every call vs reusing one captured as an upvalue.</p>
+			<div class="tag-row">
+				<span class="tag">Run count 100</span>
+				<span class="tag">Iterations / run 100000</span>
+				<span class="tag">4 candidates</span>
+			</div>
+		</header>
+
+		<section class="trial-hero">
+			<div class="trial-hero-winner">
+				<span class="trial-hero-label">Fastest</span>
+				<span class="trial-hero-name">Constructed Key Lookup</span>
+				<span class="trial-hero-note">Beats the next candidate by 10%, and the slowest by 267%.</span>
+			</div>
+			<div class="trial-hero-stats">
+				<span class="trial-hero-stat">
+					<span class="trial-hero-stat-label">Mean run</span>
+					<span class="trial-hero-stat-value">3.02ms</span>
+				</span>
+				<span class="trial-hero-stat">
+					<span class="trial-hero-stat-label">Per call</span>
+					<span class="trial-hero-stat-value">30.22ns</span>
+				</span>
+				<span class="trial-hero-stat">
+					<span class="trial-hero-stat-label">Slowest</span>
+					<span class="trial-hero-stat-value">367%</span>
+				</span>
+			</div>
+		</section>
+
+		<section>
+			<div class="section-head">
+				<h2 class="section-title">Results</h2>
+				<span class="section-note">Bars are log-scaled mean run time; percentages are relative to the fastest candidate.</span>
+			</div>
+			<div class="result-rows">
+				<div class="result-row sev-warn">
+	<span class="result-rank">1</span>
+	<span class="result-name">
+		<span class="result-name-value">Constructed Key Lookup</span>
+		<span class="result-name-sub">median 3.02ms &middot; min 2.99ms &middot; max 3.05ms &middot; 30.22ns / call</span>
+	</span>
+	<span class="result-bar">
+		<span style="width: 18.177778370702%;"></span>
+	</span>
+	<span class="result-pct">
+		<span class="result-pct-value">100%</span>
+		<span class="result-pct-sub">3.02ms mean</span>
+	</span>
+</div>
+
+<div class="result-row sev-warn">
+	<span class="result-rank">2</span>
+	<span class="result-name">
+		<span class="result-name-value">UpValue Key Lookup</span>
+		<span class="result-name-sub">median 3.33ms &middot; min 3.30ms &middot; max 3.37ms &middot; 33.35ns / call</span>
+	</span>
+	<span class="result-bar">
+		<span style="width: 23.946668608312%;"></span>
+	</span>
+	<span class="result-pct">
+		<span class="result-pct-value">110%</span>
+		<span class="result-pct-sub">3.34ms mean</span>
+	</span>
+</div>
+
+<div class="result-row sev-critical">
+	<span class="result-rank">3</span>
+	<span class="result-name">
+		<span class="result-name-value">UpValue HasValue</span>
+		<span class="result-name-sub">median 8.23ms &middot; min 8.18ms &middot; max 8.29ms &middot; 82.41ns / call</span>
+	</span>
+	<span class="result-bar">
+		<span style="width: 76.916654180887%;"></span>
+	</span>
+	<span class="result-pct">
+		<span class="result-pct-value">273%</span>
+		<span class="result-pct-sub">8.24ms mean</span>
+	</span>
+</div>
+
+<div class="result-row sev-critical">
+	<span class="result-rank">4</span>
+	<span class="result-name">
+		<span class="result-name-value">Constructed HasValue</span>
+		<span class="result-name-sub">median 10.88ms &middot; min 10.79ms &middot; max 11.11ms &middot; 110.79ns / call</span>
+	</span>
+	<span class="result-bar">
+		<span style="width: 94.243146104816%;"></span>
+	</span>
+	<span class="result-pct">
+		<span class="result-pct-value">367%</span>
+		<span class="result-pct-sub">11.08ms mean</span>
+	</span>
+</div>
+
+			</div>
+		</section>
+
+		<section>
+			<div class="section-head">
+				<h2 class="section-title">Run distribution</h2>
+				<div class="boxplot-legend">
+					<span class="boxplot-legend-item"><span class="boxplot-swatch-box"></span>Q1&ndash;Q3</span>
+					<span class="boxplot-legend-item"><span class="boxplot-swatch-median"></span>Median</span>
+					<span class="boxplot-legend-item"><span class="boxplot-swatch-mean"></span>Mean</span>
+				</div>
+			</div>
+			<div class="boxplot">
+				<div class="boxplot-row">
+	<span class="boxplot-row-name">Constructed Key Lookup</span>
+	<span class="boxplot-track">
+		<span class="boxplot-baseline"></span>
+		<span class="boxplot-whisker" style="left: 17.572299215341%; width: 1.1238976290466%;"></span>
+		<span class="boxplot-cap" style="left: 17.572299215341%;"></span>
+		<span class="boxplot-cap" style="left: 18.696196844387%;"></span>
+		<span class="boxplot-box" style="left: 17.941776752472%; width: 0.48735622293982%;"></span>
+		<span class="boxplot-median" style="left: 18.099949635295%;"></span>
+		<span class="boxplot-mean" style="left: 18.177778370702%;"></span>
+	</span>
+	<span class="boxplot-row-range">2.99ms – 3.05ms</span>
+</div>
+
+<div class="boxplot-row">
+	<span class="boxplot-row-name">UpValue Key Lookup</span>
+	<span class="boxplot-track">
+		<span class="boxplot-baseline"></span>
+		<span class="boxplot-whisker" style="left: 23.359906819482%; width: 1.1132982955721%;"></span>
+		<span class="boxplot-cap" style="left: 23.359906819482%;"></span>
+		<span class="boxplot-cap" style="left: 24.473205115054%;"></span>
+		<span class="boxplot-box" style="left: 23.780509782195%; width: 0.29297455838024%;"></span>
+		<span class="boxplot-median" style="left: 23.921142772651%;"></span>
+		<span class="boxplot-mean" style="left: 23.946668608312%;"></span>
+	</span>
+	<span class="boxplot-row-range">3.30ms – 3.37ms</span>
+</div>
+
+<div class="boxplot-row">
+	<span class="boxplot-row-name">UpValue HasValue</span>
+	<span class="boxplot-track">
+		<span class="boxplot-baseline"></span>
+		<span class="boxplot-whisker" style="left: 76.448497277478%; width: 0.79335230391106%;"></span>
+		<span class="boxplot-cap" style="left: 76.448497277478%;"></span>
+		<span class="boxplot-cap" style="left: 77.241849581389%;"></span>
+		<span class="boxplot-box" style="left: 76.733668072474%; width: 0.22057819655696%;"></span>
+		<span class="boxplot-median" style="left: 76.85510258804%;"></span>
+		<span class="boxplot-mean" style="left: 76.916654180887%;"></span>
+	</span>
+	<span class="boxplot-row-range">8.18ms – 8.29ms</span>
+</div>
+
+<div class="boxplot-row">
+	<span class="boxplot-row-name">Constructed HasValue</span>
+	<span class="boxplot-track">
+		<span class="boxplot-baseline"></span>
+		<span class="boxplot-whisker" style="left: 92.67217174987%; width: 1.747043950514%;"></span>
+		<span class="boxplot-cap" style="left: 92.67217174987%;"></span>
+		<span class="boxplot-cap" style="left: 94.419215700384%;"></span>
+		<span class="boxplot-box" style="left: 93.00610782713%; width: 0.68871436218842%;"></span>
+		<span class="boxplot-median" style="left: 93.171757494372%;"></span>
+		<span class="boxplot-mean" style="left: 94.243146104816%;"></span>
+	</span>
+	<span class="boxplot-row-range">10.79ms – 11.11ms</span>
+</div>
+
+				<span class="boxplot-footnote">Logarithmic scale, 2.22ms to 12.22ms per run.</span>
+			</div>
+		</section>
+
+		<section class="definitions-layout">
+			<div class="definitions">
+				<h2 class="section-title">Test definitions</h2>
+				<div class="definition">
+	<div class="definition-head">
+		<span class="definition-head-name">Constructed HasValue</span>
+		
+	</div>
+	<p class="definition-description">Rebuilds the table AND does a linear scan through it on every call - combines both costs, and is the one most people write by accident.</p>
+	<pre><code>local function a()
+	return table.HasValue({"vip", "admin"}, "user")
+end</code></pre>
+
+</div>
+
+<div class="definition">
+	<div class="definition-head">
+		<span class="definition-head-name">Constructed Key Lookup</span>
+		<span class="tag tag-accent">Fastest</span>
+	</div>
+	<p class="definition-description">Still rebuilds the table on every call, but replaces the scan with a hash lookup - isolates the cost of construction from the cost of table.HasValue's scan.</p>
+	<pre><code>local function b()
+	return ({["vip"] = true, ["admin"] = true})["user"]
+end</code></pre>
+
+</div>
+
+<div class="definition">
+	<div class="definition-head">
+		<span class="definition-head-name">UpValue HasValue</span>
+		
+	</div>
+	
+	<pre><code>local function c()
+	return table.HasValue(c_data, "user")
+end</code></pre>
+
+</div>
+
+<div class="definition">
+	<div class="definition-head">
+		<span class="definition-head-name">UpValue Key Lookup</span>
+		
+	</div>
+	
+	<pre><code>local function d()
+	return d_data["user"]
+end</code></pre>
+
+</div>
+
+			</div>
+			<div class="predefines">
+				<h2 class="section-title">Pre-definitions</h2>
+				<pre><code>local c_data = {"vip", "admin"}
+local d_data = {["vip"] = true, ["admin"] = true}</code></pre>
+
+				<p class="predefines-note">Shared setup, run once before timing starts. Locals declared here are upvalues to every candidate in this trial.</p>
+			</div>
+		</section>
+	</div>
+</section>
+
+			</main>
+		</div>
+	</body>
+
+	<script>(function(){
+	"use strict";
+
+	var THEME_KEY = "internet_benchmark_theme";
+
+	function applyStoredTheme(){
+		var stored = null;
+		try {
+			stored = localStorage.getItem(THEME_KEY);
+		} catch (e) {}
+
+		if (stored === "dark" || stored === "light"){
+			document.documentElement.setAttribute("data-theme", stored);
+		}
+
+		updateThemeToggleLabel();
+	}
+
+	function currentTheme(){
+		var attr = document.documentElement.getAttribute("data-theme");
+		if (attr === "dark" || attr === "light"){
+			return attr;
+		}
+
+		return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+	}
+
+	function updateThemeToggleLabel(){
+		var toggle = document.querySelector("[data-theme-toggle]");
+		if (!toggle){
+			return;
+		}
+
+		toggle.textContent = currentTheme() === "dark" ? "Light" : "Dark";
+	}
+
+	function toggleTheme(){
+		var next = currentTheme() === "dark" ? "light" : "dark";
+		document.documentElement.setAttribute("data-theme", next);
+
+		try {
+			localStorage.setItem(THEME_KEY, next);
+		} catch (e) {}
+
+		updateThemeToggleLabel();
+	}
+
+	function setView(view){
+		var sections = document.querySelectorAll("[data-view-section]");
+		for (var i = 0; i < sections.length; i++){
+			var match = sections[i].getAttribute("data-view-section") === view;
+			sections[i].classList.toggle("active", match);
+		}
+
+		var navLinks = document.querySelectorAll("[data-view]");
+		for (var j = 0; j < navLinks.length; j++){
+			var match2 = navLinks[j].getAttribute("data-view") === view;
+			navLinks[j].classList.toggle("active", match2);
+		}
+	}
+
+	function goToView(view){
+		setView(view);
+		if (history.replaceState){
+			history.replaceState(null, "", "#" + view);
+		} else {
+			location.hash = view;
+		}
+	}
+
+	function viewFromHash(){
+		var hash = location.hash.replace(/^#/, "");
+		if (!hash){
+			return "overview";
+		}
+
+		// Matched by attribute, not a built selector: an unescaped quote in a fragment throws.
+		var sections = document.querySelectorAll("[data-view-section]");
+		for (var i = 0; i < sections.length; i++){
+			if (sections[i].getAttribute("data-view-section") === hash){
+				return hash;
+			}
+		}
+
+		return "overview";
+	}
+
+	document.addEventListener("click", function(event){
+		var target = event.target.closest("[data-view]");
+		if (target){
+			goToView(target.getAttribute("data-view"));
+			return;
+		}
+
+		if (event.target.closest("[data-theme-toggle]")){
+			toggleTheme();
+		}
+	});
+
+	window.addEventListener("hashchange", function(){
+		setView(viewFromHash());
+	});
+
+	document.addEventListener("DOMContentLoaded", function(){
+		applyStoredTheme();
+		setView(viewFromHash());
+	});
+})();
+</script>
+</html>

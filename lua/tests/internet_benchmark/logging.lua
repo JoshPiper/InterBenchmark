@@ -294,8 +294,7 @@ return {
 		{
 			name = "internet_benchmark_logging_report refuses a non-superadmin player",
 			func = function(state)
-				-- The refusal warning is level-gated; the report body is not,
-				-- so silencing the logger leaves MsgC as a clean signal.
+				-- The refusal warning is level-gated but the report body is not, so silencing the logger leaves MsgC as a clean signal.
 				INTERNET_BENCHMARK.Logging.Level = INTERNET_BENCHMARK.Logging.Levels.NONE
 
 				local ply = {IsValid = function() return true end, IsSuperAdmin = function() return false end}

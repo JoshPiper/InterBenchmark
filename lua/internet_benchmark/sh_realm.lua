@@ -41,11 +41,24 @@ end
 --- @param requestId integer The request this is a reply to.
 --- @param kind string A short tag for the payload ("html", "text", "summary", "reject").
 --- @param payload string
+--- @return boolean # Whether the whole payload was sent.
 function BENCH:SendChunkedString(ply, requestId, kind, payload)
 	local size = self.RealmChunkSize
 	local count = math.max(1, math.ceil(#payload / size))
 
 	for index = 1, count do
+		-- Re-checked per chunk rather than once up front: a report spans
+		-- several messages, and net.Send raises on a player who left between
+		-- two of them.
+		if ply and not IsValid(ply) then
+			self.Logging.Info(string.format(
+				"The target player left after chunk %d of %d for request #%d; dropping the rest.",
+				index - 1, count, requestId
+			))
+
+			return false
+		end
+
 		local from = (index - 1) * size + 1
 		local chunk = string.sub(payload, from, from + size - 1)
 
@@ -63,6 +76,8 @@ function BENCH:SendChunkedString(ply, requestId, kind, payload)
 			net.SendToServer()
 		end
 	end
+
+	return true
 end
 
 --- Reassembly buffers for in-flight replies, keyed by request ID.

@@ -25,9 +25,7 @@ function fn.partial(func, ...)
 			return func(unpack(stored, 1, st))
 		end
 
-		-- Assembled fresh per call, so the stored arguments stay exactly as
-		-- they were handed over however many times, and at whatever arity,
-		-- the partial is later called.
+		-- Assembled fresh per call, so the stored arguments survive any later arity.
 		local args = {}
 		for i = 1, st do
 			args[i] = stored[i]

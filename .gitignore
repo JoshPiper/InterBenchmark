@@ -1,0 +1,14 @@
+# JetBrains IDEs
+/.idea/
+
+# Local build output and downloaded tooling
+/dist/
+/fastgmad
+/glualint
+/version.txt
+*.gma
+*.zip
+
+# OS metadata
+.DS_Store
+Thumbs.db

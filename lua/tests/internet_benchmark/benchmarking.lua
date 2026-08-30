@@ -443,6 +443,75 @@ return {
 		},
 
 		{
+			name = "Trial restarts the collector when a benchmarked function raises",
+			func = function()
+				local trial = INTERNET_BENCHMARK.Classes.Trial()
+				trial.id = "gc_probe_raising"
+				trial.runs = 1
+				trial.iterations = 1
+				trial:Function(function() error("trial exploded") end)
+				trial:Label("boom")
+
+				stub(INTERNET_BENCHMARK, "LoadTrial").returns(trial)
+
+				local realCollect = collectgarbage
+				local calls, steps = {}, {}
+				_G.collectgarbage = function(opt, arg)
+					table.insert(calls, opt or "collect")
+					if opt == "setstepmul" then
+						table.insert(steps, arg)
+						return 200
+					end
+
+					return 0
+				end
+
+				local ok, err = pcall(INTERNET_BENCHMARK.Trial, INTERNET_BENCHMARK, "gc_probe_raising", false, false)
+
+				_G.collectgarbage = realCollect
+
+				expect(ok).to.beFalse()
+				expect(string.find(tostring(err), "trial exploded", 1, true)).to.exist()
+				expect(table.HasValue(calls, "restart")).to.beTrue()
+				expect(steps[#steps]).to.equal(200)
+			end
+		},
+
+		{
+			name = "Trial still yields to the pump from inside the collector guard",
+			func = function()
+				local trial = INTERNET_BENCHMARK.Classes.Trial()
+				trial.id = "gc_probe_yielding"
+				trial.runs = 2
+				trial.iterations = 1
+				trial:Function(function() end)
+				trial:Label("noop")
+
+				stub(INTERNET_BENCHMARK, "LoadTrial").returns(trial)
+
+				local realCollect = collectgarbage
+				_G.collectgarbage = function(opt)
+					return opt == "setstepmul" and 200 or 0
+				end
+
+				local job = coroutine.create(function()
+					return INTERNET_BENCHMARK:Trial("gc_probe_yielding", false, false)
+				end)
+
+				local resumes, ok = 0, true
+				while ok and coroutine.status(job) ~= "dead" and resumes < 100 do
+					ok = coroutine.resume(job)
+					resumes = resumes + 1
+				end
+
+				_G.collectgarbage = realCollect
+
+				expect(ok).to.beTrue()
+				expect(resumes).to.beGreaterThan(1)
+			end
+		},
+
+		{
 			name = "internet_benchmark_run passes the dynamic flag through to the report job",
 			func = function()
 				local report = stub(INTERNET_BENCHMARK, "ReportWithoutCrashing")

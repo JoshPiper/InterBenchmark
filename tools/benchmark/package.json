@@ -1,0 +1,14 @@
+{
+	"name": "internet-benchmark-harness",
+	"version": "1.0.0",
+	"private": true,
+	"description": "Runs Internet's Benchmark Suite on a headless Garry's Mod server in docker.",
+	"license": "MIT",
+	"type": "module",
+	"engines": {
+		"node": ">=24"
+	},
+	"scripts": {
+		"test": "node --test"
+	}
+}

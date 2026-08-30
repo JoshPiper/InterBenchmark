@@ -44,6 +44,22 @@ jobs:
           # Templates are HTML/CSS/JS carried in .lua files; they are not Lua.
           find lua -name '*.lua' -not -path '*/templates/*' -print0 | xargs -0 ./glualint lint
 
+  harness:
+    name: Benchmark Harness
+    # The harness itself only runs on demand (see benchmark.yml), so its own
+    # tests are what keeps it from rotting between runs.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "24"
+
+      - name: Test
+        working-directory: tools/benchmark
+        run: node --test
+
   package:
     name: Package
     # Proves every change still packs cleanly: gmad's whitelist rejects stray

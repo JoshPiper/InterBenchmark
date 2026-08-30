@@ -328,6 +328,22 @@ The suite runs **serverside**, so the client-only trials (`draw_rect`,
 `set_draw_color`) are covered only to the extent that they are correctly skipped;
 verifying their timings still needs a manual client-side run.
 
+### Benchmarking in docker
+
+`tools/benchmark/harness.js` runs the suite on a headless server in docker and
+collects the report, on the same GLuaTest runner image the `ingame` job tests
+against. It takes a full run, a tag-filtered group or a single trial:
+
+```bash
+node tools/benchmark/harness.js --mode=trial --trial=modulo --iterations=test
+```
+
+`.github/workflows/benchmark.yml` exposes the same choices as manual
+`workflow_dispatch` inputs and uploads `report.html`, `results.json`,
+`environment.txt` and the server log as an artifact. Nothing in it gates on the
+numbers: results from a shared CI runner describe that runner, not the
+candidates. See [tools/benchmark/README.md](tools/benchmark/README.md).
+
 **Linting**: [glualint](https://github.com/FPtje/GLuaFixer) with the bundled
 `.glualint.json`. Templates under `lua/internet_benchmark/templates/` are
 HTML/CSS/JS carried in `.lua` files (so they ride the client download list) and

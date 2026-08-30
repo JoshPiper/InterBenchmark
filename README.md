@@ -13,6 +13,9 @@ produces a single self-contained HTML report — an overview, an environment
 statement and a page per trial with summary statistics, box-and-whisker plots,
 and the exact source code that was measured.
 
+Written with AI assistance — see [AI-DISCLOSURE.md](AI-DISCLOSURE.md) for
+the full statement.
+
 ## Installation
 
 Grab the latest packaged build from the

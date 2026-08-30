@@ -87,6 +87,42 @@ return {
 				expect(target).to.beNil()
 				expect(err).to.beA("string")
 			end
+		},
+
+		{
+			name = "internet_benchmark_environment refuses a non-superadmin player",
+			func = function(state)
+				local ply = {IsValid = function() return true end, IsSuperAdmin = function() return false end}
+
+				local report = stub(INTERNET_BENCHMARK.Environment, "Report")
+				state.report = report
+				local warned = stub(INTERNET_BENCHMARK.Logging, "Warning")
+				state.warned = warned
+
+				local callback = concommand.GetTable()["internet_benchmark_environment"]
+				callback(ply, "internet_benchmark_environment", {}, "")
+
+				report:Restore()
+				warned:Restore()
+
+				expect(report).wasNot.called()
+				expect(warned).was.called()
+			end
+		},
+
+		{
+			name = "internet_benchmark_environment allows the dedicated console",
+			func = function(state)
+				local report = stub(INTERNET_BENCHMARK.Environment, "Report")
+				state.report = report
+
+				local callback = concommand.GetTable()["internet_benchmark_environment"]
+				callback(nil, "internet_benchmark_environment", {}, "")
+
+				report:Restore()
+
+				expect(report).was.called(1)
+			end
 		}
 	}
 }

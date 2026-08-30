@@ -161,6 +161,11 @@ end, BENCH:ArgCompleter({flags = {"dynamic", "test", "realm", "target"}, positio
 	helpRealm
 ))
 
-concommand.Add("internet_benchmark_environment", function()
+concommand.Add("internet_benchmark_environment", function(ply)
+	if not BENCH:CanRunHere(ply) then
+		BENCH.Logging.Warning("Only superadmins may print the server's environment statement.")
+		return
+	end
+
 	BENCH.Environment:Report()
 end, nil, "Print the environment statement used alongside benchmark reports.")

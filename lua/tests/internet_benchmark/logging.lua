@@ -289,6 +289,27 @@ return {
 
 				expect(printed).was.called()
 			end
+		},
+
+		{
+			name = "internet_benchmark_logging_report refuses a non-superadmin player",
+			func = function(state)
+				-- The refusal warning is level-gated; the report body is not,
+				-- so silencing the logger leaves MsgC as a clean signal.
+				INTERNET_BENCHMARK.Logging.Level = INTERNET_BENCHMARK.Logging.Levels.NONE
+
+				local ply = {IsValid = function() return true end, IsSuperAdmin = function() return false end}
+
+				local printed = stub(_G, "MsgC")
+				state.printed = printed
+
+				local callback = concommand.GetTable()["internet_benchmark_logging_report"]
+				callback(ply, "internet_benchmark_logging_report", {}, "")
+
+				printed:Restore()
+
+				expect(printed).wasNot.called()
+			end
 		}
 	}
 }

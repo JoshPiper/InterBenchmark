@@ -333,10 +333,7 @@ function BENCH:Trial(name, dynamic, test, includeTags, excludeTags)
 		trial.runs = self.TestRuns
 	end
 
-	-- Checked against the counts actually about to be used, after dynamic
-	-- calibration and test mode have had their say. Anything below one
-	-- leaves every function without a single timed run, and so without any
-	-- statistics for the report to rank.
+	-- Checked after dynamic and test mode, against the counts actually about to be used.
 	if (trial.runs or 0) < 1 or (trial.iterations or 0) < 1 then
 		self.Logging.Warning(string.format(
 			"Trial '%s' asks for %s runs of %s iterations; both must be at least 1, skipping.",

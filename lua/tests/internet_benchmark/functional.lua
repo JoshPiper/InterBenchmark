@@ -59,6 +59,47 @@ return {
 		},
 
 		{
+			name = "partial keeps a stored trailing nil in its own position",
+			func = function()
+				local p = INTERNET_BENCHMARK.Functional.partial(capture, "a", nil)
+				local n, a, b, c = p("c")
+
+				expect(n).to.equal(3)
+				expect(a).to.equal("a")
+				expect(b).to.beNil()
+				expect(c).to.equal("c")
+			end
+		},
+
+		{
+			name = "partial keeps a stored leading nil in its own position",
+			func = function()
+				local p = INTERNET_BENCHMARK.Functional.partial(capture, nil, "b")
+				local n, a, b, c = p("c")
+
+				expect(n).to.equal(3)
+				expect(a).to.beNil()
+				expect(b).to.equal("b")
+				expect(c).to.equal("c")
+			end
+		},
+
+		{
+			name = "partial leaves its stored arguments untouched between calls",
+			func = function()
+				local p = INTERNET_BENCHMARK.Functional.partial(capture, "a")
+
+				local _, first = p("x", "y", "z")
+				expect(first).to.equal("a")
+
+				local n, a, b = p()
+				expect(n).to.equal(1)
+				expect(a).to.equal("a")
+				expect(b).to.beNil()
+			end
+		},
+
+		{
 			name = "partial counts nil call arguments via select, not #",
 			func = function()
 				local p = INTERNET_BENCHMARK.Functional.partial(capture, "a")

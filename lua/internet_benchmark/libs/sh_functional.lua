@@ -16,13 +16,22 @@ local unpack = unpack
 --- @param func function Input function to curry.
 --- @param ... any Arguments to store.
 function fn.partial(func, ...)
-	local args = {...}
-	local st = #args
+	local stored = {...}
+	local st = select("#", ...)
 
 	return function(...)
 		local m = select("#", ...)
+		if m == 0 then
+			return func(unpack(stored, 1, st))
+		end
+
+		-- Assembled fresh per call, so the stored arguments survive any later arity.
+		local args = {}
+		for i = 1, st do
+			args[i] = stored[i]
+		end
 		for i = 1, m do
-			args[st + i] = select(i, ...)
+			args[st + i] = (select(i, ...))
 		end
 
 		return func(unpack(args, 1, st + m))

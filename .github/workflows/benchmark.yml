@@ -70,9 +70,10 @@ jobs:
   benchmark:
     name: Benchmark
     runs-on: ubuntu-latest
-    # The container's own timeout ends the run; this only stops a wedged job
-    # from sitting there once staging and collection have had their share.
-    timeout-minutes: ${{ fromJSON(inputs.timeout || '10') + 20 }}
+    # The run is really bounded by the container's own timeout; this is only a
+    # backstop for a job that wedges before or after it, so it is deliberately
+    # far looser than any sensible --timeout.
+    timeout-minutes: 120
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1

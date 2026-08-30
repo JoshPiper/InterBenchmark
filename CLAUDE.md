@@ -7,6 +7,14 @@ Guidance for Claude Code when working in this repository.
 PR titles must start with their conventional commit prefix
 (e.g. `feat:`, `fix:`, `docs:`, `chore:`, `refactor:`, `test:`, `ci:`).
 
+## Attribution
+
+AI-assisted commits carry a `Co-Authored-By: Claude …` trailer; most of the
+history names the specific model that did the work. Always add one, never
+strip one, and never rewrite history to remove one — `AI-DISCLOSURE.md`
+states this as a project practice, so a gap in the record reads as something
+concealed rather than something tidied.
+
 ## Testing
 
 - When fixing a bug, add a test case that reproduces it, so it can't

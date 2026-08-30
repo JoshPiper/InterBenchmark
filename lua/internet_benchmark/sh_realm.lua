@@ -62,7 +62,7 @@ local function reportRejection(message)
 	end
 
 	lastRejectAt, suppressedRejects = now, 0
-	BENCH.Logging.ForceError(message)
+	BENCH.Logging.Error(message)
 end
 
 --- Record that this realm sent a request, so its reply can be told apart from an unsolicited one.
@@ -110,7 +110,7 @@ function BENCH:ExpireRealmRequest(requestId)
 		return
 	end
 
-	self.Logging.ForceWarning(string.format("Realm request #%d timed out after %d seconds without a complete reply.", requestId, self.RealmRequestTimeout))
+	self.Logging.Warning(string.format("Realm request #%d timed out after %d seconds without a complete reply.", requestId, self.RealmRequestTimeout))
 	self:ForgetRealmRequest(requestId)
 end
 

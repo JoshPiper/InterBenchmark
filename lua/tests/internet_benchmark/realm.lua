@@ -39,7 +39,7 @@ return {
 			name = "Rejects a reply for a request this realm never sent, loudly",
 			func = function()
 				local accepted
-				local messages = captureLog("ForceError", function()
+				local messages = captureLog("Error", function()
 					accepted = INTERNET_BENCHMARK:AcceptRealmReply(910001, fakePlayer())
 				end)
 
@@ -55,7 +55,7 @@ return {
 				INTERNET_BENCHMARK:TrackRealmRequest(910002, asked)
 
 				local accepted
-				local messages = captureLog("ForceError", function()
+				local messages = captureLog("Error", function()
 					accepted = INTERNET_BENCHMARK:AcceptRealmReply(910002, forger)
 				end)
 				INTERNET_BENCHMARK:ForgetRealmRequest(910002)
@@ -71,7 +71,7 @@ return {
 				local asked = fakePlayer()
 				INTERNET_BENCHMARK:TrackRealmRequest(910003, asked)
 
-				local messages = captureLog("ForceError", function()
+				local messages = captureLog("Error", function()
 					expect(INTERNET_BENCHMARK:AcceptRealmReply(910003, asked)).to.beTrue()
 				end)
 				INTERNET_BENCHMARK:ForgetRealmRequest(910003)
@@ -91,7 +91,7 @@ return {
 				INTERNET_BENCHMARK.RealmRequestTimeout = timeout
 
 				local accepted
-				local messages = captureLog("ForceWarning", function()
+				local messages = captureLog("Warning", function()
 					accepted = INTERNET_BENCHMARK:AcceptRealmReply(910004, asked)
 				end)
 
@@ -108,7 +108,7 @@ return {
 				INTERNET_BENCHMARK:ForgetRealmRequest(910005)
 
 				local accepted
-				captureLog("ForceError", function()
+				captureLog("Error", function()
 					accepted = INTERNET_BENCHMARK:AcceptRealmReply(910005, asked)
 				end)
 
@@ -126,7 +126,7 @@ return {
 				hook.GetTable().PlayerDisconnected.InternetBenchmarkRealmCleanup(leaving)
 
 				local dropped, kept
-				captureLog("ForceError", function()
+				captureLog("Error", function()
 					dropped = INTERNET_BENCHMARK:AcceptRealmReply(910006, leaving)
 					kept = INTERNET_BENCHMARK:AcceptRealmReply(910007, staying)
 				end)
@@ -142,7 +142,7 @@ return {
 			func = function()
 				local ply = fakePlayer("STEAM_0:1:9999999", "Suite] a forged console line [")
 
-				local messages = captureLog("ForceError", function()
+				local messages = captureLog("Error", function()
 					INTERNET_BENCHMARK:AcceptRealmReply(910008, ply)
 				end)
 
@@ -156,10 +156,10 @@ return {
 			name = "Coalesces a burst of rejections into one report carrying the count",
 			func = function()
 				local messages = {}
-				local originalLog = INTERNET_BENCHMARK.Logging.ForceError
+				local originalLog = INTERNET_BENCHMARK.Logging.Error
 				local originalInterval = INTERNET_BENCHMARK.RealmRejectLogInterval
 
-				INTERNET_BENCHMARK.Logging.ForceError = function(message)
+				INTERNET_BENCHMARK.Logging.Error = function(message)
 					table.insert(messages, message)
 				end
 
@@ -173,7 +173,7 @@ return {
 				INTERNET_BENCHMARK.RealmRejectLogInterval = 0
 				INTERNET_BENCHMARK:AcceptRealmReply(910013, fakePlayer())
 
-				INTERNET_BENCHMARK.Logging.ForceError = originalLog
+				INTERNET_BENCHMARK.Logging.Error = originalLog
 				INTERNET_BENCHMARK.RealmRejectLogInterval = originalInterval
 
 				expect(#messages).to.equal(2)

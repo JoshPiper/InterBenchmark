@@ -158,3 +158,9 @@ whether the report renders. Drop it once you want numbers you'd publish.
   serialise — tables, entities — gets `:Exclude`d and covered by a
   `:ManualPredefine` line range instead; the suite warns when a capture needs
   it.
+
+---
+
+## Reporting a security issue
+
+Don't put it in a PR or an issue. See [SECURITY.md](SECURITY.md).

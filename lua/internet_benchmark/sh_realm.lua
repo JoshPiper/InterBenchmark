@@ -181,6 +181,48 @@ function BENCH:SendChunkedString(ply, requestId, kind, payload)
 	end
 end
 
+--- Take one chunk of a reply into its buffer, reassembling as they arrive.
+--- @param requestId integer The request the chunk belongs to.
+--- @param index integer The chunk's position within the reply, from 1.
+--- @param count integer How many chunks the reply is split into.
+--- @param chunk string
+--- @return string? # The whole payload, once its last chunk has arrived.
+--- @return table? # {reason = "oversize"}, or {reason = "incomplete", position = n}, when the reply was dropped.
+function BENCH:TakeChunk(requestId, index, count, chunk)
+	local buffer = pending[requestId]
+	if not buffer then
+		buffer = {size = 0}
+		pending[requestId] = buffer
+	end
+
+	if buffer[index] then
+		buffer.size = buffer.size - #buffer[index]
+	end
+	buffer[index] = chunk
+	buffer.size = buffer.size + #chunk
+
+	if buffer.size > self.RealmMaxReplyBytes then
+		self:ForgetRealmRequest(requestId)
+		return nil, {reason = "oversize"}
+	end
+
+	if index < count then
+		return nil
+	end
+
+	for position = 1, count do
+		if not buffer[position] then
+			self:ForgetRealmRequest(requestId)
+			return nil, {reason = "incomplete", position = position}
+		end
+	end
+
+	local payload = table.concat(buffer, "", 1, count)
+	self:ForgetRealmRequest(requestId)
+
+	return payload
+end
+
 net.Receive("ib_realm_result", function(_, ply)
 	local requestId = net.ReadUInt(32)
 	local index = net.ReadUInt(16)
@@ -201,38 +243,20 @@ net.Receive("ib_realm_result", function(_, ply)
 
 	local chunk = net.ReadData(len)
 
-	local buffer = pending[requestId]
-	if not buffer then
-		buffer = {size = 0}
-		pending[requestId] = buffer
-	end
-
-	if buffer[index] then
-		buffer.size = buffer.size - #buffer[index]
-	end
-	buffer[index] = chunk
-	buffer.size = buffer.size + #chunk
-
-	if buffer.size > BENCH.RealmMaxReplyBytes then
-		reportRejection(string.format("Realm reply for request #%d from %s exceeded the %d byte reassembly limit; dropped.", requestId, senderName(ply), BENCH.RealmMaxReplyBytes))
-		BENCH:ForgetRealmRequest(requestId)
-		return
-	end
-
-	if index < count then
-		return
-	end
-
-	for position = 1, count do
-		if not buffer[position] then
-			reportRejection(string.format("Dropped an incomplete realm reply for request #%d from %s: chunk %d of %d never arrived.", requestId, senderName(ply), position, count))
-			BENCH:ForgetRealmRequest(requestId)
-			return
+	local payload, failure = BENCH:TakeChunk(requestId, index, count, chunk)
+	if failure then
+		if failure.reason == "oversize" then
+			reportRejection(string.format("Realm reply for request #%d from %s exceeded the %d byte reassembly limit; dropped.", requestId, senderName(ply), BENCH.RealmMaxReplyBytes))
+		else
+			reportRejection(string.format("Dropped an incomplete realm reply for request #%d from %s: chunk %d of %d never arrived.", requestId, senderName(ply), failure.position, count))
 		end
+
+		return
 	end
 
-	local payload = table.concat(buffer, "", 1, count)
-	BENCH:ForgetRealmRequest(requestId)
+	if not payload then
+		return
+	end
 
 	-- Set by whichever of sv_realm.lua/cl_realm.lua loaded for this realm.
 	if BENCH.OnRealmResult then

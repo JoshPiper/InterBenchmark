@@ -13,6 +13,7 @@
 		"CONTRIBUTING.md",
 		"LICENSE",
 		"README.md",
+		"SECURITY.md",
 		"addon.json",
 		"release-please-config.json",
 		"version.txt",

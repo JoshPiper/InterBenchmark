@@ -342,6 +342,10 @@ exact source that produced its numbers.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md).
 
+## Security
+
+See [SECURITY.md](SECURITY.md) for how to report a vulnerability.
+
 ## Licence
 
 [MIT](LICENSE).

@@ -8,6 +8,13 @@ local BENCH = INTERNET_BENCHMARK
 --- @param resultKind string "html", "text" or "reject".
 --- @param payload string
 function BENCH:OnRealmResult(requestId, resultKind, payload)
+	-- Only a reply to something this client actually asked for gets to log,
+	-- or to put a scripted page in front of the player through the viewer.
+	if not self:ClaimRealmRequest(requestId) then
+		BENCH.Logging.Warning(string.format("Ignoring an unsolicited realm result (#%d, kind '%s').", requestId, tostring(resultKind)))
+		return
+	end
+
 	if resultKind == "reject" then
 		BENCH.Logging.ForceWarning(payload)
 		return
@@ -38,6 +45,7 @@ function BENCH:RequestRemoteRun(kind, params)
 	params.kind = kind
 
 	local requestId = self:NextRealmRequestId()
+	self:TrackRealmRequest(requestId)
 	self:SendRealmRequest(nil, requestId, params)
 end
 

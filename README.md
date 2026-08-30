@@ -292,7 +292,8 @@ Testing lives entirely under `lua/tests/internet_benchmark/` as
 [GLuaTest](https://github.com/CFC-Servers/GLuaTest) suites, run in a real GMod
 server. This covers trial discovery and realm gating, source introspection,
 argument parsing, formatting and statistics maths, the timing loop, the
-background job pump, report rendering, file output, and the console commands.
+background job pump, report rendering, file output, the realm bridge's
+outstanding-request registry, and the console commands.
 
 CI runs the suite automatically on every push and pull request (`ingame` job
 in `.github/workflows/ci.yml`), and can also be triggered manually via

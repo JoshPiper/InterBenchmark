@@ -20,6 +20,38 @@ function BENCH:NextRealmRequestId()
 	return nextRequestId
 end
 
+--- How long a request this realm issued stays answerable, in seconds.
+--- A run's length is bounded by the pump rather than by wall clock, so this
+--- is deliberately generous: it exists only so an unanswered request cannot
+--- sit in the table forever.
+BENCH.RealmRequestTimeout = 30 * 60
+
+--- Requests this realm issued and is still willing to accept a reply to.
+local outstanding = {}
+
+--- Record a request this realm just issued, so its reply can be recognised.
+--- @param requestId integer
+function BENCH:TrackRealmRequest(requestId)
+	local now = SysTime()
+	for id, expiry in pairs(outstanding) do
+		if now > expiry then
+			outstanding[id] = nil
+		end
+	end
+
+	outstanding[requestId] = now + self.RealmRequestTimeout
+end
+
+--- Consume a request this realm issued, so each one is answerable once.
+--- @param requestId integer
+--- @return boolean # False for a reply nothing here asked for.
+function BENCH:ClaimRealmRequest(requestId)
+	local expiry = outstanding[requestId]
+	outstanding[requestId] = nil
+
+	return expiry ~= nil and SysTime() <= expiry
+end
+
 --- Send a small JSON request to the other realm, or to one specific client.
 --- @param ply Player? The target client, or nil to send to the server.
 --- @param requestId integer

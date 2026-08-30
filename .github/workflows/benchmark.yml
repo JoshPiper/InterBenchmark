@@ -1,6 +1,12 @@
 name: Benchmark
 
 on:
+  # TEMPORARY, while the harness is being proven out: a push to the harness
+  # branch runs a full report at --iterations=test, so a container actually
+  # boots on every change. Remove this trigger before merging.
+  push:
+    branches:
+      - claude/gluatest-docker-harness-013527
   workflow_dispatch:
     inputs:
       mode:
@@ -54,13 +60,19 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: benchmark-${{ github.ref }}
+  # A dispatched run was asked for by name and is left alone; a push run is
+  # only ever checking the newest commit.
+  cancel-in-progress: ${{ github.event_name == 'push' }}
+
 jobs:
   benchmark:
     name: Benchmark
     runs-on: ubuntu-latest
     # The container's own timeout ends the run; this only stops a wedged job
     # from sitting there once staging and collection have had their share.
-    timeout-minutes: ${{ fromJSON(inputs.timeout) + 20 }}
+    timeout-minutes: ${{ fromJSON(inputs.timeout || '10') + 20 }}
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -76,7 +88,7 @@ jobs:
         run: node --test
 
       - name: Install gm_sysinfo
-        if: inputs.sysinfo
+        if: inputs.sysinfo || github.event_name == 'push'
         env:
           # Pinned and checksummed like every other third-party binary here;
           # Dependabot cannot see curl downloads, so bumps are deliberate.
@@ -98,13 +110,15 @@ jobs:
 
       - name: Run the benchmark
         env:
-          MODE: ${{ inputs.mode }}
+          # A push carries no inputs, so the fallbacks are what it runs: a full
+          # report at the smoke-test iteration counts.
+          MODE: ${{ inputs.mode || 'all' }}
           TRIAL: ${{ inputs.trial }}
           TAGS: ${{ inputs.tags }}
           SKIP_TAGS: ${{ inputs.skip-tags }}
-          ITERATIONS: ${{ inputs.iterations }}
-          BRANCH: ${{ inputs.branch }}
-          TIMEOUT: ${{ inputs.timeout }}
+          ITERATIONS: ${{ inputs.iterations || 'test' }}
+          BRANCH: ${{ inputs.branch || 'live' }}
+          TIMEOUT: ${{ inputs.timeout || '10' }}
         run: |
           args=(--mode="$MODE" --iterations="$ITERATIONS" --branch="$BRANCH" --timeout="$TIMEOUT")
 
@@ -132,6 +146,6 @@ jobs:
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: benchmark-${{ inputs.mode }}-${{ github.run_id }}
+          name: benchmark-${{ inputs.mode || 'all' }}-${{ github.run_id }}
           path: benchmark-output
           if-no-files-found: error

@@ -3,10 +3,10 @@
 --- manual check (see the README).
 
 --- Captures each net message SendChunkedString produces, in order.
---- Field order follows the writes in SendChunkedString. Called from each
---- case rather than beforeEach: GLuaTest only puts stub in a case
---- function's environment.
-local function captureNet(state)
+--- Field order follows the writes in SendChunkedString. stub is passed in
+--- because GLuaTest injects it into a case function's own environment,
+--- which a helper defined out here does not share.
+local function captureNet(state, stub)
 	state.sent = {}
 
 	local current
@@ -60,7 +60,7 @@ return {
 		{
 			name = "Round-trips a payload shorter than one chunk",
 			func = function(state)
-				captureNet(state)
+				captureNet(state, stub)
 
 				local payload, count = roundTrip(state, 1, "short")
 
@@ -72,7 +72,7 @@ return {
 		{
 			name = "Round-trips a payload that fills its chunks exactly",
 			func = function(state)
-				captureNet(state)
+				captureNet(state, stub)
 
 				local original = string.rep("ab", 12)
 				local payload, count = roundTrip(state, 2, original)
@@ -85,7 +85,7 @@ return {
 		{
 			name = "Round-trips a payload whose last chunk is a remainder",
 			func = function(state)
-				captureNet(state)
+				captureNet(state, stub)
 
 				local original = string.rep("c", 19)
 				local payload, count = roundTrip(state, 3, original)
@@ -99,7 +99,7 @@ return {
 		{
 			name = "Sends one empty chunk for an empty payload",
 			func = function(state)
-				captureNet(state)
+				captureNet(state, stub)
 
 				local payload, count = roundTrip(state, 4, "")
 
@@ -111,7 +111,7 @@ return {
 		{
 			name = "Round-trips binary content byte for byte",
 			func = function(state)
-				captureNet(state)
+				captureNet(state, stub)
 
 				local original = string.char(0, 255, 10, 13, 0, 128) .. "tail" .. string.char(0)
 				local payload = roundTrip(state, 5, original)
@@ -123,7 +123,7 @@ return {
 		{
 			name = "Reports each chunk's position and the reply's total",
 			func = function(state)
-				captureNet(state)
+				captureNet(state, stub)
 
 				INTERNET_BENCHMARK:SendChunkedString(nil, 6, "html", string.rep("d", 20))
 
@@ -141,7 +141,7 @@ return {
 		{
 			name = "Keeps two replies apart while their chunks interleave",
 			func = function(state)
-				captureNet(state)
+				captureNet(state, stub)
 
 				INTERNET_BENCHMARK:SendChunkedString(nil, 7, "text", string.rep("a", 16))
 				local first = state.sent
@@ -165,7 +165,7 @@ return {
 		{
 			name = "Releases a reply's buffer once it completes, so the id can be reused",
 			func = function(state)
-				captureNet(state)
+				captureNet(state, stub)
 
 				local first = roundTrip(state, 9, string.rep("a", 16))
 				expect(first).to.equal(string.rep("a", 16))

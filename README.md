@@ -85,6 +85,21 @@ to the *other* realm from wherever you typed it, over the network:
   runs it exactly as a local client run (its own viewer opens, its own disk
   copy is written), and a summary relays back to the server console.
 
+> **Trust, and production servers.** `--realm=client` hands a named client the
+> job of running a benchmark and relays what comes back into your server
+> console. A reply is only accepted from the exact player that request was sent
+> to, and only while that request is outstanding — anything else is dropped and
+> logged as an error, and a request that never gets answered is logged as a
+> warning once it times out. What a legitimate reply *contains*, though, is
+> still whatever that client chose to send: point `--realm=client` at clients
+> you trust, and read relayed output as their claim rather than as a
+> measurement you took.
+>
+> More broadly, this is a development and profiling tool. A run deliberately
+> pins a core for minutes and stops the garbage collector for the duration of
+> each trial, so it does not belong on a live, populated production server —
+> benchmark on a test server, or on a listen server, instead.
+
 Naming the realm the command is *already* running in is a no-op — `--realm`
 only does something when it names the opposite realm. If the requesting
 player disconnects before a bridged run finishes, the reply is dropped

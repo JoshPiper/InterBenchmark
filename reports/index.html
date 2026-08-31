@@ -57,7 +57,7 @@
 	<body>
 		<main>
 			<h1>Internet's Benchmark Suite</h1>
-			<p class="lede">An automated reference run, measured 2026-08-30 17:45:44 UTC.</p>
+			<p class="lede">An automated reference run, measured 2026-08-31 07:25:45 UTC.</p>
 
 			<div class="warning">
 				<p><strong>These are not authoritative numbers.</strong> This report is produced on a shared
@@ -96,99 +96,99 @@
 						<td>Local vs Global</td>
 						<td class="n">2</td>
 						<td>t(3)</td>
-						<td class="n">30ns</td>
+						<td class="n">23.5ns</td>
 						<td class="n">104%</td>
 					</tr>
 					<tr>
 						<td>Local vs Global (including Table Index)</td>
 						<td class="n">2</td>
 						<td>s(3.14)</td>
-						<td class="n">30ns</td>
-						<td class="n">108%</td>
+						<td class="n">22.9ns</td>
+						<td class="n">109%</td>
 					</tr>
 					<tr>
 						<td>Localised Method Calls</td>
 						<td class="n">2</td>
-						<td>Local Call</td>
-						<td class="n">32.1ns</td>
+						<td>Direct Call</td>
+						<td class="n">24.3ns</td>
 						<td class="n">100%</td>
 					</tr>
 					<tr>
 						<td>Unpack</td>
 						<td class="n">3</td>
 						<td>unpack4</td>
-						<td class="n">31.9ns</td>
-						<td class="n">218%</td>
+						<td class="n">24.1ns</td>
+						<td class="n">219%</td>
 					</tr>
 					<tr>
 						<td>Finding and Returning a Maximum Value</td>
 						<td class="n">4</td>
 						<td>if num &gt; y then</td>
-						<td class="n">30ns</td>
+						<td class="n">23.2ns</td>
 						<td class="n">107%</td>
 					</tr>
 					<tr>
 						<td>'not a' vs 'a or b'</td>
 						<td class="n">2</td>
-						<td>a or b</td>
-						<td class="n">30.2ns</td>
-						<td class="n">100%</td>
+						<td>not a</td>
+						<td class="n">23ns</td>
+						<td class="n">101%</td>
 					</tr>
 					<tr>
 						<td>Calculating a Power</td>
 						<td class="n">3</td>
-						<td>x * x</td>
-						<td class="n">30ns</td>
-						<td class="n">100%</td>
+						<td>x ^ 2</td>
+						<td class="n">23.2ns</td>
+						<td class="n">101%</td>
 					</tr>
 					<tr>
 						<td>Calculating Negative Modulus</td>
 						<td class="n">3</td>
-						<td>% operator</td>
-						<td class="n">30ns</td>
-						<td class="n">152%</td>
+						<td>jit'd fmod</td>
+						<td class="n">22.8ns</td>
+						<td class="n">153%</td>
 					</tr>
 					<tr>
 						<td>For Loops</td>
 						<td class="n">8</td>
 						<td>for i length</td>
-						<td class="n">87.7ns</td>
-						<td class="n">3064%</td>
+						<td class="n">67.8ns</td>
+						<td class="n">3070%</td>
 					</tr>
 					<tr>
 						<td>Array Insertion</td>
 						<td class="n">6</td>
 						<td>tab[i]</td>
-						<td class="n">6.71ns</td>
-						<td class="n">591%</td>
+						<td class="n">5.21ns</td>
+						<td class="n">586%</td>
 					</tr>
 					<tr>
 						<td>Distance vs DistToSqr</td>
 						<td class="n">2</td>
 						<td>DistToSqr</td>
-						<td class="n">156ns</td>
-						<td class="n">103%</td>
+						<td class="n">124ns</td>
+						<td class="n">102%</td>
 					</tr>
 					<tr>
 						<td>String Templating</td>
 						<td class="n">3</td>
 						<td>string sub</td>
-						<td class="n">1.05us</td>
-						<td class="n">118%</td>
+						<td class="n">809ns</td>
+						<td class="n">117%</td>
 					</tr>
 					<tr>
 						<td>val == false vs not val</td>
 						<td class="n">2</td>
 						<td>== false</td>
-						<td class="n">30.1ns</td>
+						<td class="n">23.2ns</td>
 						<td class="n">100%</td>
 					</tr>
 					<tr>
 						<td>HasValue vs Key Lookup in Table Construction vs Upvalues</td>
 						<td class="n">4</td>
 						<td>Constructed Key Lookup</td>
-						<td class="n">30.2ns</td>
-						<td class="n">367%</td>
+						<td class="n">23ns</td>
+						<td class="n">368%</td>
 					</tr>
 					</tbody>
 				</table>
@@ -198,7 +198,7 @@
 			<dl class="env">
 					<div class="env-row"><dt>Suite Version</dt><dd>3.1.0</dd></div>
 					<div class="env-row"><dt>Suite Build</dt><dd>dev</dd></div>
-					<div class="env-row"><dt>Generated</dt><dd>2026-08-30 17:45:44 UTC</dd></div>
+					<div class="env-row"><dt>Generated</dt><dd>2026-08-31 07:25:45 UTC</dd></div>
 					<div class="env-row"><dt>Game Branch</dt><dd>unknown</dd></div>
 					<div class="env-row"><dt>Game Version</dt><dd>250723 (2025.07.23)</dd></div>
 					<div class="env-row"><dt>Lua Runtime</dt><dd>LuaJIT 2.0.4</dd></div>
@@ -211,7 +211,7 @@
 					<div class="env-row"><dt>Map</dt><dd>gm_construct</dd></div>
 			</dl>
 
-			<p class="provenance">Built from <a href="https://github.com/JoshPiper/InterBenchmark/commit/f17cffc8a9fb363ce551661b82bb5c7f67d948fd"><code>f17cffc</code></a> by <a href="https://github.com/JoshPiper/InterBenchmark/actions/runs/33326015558">run 33326015558</a>.</p>
+			<p class="provenance">Built from <a href="https://github.com/JoshPiper/InterBenchmark/commit/f17cffc8a9fb363ce551661b82bb5c7f67d948fd"><code>f17cffc</code></a> by <a href="https://github.com/JoshPiper/InterBenchmark/actions/runs/33368089860">run 33368089860</a>.</p>
 			<footer>
 				Generated by <code>tools/benchmark</code> in Internet's Benchmark Suite.
 			</footer>

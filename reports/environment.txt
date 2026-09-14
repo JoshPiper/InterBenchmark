@@ -2,7 +2,7 @@ Internet's Benchmark Suite: Environment Statement
 
 Suite Version: 3.2.0
 Suite Build: dev
-Generated: 2026-09-07 07:26:45 UTC
+Generated: 2026-09-14 07:28:42 UTC
 Realm: Server
 Hosting: Dedicated Server
 Operating System: Linux
@@ -21,10 +21,10 @@ Distribution: linux
 CPU Model: AMD EPYC 7763 64-Core Processor
 CPU Architecture: x86_64
 Physical Cores: 2
-Total Memory: 15.62 GiB
+Total Memory: 15.61 GiB
 Available Memory: 14.48 GiB
 Total Swap: 3.00 GiB
-Load Average: 0.89 / 0.52 / 0.23 (1/5/15 min)
+Load Average: 0.58 / 0.40 / 0.17 (1/5/15 min)
 Host Uptime: 0d 0h 4m
 
 Host details above are provided by the gm_sysinfo binary module.

@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.2.1](https://github.com/JoshPiper/InterBenchmark/compare/v3.2.0...v3.2.1) (2026-09-23)
+
+
+### Bug Fixes
+
+* Only include .lua files when including a directory ([#99](https://github.com/JoshPiper/InterBenchmark/issues/99)) ([4f87a66](https://github.com/JoshPiper/InterBenchmark/commit/4f87a6639e3bbd858b9553be899dd8be5046acf6))
+
 ## [3.2.0](https://github.com/JoshPiper/InterBenchmark/compare/v3.1.0...v3.2.0) (2026-08-30)
 
 

@@ -64,7 +64,9 @@ function BENCH:IncludeDir(path, forceState)
 
 	local files, folders = file.Find(full .. "*", "LUA")
 	for _, name in ipairs(files or {}) do
-		self:Include(full .. name, true, forceState)
+		if name:EndsWith(".lua") then
+			self:Include(full .. name, true, forceState)
+		end
 	end
 	for _, name in ipairs(folders or {}) do
 		self:IncludeDir(path .. "/" .. name, forceState)

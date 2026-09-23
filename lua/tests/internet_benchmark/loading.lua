@@ -196,6 +196,33 @@ return {
 		},
 
 		{
+			name = "IncludeDir skips files that are not Lua, including in subdirectories",
+			func = function()
+				local found = stub(file, "Find").with(function(pattern)
+					if pattern == "internet_benchmark/fixture/*" then
+						return { "sh_a.lua", "readme.md", "notes.txt" }, { "sub" }
+					end
+
+					return { "LICENSE", "cl_b.lua" }, {}
+				end)
+
+				local included = {}
+				local include = stub(INTERNET_BENCHMARK, "Include").with(function(_, path)
+					included[#included + 1] = path
+				end)
+
+				INTERNET_BENCHMARK:IncludeDir("fixture", "cl")
+
+				found:Restore()
+				include:Restore()
+
+				expect(#included).to.equal(2)
+				expect(included[1]).to.equal("internet_benchmark/fixture/sh_a.lua")
+				expect(included[2]).to.equal("internet_benchmark/fixture/sub/cl_b.lua")
+			end
+		},
+
+		{
 			name = "Every trial shipped with the suite is tagged 'default'",
 			func = function()
 				local names = INTERNET_BENCHMARK:TrialNames()

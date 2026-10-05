@@ -2,7 +2,7 @@ Internet's Benchmark Suite: Environment Statement
 
 Suite Version: 3.2.1
 Suite Build: dev
-Generated: 2026-09-28 07:36:38 UTC
+Generated: 2026-10-05 07:41:41 UTC
 Realm: Server
 Hosting: Dedicated Server
 Operating System: Linux
@@ -24,8 +24,8 @@ Physical Cores: 2
 Total Memory: 15.61 GiB
 Available Memory: 14.48 GiB
 Total Swap: 3.00 GiB
-Load Average: 0.57 / 0.38 / 0.16 (1/5/15 min)
-Host Uptime: 0d 0h 3m
+Load Average: 0.72 / 0.38 / 0.15 (1/5/15 min)
+Host Uptime: 0d 0h 4m
 
 Host details above are provided by the gm_sysinfo binary module.
 CPU clock speed and GPU are not exposed by plain GLua or the

@@ -941,22 +941,22 @@ pre code {
 
 					<button type="button" class="nav-trial" data-view="trial:local_vs_global">
 	<span>Local Vs Global</span>
-	<span class="nav-trial-spread ">111%</span>
+	<span class="nav-trial-spread ">103%</span>
 </button>
 
 <button type="button" class="nav-trial" data-view="trial:local_vs_table_index">
 	<span>Local Vs Global (including Table Index)</span>
-	<span class="nav-trial-spread ">109%</span>
+	<span class="nav-trial-spread ">108%</span>
 </button>
 
 <button type="button" class="nav-trial" data-view="trial:localised_method">
 	<span>Localised Method Calls</span>
-	<span class="nav-trial-spread ">103%</span>
+	<span class="nav-trial-spread ">101%</span>
 </button>
 
 <button type="button" class="nav-trial" data-view="trial:unpack">
 	<span>Unpack</span>
-	<span class="nav-trial-spread sev-critical">248%</span>
+	<span class="nav-trial-spread sev-critical">242%</span>
 </button>
 
 <button type="button" class="nav-trial" data-view="trial:find_max">
@@ -971,22 +971,22 @@ pre code {
 
 <button type="button" class="nav-trial" data-view="trial:powers">
 	<span>Calculating A Power</span>
-	<span class="nav-trial-spread ">106%</span>
+	<span class="nav-trial-spread ">101%</span>
 </button>
 
 <button type="button" class="nav-trial" data-view="trial:modulo">
 	<span>Calculating Negative Modulus</span>
-	<span class="nav-trial-spread ">168%</span>
+	<span class="nav-trial-spread ">170%</span>
 </button>
 
 <button type="button" class="nav-trial" data-view="trial:for_loops">
 	<span>For Loops</span>
-	<span class="nav-trial-spread sev-critical">4132%</span>
+	<span class="nav-trial-spread sev-critical">4172%</span>
 </button>
 
 <button type="button" class="nav-trial" data-view="trial:array_insertion">
 	<span>Array Insertion</span>
-	<span class="nav-trial-spread sev-critical">581%</span>
+	<span class="nav-trial-spread sev-critical">537%</span>
 </button>
 
 <button type="button" class="nav-trial" data-view="trial:distances">
@@ -996,17 +996,17 @@ pre code {
 
 <button type="button" class="nav-trial" data-view="trial:string_templating">
 	<span>String Templating</span>
-	<span class="nav-trial-spread ">129%</span>
+	<span class="nav-trial-spread ">142%</span>
 </button>
 
 <button type="button" class="nav-trial" data-view="trial:equals_false_vs_not">
 	<span>Val == False Vs Not Val</span>
-	<span class="nav-trial-spread ">102%</span>
+	<span class="nav-trial-spread ">101%</span>
 </button>
 
 <button type="button" class="nav-trial" data-view="trial:table_lookup">
 	<span>HasValue Vs Key Lookup In Table Construction Vs Upvalues</span>
-	<span class="nav-trial-spread sev-critical">396%</span>
+	<span class="nav-trial-spread sev-critical">432%</span>
 </button>
 
 				</nav>
@@ -1037,12 +1037,12 @@ pre code {
 			</div>
 			<div class="tile">
 				<span class="tile-label">Widest spread</span>
-				<span class="tile-value">4132%</span>
+				<span class="tile-value">4172%</span>
 				<span class="tile-note">For Loops</span>
 			</div>
 			<div class="tile">
 				<span class="tile-label">Ties (&lt;5%)</span>
-				<span class="tile-value">5</span>
+				<span class="tile-value">7</span>
 				<span class="tile-note">no meaningful winner</span>
 			</div>
 		</div>
@@ -1061,10 +1061,10 @@ pre code {
 	</span>
 	<span class="summary-winner">
 		<span class="summary-winner-name">t(3)</span>
-		<span class="summary-winner-sub">15.76ns / call</span>
+		<span class="summary-winner-sub">15.73ns / call</span>
 	</span>
-	<span class="summary-spread sev-warn">111%</span>
-	<span class="summary-bar sev-warn">
+	<span class="summary-spread ">103%</span>
+	<span class="summary-bar ">
 		<span style="width: 3%;"></span>
 	</span>
 </button>
@@ -1076,9 +1076,9 @@ pre code {
 	</span>
 	<span class="summary-winner">
 		<span class="summary-winner-name">s(3.14)</span>
-		<span class="summary-winner-sub">15.72ns / call</span>
+		<span class="summary-winner-sub">15.58ns / call</span>
 	</span>
-	<span class="summary-spread sev-warn">109%</span>
+	<span class="summary-spread sev-warn">108%</span>
 	<span class="summary-bar sev-warn">
 		<span style="width: 3%;"></span>
 	</span>
@@ -1091,9 +1091,9 @@ pre code {
 	</span>
 	<span class="summary-winner">
 		<span class="summary-winner-name">Direct Call</span>
-		<span class="summary-winner-sub">16.67ns / call</span>
+		<span class="summary-winner-sub">16.91ns / call</span>
 	</span>
-	<span class="summary-spread ">103%</span>
+	<span class="summary-spread ">101%</span>
 	<span class="summary-bar ">
 		<span style="width: 3%;"></span>
 	</span>
@@ -1105,12 +1105,12 @@ pre code {
 		<span class="summary-name-sub">3 candidates</span>
 	</span>
 	<span class="summary-winner">
-		<span class="summary-winner-name">unpack4</span>
-		<span class="summary-winner-sub">15.87ns / call</span>
+		<span class="summary-winner-name">table index</span>
+		<span class="summary-winner-sub">16.93ns / call</span>
 	</span>
-	<span class="summary-spread sev-critical">248%</span>
+	<span class="summary-spread sev-critical">242%</span>
 	<span class="summary-bar sev-critical">
-		<span style="width: 6.0019361084221%;"></span>
+		<span style="width: 5.8005752636625%;"></span>
 	</span>
 </button>
 
@@ -1120,8 +1120,8 @@ pre code {
 		<span class="summary-name-sub">4 candidates</span>
 	</span>
 	<span class="summary-winner">
-		<span class="summary-winner-name">num &gt; y and num or y</span>
-		<span class="summary-winner-sub">15.02ns / call</span>
+		<span class="summary-winner-name">if num &gt; y then</span>
+		<span class="summary-winner-sub">15.65ns / call</span>
 	</span>
 	<span class="summary-spread sev-warn">105%</span>
 	<span class="summary-bar sev-warn">
@@ -1136,7 +1136,7 @@ pre code {
 	</span>
 	<span class="summary-winner">
 		<span class="summary-winner-name">not a</span>
-		<span class="summary-winner-sub">15.76ns / call</span>
+		<span class="summary-winner-sub">15.72ns / call</span>
 	</span>
 	<span class="summary-spread ">101%</span>
 	<span class="summary-bar ">
@@ -1150,11 +1150,11 @@ pre code {
 		<span class="summary-name-sub">3 candidates</span>
 	</span>
 	<span class="summary-winner">
-		<span class="summary-winner-name">x ^ 2</span>
-		<span class="summary-winner-sub">15.48ns / call</span>
+		<span class="summary-winner-name">pow(x, 2)</span>
+		<span class="summary-winner-sub">15.84ns / call</span>
 	</span>
-	<span class="summary-spread sev-warn">106%</span>
-	<span class="summary-bar sev-warn">
+	<span class="summary-spread ">101%</span>
+	<span class="summary-bar ">
 		<span style="width: 3%;"></span>
 	</span>
 </button>
@@ -1165,12 +1165,12 @@ pre code {
 		<span class="summary-name-sub">3 candidates</span>
 	</span>
 	<span class="summary-winner">
-		<span class="summary-winner-name">jit'd fmod</span>
-		<span class="summary-winner-sub">16.05ns / call</span>
+		<span class="summary-winner-name">% operator</span>
+		<span class="summary-winner-sub">15.98ns / call</span>
 	</span>
-	<span class="summary-spread sev-warn">168%</span>
+	<span class="summary-spread sev-warn">170%</span>
 	<span class="summary-bar sev-warn">
-		<span style="width: 4.0658276863504%;"></span>
+		<span style="width: 4.0747842761266%;"></span>
 	</span>
 </button>
 
@@ -1181,9 +1181,9 @@ pre code {
 	</span>
 	<span class="summary-winner">
 		<span class="summary-winner-name">for i length</span>
-		<span class="summary-winner-sub">40.84ns / call</span>
+		<span class="summary-winner-sub">40.59ns / call</span>
 	</span>
-	<span class="summary-spread sev-critical">4132%</span>
+	<span class="summary-spread sev-critical">4172%</span>
 	<span class="summary-bar sev-critical">
 		<span style="width: 100%;"></span>
 	</span>
@@ -1196,11 +1196,11 @@ pre code {
 	</span>
 	<span class="summary-winner">
 		<span class="summary-winner-name">tab[i]</span>
-		<span class="summary-winner-sub">3.98ns / call</span>
+		<span class="summary-winner-sub">4.29ns / call</span>
 	</span>
-	<span class="summary-spread sev-critical">581%</span>
+	<span class="summary-spread sev-critical">537%</span>
 	<span class="summary-bar sev-critical">
-		<span style="width: 14.060987415295%;"></span>
+		<span style="width: 12.871524448706%;"></span>
 	</span>
 </button>
 
@@ -1211,7 +1211,7 @@ pre code {
 	</span>
 	<span class="summary-winner">
 		<span class="summary-winner-name">DistToSqr</span>
-		<span class="summary-winner-sub">72.96ns / call</span>
+		<span class="summary-winner-sub">72.55ns / call</span>
 	</span>
 	<span class="summary-spread ">103%</span>
 	<span class="summary-bar ">
@@ -1226,11 +1226,11 @@ pre code {
 	</span>
 	<span class="summary-winner">
 		<span class="summary-winner-name">string sub</span>
-		<span class="summary-winner-sub">626.87ns / call</span>
+		<span class="summary-winner-sub">615.97ns / call</span>
 	</span>
-	<span class="summary-spread sev-warn">129%</span>
+	<span class="summary-spread sev-warn">142%</span>
 	<span class="summary-bar sev-warn">
-		<span style="width: 3.1219748305905%;"></span>
+		<span style="width: 3.4036433365292%;"></span>
 	</span>
 </button>
 
@@ -1241,9 +1241,9 @@ pre code {
 	</span>
 	<span class="summary-winner">
 		<span class="summary-winner-name">not val</span>
-		<span class="summary-winner-sub">14.95ns / call</span>
+		<span class="summary-winner-sub">15.01ns / call</span>
 	</span>
-	<span class="summary-spread ">102%</span>
+	<span class="summary-spread ">101%</span>
 	<span class="summary-bar ">
 		<span style="width: 3%;"></span>
 	</span>
@@ -1256,11 +1256,11 @@ pre code {
 	</span>
 	<span class="summary-winner">
 		<span class="summary-winner-name">Constructed Key Lookup</span>
-		<span class="summary-winner-sub">15.34ns / call</span>
+		<span class="summary-winner-sub">16.59ns / call</span>
 	</span>
-	<span class="summary-spread sev-critical">396%</span>
+	<span class="summary-spread sev-critical">432%</span>
 	<span class="summary-bar sev-critical">
-		<span style="width: 9.5837366892546%;"></span>
+		<span style="width: 10.354745925216%;"></span>
 	</span>
 </button>
 
@@ -1294,7 +1294,7 @@ pre code {
 
 <div class="tile">
 	<span class="tile-label">Generated</span>
-	<span class="tile-value tile-value-text">2026-09-28 07:36:38 UTC</span>
+	<span class="tile-value tile-value-text">2026-10-05 07:41:41 UTC</span>
 </div>
 
 		</div>
@@ -1315,7 +1315,7 @@ pre code {
 
 <div class="env-row">
 	<dt>Generated</dt>
-	<dd>2026-09-28 07:36:38 UTC</dd>
+	<dd>2026-10-05 07:41:41 UTC</dd>
 </div>
 
 <div class="env-row">
@@ -1455,12 +1455,12 @@ pre code {
 
 <div class="env-row">
 	<dt>Load Average</dt>
-	<dd>0.57 / 0.38 / 0.16 (1/5/15 min)</dd>
+	<dd>0.72 / 0.38 / 0.15 (1/5/15 min)</dd>
 </div>
 
 <div class="env-row">
 	<dt>Host Uptime</dt>
-	<dd>0d 0h 3m</dd>
+	<dd>0d 0h 4m</dd>
 </div>
 
 	</dl>
@@ -1487,20 +1487,20 @@ pre code {
 			<div class="trial-hero-winner">
 				<span class="trial-hero-label">Fastest</span>
 				<span class="trial-hero-name">t(3)</span>
-				<span class="trial-hero-note">Beats the other option by 11%.</span>
+				<span class="trial-hero-note">Within 3% of the next candidate — effectively a tie at this sample size.</span>
 			</div>
 			<div class="trial-hero-stats">
 				<span class="trial-hero-stat">
 					<span class="trial-hero-stat-label">Mean run</span>
-					<span class="trial-hero-stat-value">1.58ms</span>
+					<span class="trial-hero-stat-value">1.57ms</span>
 				</span>
 				<span class="trial-hero-stat">
 					<span class="trial-hero-stat-label">Per call</span>
-					<span class="trial-hero-stat-value">15.76ns</span>
+					<span class="trial-hero-stat-value">15.73ns</span>
 				</span>
 				<span class="trial-hero-stat">
 					<span class="trial-hero-stat-label">Slowest</span>
-					<span class="trial-hero-stat-value">111%</span>
+					<span class="trial-hero-stat-value">103%</span>
 				</span>
 			</div>
 		</section>
@@ -1515,29 +1515,29 @@ pre code {
 	<span class="result-rank">1</span>
 	<span class="result-name">
 		<span class="result-name-value">t(3)</span>
-		<span class="result-name-sub">median 1.56ms &middot; min 1.54ms &middot; max 1.59ms &middot; 15.76ns / call</span>
+		<span class="result-name-sub">median 1.57ms &middot; min 1.51ms &middot; max 1.63ms &middot; 15.73ns / call</span>
 	</span>
 	<span class="result-bar">
-		<span style="width: 67.988466666883%;"></span>
+		<span style="width: 67.751008427976%;"></span>
 	</span>
 	<span class="result-pct">
 		<span class="result-pct-value">100%</span>
-		<span class="result-pct-sub">1.58ms mean</span>
+		<span class="result-pct-sub">1.57ms mean</span>
 	</span>
 </div>
 
-<div class="result-row sev-warn">
+<div class="result-row ">
 	<span class="result-rank">2</span>
 	<span class="result-name">
 		<span class="result-name-value">type(3)</span>
-		<span class="result-name-sub">median 1.63ms &middot; min 1.61ms &middot; max 1.67ms &middot; 17.46ns / call</span>
+		<span class="result-name-sub">median 1.61ms &middot; min 1.55ms &middot; max 1.68ms &middot; 16.23ns / call</span>
 	</span>
 	<span class="result-bar">
-		<span style="width: 89.502714420226%;"></span>
+		<span style="width: 73.971751674993%;"></span>
 	</span>
 	<span class="result-pct">
-		<span class="result-pct-value">111%</span>
-		<span class="result-pct-sub">1.75ms mean</span>
+		<span class="result-pct-value">103%</span>
+		<span class="result-pct-sub">1.62ms mean</span>
 	</span>
 </div>
 
@@ -1558,31 +1558,31 @@ pre code {
 	<span class="boxplot-row-name">t(3)</span>
 	<span class="boxplot-track">
 		<span class="boxplot-baseline"></span>
-		<span class="boxplot-whisker" style="left: 63.071846902532%; width: 6.1694515421211%;"></span>
-		<span class="boxplot-cap" style="left: 63.071846902532%;"></span>
-		<span class="boxplot-cap" style="left: 69.241298444653%;"></span>
-		<span class="boxplot-box" style="left: 65.258240507%; width: 1.7283280985448%;"></span>
-		<span class="boxplot-median" style="left: 66.192796769799%;"></span>
-		<span class="boxplot-mean" style="left: 67.988466666883%;"></span>
+		<span class="boxplot-whisker" style="left: 59.96408046011%; width: 15.384557780966%;"></span>
+		<span class="boxplot-cap" style="left: 59.96408046011%;"></span>
+		<span class="boxplot-cap" style="left: 75.348638241076%;"></span>
+		<span class="boxplot-box" style="left: 64.359870354289%; width: 4.5801287439727%;"></span>
+		<span class="boxplot-median" style="left: 67.138248615605%;"></span>
+		<span class="boxplot-mean" style="left: 67.751008427976%;"></span>
 	</span>
-	<span class="boxplot-row-range">1.54ms – 1.59ms</span>
+	<span class="boxplot-row-range">1.51ms – 1.63ms</span>
 </div>
 
 <div class="boxplot-row">
 	<span class="boxplot-row-name">type(3)</span>
 	<span class="boxplot-track">
 		<span class="boxplot-baseline"></span>
-		<span class="boxplot-whisker" style="left: 72.914784918983%; width: 7.0542351490255%;"></span>
-		<span class="boxplot-cap" style="left: 72.914784918983%;"></span>
-		<span class="boxplot-cap" style="left: 79.969020068009%;"></span>
-		<span class="boxplot-box" style="left: 74.921127265921%; width: 2.5198804601256%;"></span>
-		<span class="boxplot-median" style="left: 75.708702592929%;"></span>
-		<span class="boxplot-mean" style="left: 89.502714420226%;"></span>
+		<span class="boxplot-whisker" style="left: 65.225457861963%; width: 15.730557359963%;"></span>
+		<span class="boxplot-cap" style="left: 65.225457861963%;"></span>
+		<span class="boxplot-cap" style="left: 80.956015221927%;"></span>
+		<span class="boxplot-box" style="left: 71.28127572891%; width: 3.9430359106829%;"></span>
+		<span class="boxplot-median" style="left: 72.66303467198%;"></span>
+		<span class="boxplot-mean" style="left: 73.971751674993%;"></span>
 	</span>
-	<span class="boxplot-row-range">1.61ms – 1.67ms</span>
+	<span class="boxplot-row-range">1.55ms – 1.68ms</span>
 </div>
 
-				<span class="boxplot-footnote">Logarithmic scale, 1.14ms to 1.84ms per run.</span>
+				<span class="boxplot-footnote">Logarithmic scale, 1.12ms to 1.85ms per run.</span>
 			</div>
 		</section>
 
@@ -1641,20 +1641,20 @@ end</code></pre>
 			<div class="trial-hero-winner">
 				<span class="trial-hero-label">Fastest</span>
 				<span class="trial-hero-name">s(3.14)</span>
-				<span class="trial-hero-note">Beats the other option by 9%.</span>
+				<span class="trial-hero-note">Beats the other option by 8%.</span>
 			</div>
 			<div class="trial-hero-stats">
 				<span class="trial-hero-stat">
 					<span class="trial-hero-stat-label">Mean run</span>
-					<span class="trial-hero-stat-value">1.57ms</span>
+					<span class="trial-hero-stat-value">1.56ms</span>
 				</span>
 				<span class="trial-hero-stat">
 					<span class="trial-hero-stat-label">Per call</span>
-					<span class="trial-hero-stat-value">15.72ns</span>
+					<span class="trial-hero-stat-value">15.58ns</span>
 				</span>
 				<span class="trial-hero-stat">
 					<span class="trial-hero-stat-label">Slowest</span>
-					<span class="trial-hero-stat-value">109%</span>
+					<span class="trial-hero-stat-value">108%</span>
 				</span>
 			</div>
 		</section>
@@ -1669,14 +1669,14 @@ end</code></pre>
 	<span class="result-rank">1</span>
 	<span class="result-name">
 		<span class="result-name-value">s(3.14)</span>
-		<span class="result-name-sub">median 1.56ms &middot; min 1.55ms &middot; max 1.58ms &middot; 15.72ns / call</span>
+		<span class="result-name-sub">median 1.55ms &middot; min 1.51ms &middot; max 1.59ms &middot; 15.58ns / call</span>
 	</span>
 	<span class="result-bar">
-		<span style="width: 61.808928470078%;"></span>
+		<span style="width: 64.238895382096%;"></span>
 	</span>
 	<span class="result-pct">
 		<span class="result-pct-value">100%</span>
-		<span class="result-pct-sub">1.57ms mean</span>
+		<span class="result-pct-sub">1.56ms mean</span>
 	</span>
 </div>
 
@@ -1684,14 +1684,14 @@ end</code></pre>
 	<span class="result-rank">2</span>
 	<span class="result-name">
 		<span class="result-name-value">math.sin(3.14)</span>
-		<span class="result-name-sub">median 1.71ms &middot; min 1.69ms &middot; max 1.73ms &middot; 17.15ns / call</span>
+		<span class="result-name-sub">median 1.67ms &middot; min 1.65ms &middot; max 1.70ms &middot; 16.77ns / call</span>
 	</span>
 	<span class="result-bar">
-		<span style="width: 79.011183038575%;"></span>
+		<span style="width: 78.631246042767%;"></span>
 	</span>
 	<span class="result-pct">
-		<span class="result-pct-value">109%</span>
-		<span class="result-pct-sub">1.72ms mean</span>
+		<span class="result-pct-value">108%</span>
+		<span class="result-pct-sub">1.68ms mean</span>
 	</span>
 </div>
 
@@ -1712,31 +1712,31 @@ end</code></pre>
 	<span class="boxplot-row-name">s(3.14)</span>
 	<span class="boxplot-track">
 		<span class="boxplot-baseline"></span>
-		<span class="boxplot-whisker" style="left: 59.063330077241%; width: 4.2918541477695%;"></span>
-		<span class="boxplot-cap" style="left: 59.063330077241%;"></span>
-		<span class="boxplot-cap" style="left: 63.355184225011%;"></span>
-		<span class="boxplot-box" style="left: 60.583475465852%; width: 1.1280681083617%;"></span>
-		<span class="boxplot-median" style="left: 60.855891751829%;"></span>
-		<span class="boxplot-mean" style="left: 61.808928470078%;"></span>
+		<span class="boxplot-whisker" style="left: 58.752074700424%; width: 9.4992514563648%;"></span>
+		<span class="boxplot-cap" style="left: 58.752074700424%;"></span>
+		<span class="boxplot-cap" style="left: 68.251326156789%;"></span>
+		<span class="boxplot-box" style="left: 61.831859669987%; width: 2.6527695985531%;"></span>
+		<span class="boxplot-median" style="left: 62.845798776911%;"></span>
+		<span class="boxplot-mean" style="left: 64.238895382096%;"></span>
 	</span>
-	<span class="boxplot-row-range">1.55ms – 1.58ms</span>
+	<span class="boxplot-row-range">1.51ms – 1.59ms</span>
 </div>
 
 <div class="boxplot-row">
 	<span class="boxplot-row-name">math.sin(3.14)</span>
 	<span class="boxplot-track">
 		<span class="boxplot-baseline"></span>
-		<span class="boxplot-whisker" style="left: 76.623116439468%; width: 4.6189679833636%;"></span>
-		<span class="boxplot-cap" style="left: 76.623116439468%;"></span>
-		<span class="boxplot-cap" style="left: 81.242084422831%;"></span>
-		<span class="boxplot-box" style="left: 78.050977792583%; width: 1.3143521389689%;"></span>
-		<span class="boxplot-median" style="left: 78.388461416002%;"></span>
-		<span class="boxplot-mean" style="left: 79.011183038575%;"></span>
+		<span class="boxplot-whisker" style="left: 75.217487782362%; width: 6.12344819648%;"></span>
+		<span class="boxplot-cap" style="left: 75.217487782362%;"></span>
+		<span class="boxplot-cap" style="left: 81.340935978842%;"></span>
+		<span class="boxplot-box" style="left: 77.167342340558%; width: 1.7508915494902%;"></span>
+		<span class="boxplot-median" style="left: 77.859382425158%;"></span>
+		<span class="boxplot-mean" style="left: 78.631246042767%;"></span>
 	</span>
-	<span class="boxplot-row-range">1.69ms – 1.73ms</span>
+	<span class="boxplot-row-range">1.65ms – 1.70ms</span>
 </div>
 
-				<span class="boxplot-footnote">Logarithmic scale, 1.15ms to 1.91ms per run.</span>
+				<span class="boxplot-footnote">Logarithmic scale, 1.12ms to 1.87ms per run.</span>
 			</div>
 		</section>
 
@@ -1795,20 +1795,20 @@ end</code></pre>
 			<div class="trial-hero-winner">
 				<span class="trial-hero-label">Fastest</span>
 				<span class="trial-hero-name">Direct Call</span>
-				<span class="trial-hero-note">Within 3% of the next candidate — effectively a tie at this sample size.</span>
+				<span class="trial-hero-note">Within 1% of the next candidate — effectively a tie at this sample size.</span>
 			</div>
 			<div class="trial-hero-stats">
 				<span class="trial-hero-stat">
 					<span class="trial-hero-stat-label">Mean run</span>
-					<span class="trial-hero-stat-value">1.67ms</span>
+					<span class="trial-hero-stat-value">1.69ms</span>
 				</span>
 				<span class="trial-hero-stat">
 					<span class="trial-hero-stat-label">Per call</span>
-					<span class="trial-hero-stat-value">16.67ns</span>
+					<span class="trial-hero-stat-value">16.91ns</span>
 				</span>
 				<span class="trial-hero-stat">
 					<span class="trial-hero-stat-label">Slowest</span>
-					<span class="trial-hero-stat-value">103%</span>
+					<span class="trial-hero-stat-value">101%</span>
 				</span>
 			</div>
 		</section>
@@ -1823,14 +1823,14 @@ end</code></pre>
 	<span class="result-rank">1</span>
 	<span class="result-name">
 		<span class="result-name-value">Direct Call</span>
-		<span class="result-name-sub">median 1.67ms &middot; min 1.65ms &middot; max 1.69ms &middot; 16.67ns / call</span>
+		<span class="result-name-sub">median 1.69ms &middot; min 1.59ms &middot; max 1.83ms &middot; 16.91ns / call</span>
 	</span>
 	<span class="result-bar">
-		<span style="width: 74.488884799438%;"></span>
+		<span style="width: 67.434191503096%;"></span>
 	</span>
 	<span class="result-pct">
 		<span class="result-pct-value">100%</span>
-		<span class="result-pct-sub">1.67ms mean</span>
+		<span class="result-pct-sub">1.69ms mean</span>
 	</span>
 </div>
 
@@ -1838,13 +1838,13 @@ end</code></pre>
 	<span class="result-rank">2</span>
 	<span class="result-name">
 		<span class="result-name-value">Local Call</span>
-		<span class="result-name-sub">median 1.67ms &middot; min 1.65ms &middot; max 1.68ms &middot; 17.13ns / call</span>
+		<span class="result-name-sub">median 1.71ms &middot; min 1.63ms &middot; max 1.80ms &middot; 17.10ns / call</span>
 	</span>
 	<span class="result-bar">
-		<span style="width: 81.140762091691%;"></span>
+		<span style="width: 69.559036021287%;"></span>
 	</span>
 	<span class="result-pct">
-		<span class="result-pct-value">103%</span>
+		<span class="result-pct-value">101%</span>
 		<span class="result-pct-sub">1.71ms mean</span>
 	</span>
 </div>
@@ -1866,31 +1866,31 @@ end</code></pre>
 	<span class="boxplot-row-name">Direct Call</span>
 	<span class="boxplot-track">
 		<span class="boxplot-baseline"></span>
-		<span class="boxplot-whisker" style="left: 71.875701677657%; width: 5.2973032586363%;"></span>
-		<span class="boxplot-cap" style="left: 71.875701677657%;"></span>
-		<span class="boxplot-cap" style="left: 77.173004936293%;"></span>
-		<span class="boxplot-box" style="left: 73.351016086038%; width: 1.8060353147886%;"></span>
-		<span class="boxplot-median" style="left: 74.361266410815%;"></span>
-		<span class="boxplot-mean" style="left: 74.488884799438%;"></span>
+		<span class="boxplot-whisker" style="left: 56.26929139381%; width: 25.860151423385%;"></span>
+		<span class="boxplot-cap" style="left: 56.26929139381%;"></span>
+		<span class="boxplot-cap" style="left: 82.129442817195%;"></span>
+		<span class="boxplot-box" style="left: 60.976598597235%; width: 12.627061674448%;"></span>
+		<span class="boxplot-median" style="left: 66.971768928492%;"></span>
+		<span class="boxplot-mean" style="left: 67.434191503096%;"></span>
 	</span>
-	<span class="boxplot-row-range">1.65ms – 1.69ms</span>
+	<span class="boxplot-row-range">1.59ms – 1.83ms</span>
 </div>
 
 <div class="boxplot-row">
 	<span class="boxplot-row-name">Local Call</span>
 	<span class="boxplot-track">
 		<span class="boxplot-baseline"></span>
-		<span class="boxplot-whisker" style="left: 72.442684337183%; width: 4.6291145284878%;"></span>
-		<span class="boxplot-cap" style="left: 72.442684337183%;"></span>
-		<span class="boxplot-cap" style="left: 77.071798865671%;"></span>
-		<span class="boxplot-box" style="left: 73.728178917649%; width: 1.6440343108817%;"></span>
-		<span class="boxplot-median" style="left: 74.625337769427%;"></span>
-		<span class="boxplot-mean" style="left: 81.140762091691%;"></span>
+		<span class="boxplot-whisker" style="left: 60.732755965332%; width: 18.240316128371%;"></span>
+		<span class="boxplot-cap" style="left: 60.732755965332%;"></span>
+		<span class="boxplot-cap" style="left: 78.973072093703%;"></span>
+		<span class="boxplot-box" style="left: 66.066658117431%; width: 6.5558493109322%;"></span>
+		<span class="boxplot-median" style="left: 69.440008929018%;"></span>
+		<span class="boxplot-mean" style="left: 69.559036021287%;"></span>
 	</span>
-	<span class="boxplot-row-range">1.65ms – 1.68ms</span>
+	<span class="boxplot-row-range">1.63ms – 1.80ms</span>
 </div>
 
-				<span class="boxplot-footnote">Logarithmic scale, 1.22ms to 1.85ms per run.</span>
+				<span class="boxplot-footnote">Logarithmic scale, 1.18ms to 2.01ms per run.</span>
 			</div>
 		</section>
 
@@ -1955,21 +1955,21 @@ end</code></pre>
 		<section class="trial-hero">
 			<div class="trial-hero-winner">
 				<span class="trial-hero-label">Fastest</span>
-				<span class="trial-hero-name">unpack4</span>
+				<span class="trial-hero-name">table index</span>
 				<span class="trial-hero-note">Within 1% of the next candidate — effectively a tie at this sample size.</span>
 			</div>
 			<div class="trial-hero-stats">
 				<span class="trial-hero-stat">
 					<span class="trial-hero-stat-label">Mean run</span>
-					<span class="trial-hero-stat-value">1.59ms</span>
+					<span class="trial-hero-stat-value">1.69ms</span>
 				</span>
 				<span class="trial-hero-stat">
 					<span class="trial-hero-stat-label">Per call</span>
-					<span class="trial-hero-stat-value">15.87ns</span>
+					<span class="trial-hero-stat-value">16.93ns</span>
 				</span>
 				<span class="trial-hero-stat">
 					<span class="trial-hero-stat-label">Slowest</span>
-					<span class="trial-hero-stat-value">248%</span>
+					<span class="trial-hero-stat-value">242%</span>
 				</span>
 			</div>
 		</section>
@@ -1983,30 +1983,30 @@ end</code></pre>
 				<div class="result-row sev-warn">
 	<span class="result-rank">1</span>
 	<span class="result-name">
-		<span class="result-name-value">unpack4</span>
-		<span class="result-name-sub">median 1.57ms &middot; min 1.50ms &middot; max 1.62ms &middot; 15.87ns / call</span>
+		<span class="result-name-value">table index</span>
+		<span class="result-name-sub">median 1.68ms &middot; min 1.62ms &middot; max 1.76ms &middot; 16.93ns / call</span>
 	</span>
 	<span class="result-bar">
-		<span style="width: 26.026674807672%;"></span>
+		<span style="width: 25.350539145931%;"></span>
 	</span>
 	<span class="result-pct">
 		<span class="result-pct-value">100%</span>
-		<span class="result-pct-sub">1.59ms mean</span>
+		<span class="result-pct-sub">1.69ms mean</span>
 	</span>
 </div>
 
 <div class="result-row ">
 	<span class="result-rank">2</span>
 	<span class="result-name">
-		<span class="result-name-value">table index</span>
-		<span class="result-name-sub">median 1.57ms &middot; min 1.54ms &middot; max 1.61ms &middot; 16.10ns / call</span>
+		<span class="result-name-value">unpack4</span>
+		<span class="result-name-sub">median 1.68ms &middot; min 1.65ms &middot; max 1.72ms &middot; 17.15ns / call</span>
 	</span>
 	<span class="result-bar">
-		<span style="width: 27.063673059081%;"></span>
+		<span style="width: 26.304363616934%;"></span>
 	</span>
 	<span class="result-pct">
 		<span class="result-pct-value">101%</span>
-		<span class="result-pct-sub">1.61ms mean</span>
+		<span class="result-pct-sub">1.72ms mean</span>
 	</span>
 </div>
 
@@ -2014,14 +2014,14 @@ end</code></pre>
 	<span class="result-rank">3</span>
 	<span class="result-name">
 		<span class="result-name-value">unpack</span>
-		<span class="result-name-sub">median 3.93ms &middot; min 3.87ms &middot; max 3.99ms &middot; 39.30ns / call</span>
+		<span class="result-name-sub">median 4.10ms &middot; min 3.90ms &middot; max 4.23ms &middot; 40.92ns / call</span>
 	</span>
 	<span class="result-bar">
-		<span style="width: 91.937134095856%;"></span>
+		<span style="width: 90.540169650714%;"></span>
 	</span>
 	<span class="result-pct">
-		<span class="result-pct-value">248%</span>
-		<span class="result-pct-sub">3.93ms mean</span>
+		<span class="result-pct-value">242%</span>
+		<span class="result-pct-sub">4.09ms mean</span>
 	</span>
 </div>
 
@@ -2039,48 +2039,48 @@ end</code></pre>
 			</div>
 			<div class="boxplot">
 				<div class="boxplot-row">
-	<span class="boxplot-row-name">unpack4</span>
-	<span class="boxplot-track">
-		<span class="boxplot-baseline"></span>
-		<span class="boxplot-whisker" style="left: 21.808348489409%; width: 5.6822031554397%;"></span>
-		<span class="boxplot-cap" style="left: 21.808348489409%;"></span>
-		<span class="boxplot-cap" style="left: 27.490551644849%;"></span>
-		<span class="boxplot-box" style="left: 24.198041236071%; width: 1.5671450530436%;"></span>
-		<span class="boxplot-median" style="left: 25.122287784697%;"></span>
-		<span class="boxplot-mean" style="left: 26.026674807672%;"></span>
-	</span>
-	<span class="boxplot-row-range">1.50ms – 1.62ms</span>
-</div>
-
-<div class="boxplot-row">
 	<span class="boxplot-row-name">table index</span>
 	<span class="boxplot-track">
 		<span class="boxplot-baseline"></span>
-		<span class="boxplot-whisker" style="left: 23.841617270168%; width: 3.2228969168832%;"></span>
-		<span class="boxplot-cap" style="left: 23.841617270168%;"></span>
-		<span class="boxplot-cap" style="left: 27.064514187051%;"></span>
-		<span class="boxplot-box" style="left: 25.133207527105%; width: 0.8514668200935%;"></span>
-		<span class="boxplot-median" style="left: 25.48618224113%;"></span>
-		<span class="boxplot-mean" style="left: 27.063673059081%;"></span>
+		<span class="boxplot-whisker" style="left: 22.168064142927%; width: 6.0115337976579%;"></span>
+		<span class="boxplot-cap" style="left: 22.168064142927%;"></span>
+		<span class="boxplot-cap" style="left: 28.179597940585%;"></span>
+		<span class="boxplot-box" style="left: 24.364895884332%; width: 1.5943124111955%;"></span>
+		<span class="boxplot-median" style="left: 24.993013184623%;"></span>
+		<span class="boxplot-mean" style="left: 25.350539145931%;"></span>
 	</span>
-	<span class="boxplot-row-range">1.54ms – 1.61ms</span>
+	<span class="boxplot-row-range">1.62ms – 1.76ms</span>
+</div>
+
+<div class="boxplot-row">
+	<span class="boxplot-row-name">unpack4</span>
+	<span class="boxplot-track">
+		<span class="boxplot-baseline"></span>
+		<span class="boxplot-whisker" style="left: 23.620353496118%; width: 2.9643434769422%;"></span>
+		<span class="boxplot-cap" style="left: 23.620353496118%;"></span>
+		<span class="boxplot-cap" style="left: 26.58469697306%;"></span>
+		<span class="boxplot-box" style="left: 24.55019004982%; width: 0.97544875112491%;"></span>
+		<span class="boxplot-median" style="left: 24.995643583517%;"></span>
+		<span class="boxplot-mean" style="left: 26.304363616934%;"></span>
+	</span>
+	<span class="boxplot-row-range">1.65ms – 1.72ms</span>
 </div>
 
 <div class="boxplot-row">
 	<span class="boxplot-row-name">unpack</span>
 	<span class="boxplot-track">
 		<span class="boxplot-baseline"></span>
-		<span class="boxplot-whisker" style="left: 90.76079651413%; width: 2.3130928296169%;"></span>
-		<span class="boxplot-cap" style="left: 90.76079651413%;"></span>
-		<span class="boxplot-cap" style="left: 93.073889343746%;"></span>
-		<span class="boxplot-box" style="left: 91.630265475669%; width: 0.58647678481772%;"></span>
-		<span class="boxplot-median" style="left: 91.948863660316%;"></span>
-		<span class="boxplot-mean" style="left: 91.937134095856%;"></span>
+		<span class="boxplot-whisker" style="left: 87.07155132723%; width: 5.888095967318%;"></span>
+		<span class="boxplot-cap" style="left: 87.07155132723%;"></span>
+		<span class="boxplot-cap" style="left: 92.959647294548%;"></span>
+		<span class="boxplot-box" style="left: 89.482816965344%; width: 1.9799654950203%;"></span>
+		<span class="boxplot-median" style="left: 90.736128534445%;"></span>
+		<span class="boxplot-mean" style="left: 90.540169650714%;"></span>
 	</span>
-	<span class="boxplot-row-range">3.87ms – 3.99ms</span>
+	<span class="boxplot-row-range">3.90ms – 4.23ms</span>
 </div>
 
-				<span class="boxplot-footnote">Logarithmic scale, 1.11ms to 4.39ms per run.</span>
+				<span class="boxplot-footnote">Logarithmic scale, 1.20ms to 4.65ms per run.</span>
 			</div>
 		</section>
 
@@ -2090,7 +2090,7 @@ end</code></pre>
 				<div class="definition">
 	<div class="definition-head">
 		<span class="definition-head-name">table index</span>
-		
+		<span class="tag tag-accent">Fastest</span>
 	</div>
 	
 	<pre><code>local function a()
@@ -2114,7 +2114,7 @@ end</code></pre>
 <div class="definition">
 	<div class="definition-head">
 		<span class="definition-head-name">unpack4</span>
-		<span class="tag tag-accent">Fastest</span>
+		
 	</div>
 	<p class="definition-description">Hard-codes the assumption that tbl always has exactly four elements - silently wrong the moment that changes.</p>
 	<pre><code>local function c()
@@ -2155,17 +2155,17 @@ end</code></pre>
 		<section class="trial-hero">
 			<div class="trial-hero-winner">
 				<span class="trial-hero-label">Fastest</span>
-				<span class="trial-hero-name">num &gt; y and num or y</span>
+				<span class="trial-hero-name">if num &gt; y then</span>
 				<span class="trial-hero-note">Within 0% of the next candidate — effectively a tie at this sample size.</span>
 			</div>
 			<div class="trial-hero-stats">
 				<span class="trial-hero-stat">
 					<span class="trial-hero-stat-label">Mean run</span>
-					<span class="trial-hero-stat-value">1.50ms</span>
+					<span class="trial-hero-stat-value">1.57ms</span>
 				</span>
 				<span class="trial-hero-stat">
 					<span class="trial-hero-stat-label">Per call</span>
-					<span class="trial-hero-stat-value">15.02ns</span>
+					<span class="trial-hero-stat-value">15.65ns</span>
 				</span>
 				<span class="trial-hero-stat">
 					<span class="trial-hero-stat-label">Slowest</span>
@@ -2183,15 +2183,15 @@ end</code></pre>
 				<div class="result-row sev-warn">
 	<span class="result-rank">1</span>
 	<span class="result-name">
-		<span class="result-name-value">num &gt; y and num or y</span>
-		<span class="result-name-sub">median 1.50ms &middot; min 1.44ms &middot; max 1.56ms &middot; 15.02ns / call</span>
+		<span class="result-name-value">if num &gt; y then</span>
+		<span class="result-name-sub">median 1.56ms &middot; min 1.51ms &middot; max 1.62ms &middot; 15.65ns / call</span>
 	</span>
 	<span class="result-bar">
-		<span style="width: 64.380098918151%;"></span>
+		<span style="width: 65.095845519622%;"></span>
 	</span>
 	<span class="result-pct">
 		<span class="result-pct-value">100%</span>
-		<span class="result-pct-sub">1.50ms mean</span>
+		<span class="result-pct-sub">1.57ms mean</span>
 	</span>
 </div>
 
@@ -2199,44 +2199,44 @@ end</code></pre>
 	<span class="result-rank">2</span>
 	<span class="result-name">
 		<span class="result-name-value">math.max</span>
-		<span class="result-name-sub">median 1.50ms &middot; min 1.47ms &middot; max 1.53ms &middot; 15.02ns / call</span>
+		<span class="result-name-sub">median 1.56ms &middot; min 1.52ms &middot; max 1.63ms &middot; 15.70ns / call</span>
 	</span>
 	<span class="result-bar">
-		<span style="width: 64.481028126957%;"></span>
+		<span style="width: 65.721834713355%;"></span>
 	</span>
 	<span class="result-pct">
 		<span class="result-pct-value">100%</span>
-		<span class="result-pct-sub">1.50ms mean</span>
+		<span class="result-pct-sub">1.57ms mean</span>
 	</span>
 </div>
 
 <div class="result-row ">
 	<span class="result-rank">3</span>
 	<span class="result-name">
-		<span class="result-name-value">if num &gt; y then</span>
-		<span class="result-name-sub">median 1.51ms &middot; min 1.43ms &middot; max 1.65ms &middot; 15.19ns / call</span>
+		<span class="result-name-value">num &gt; y and num or y</span>
+		<span class="result-name-sub">median 1.57ms &middot; min 1.52ms &middot; max 1.63ms &middot; 15.85ns / call</span>
 	</span>
 	<span class="result-bar">
-		<span style="width: 66.494960999224%;"></span>
+		<span style="width: 67.495563627389%;"></span>
 	</span>
 	<span class="result-pct">
 		<span class="result-pct-value">101%</span>
-		<span class="result-pct-sub">1.52ms mean</span>
+		<span class="result-pct-sub">1.58ms mean</span>
 	</span>
 </div>
 
-<div class="result-row sev-warn">
+<div class="result-row ">
 	<span class="result-rank">4</span>
 	<span class="result-name">
 		<span class="result-name-value">Either(num &gt; y, num, y)</span>
-		<span class="result-name-sub">median 1.58ms &middot; min 1.51ms &middot; max 1.64ms &middot; 15.77ns / call</span>
+		<span class="result-name-sub">median 1.64ms &middot; min 1.58ms &middot; max 1.70ms &middot; 16.40ns / call</span>
 	</span>
 	<span class="result-bar">
-		<span style="width: 73.496367474151%;"></span>
+		<span style="width: 74.122054117727%;"></span>
 	</span>
 	<span class="result-pct">
 		<span class="result-pct-value">105%</span>
-		<span class="result-pct-sub">1.58ms mean</span>
+		<span class="result-pct-sub">1.64ms mean</span>
 	</span>
 </div>
 
@@ -2254,62 +2254,62 @@ end</code></pre>
 			</div>
 			<div class="boxplot">
 				<div class="boxplot-row">
-	<span class="boxplot-row-name">num &gt; y and num or y</span>
+	<span class="boxplot-row-name">if num &gt; y then</span>
 	<span class="boxplot-track">
 		<span class="boxplot-baseline"></span>
-		<span class="boxplot-whisker" style="left: 57.062165094928%; width: 14.495282621993%;"></span>
-		<span class="boxplot-cap" style="left: 57.062165094928%;"></span>
-		<span class="boxplot-cap" style="left: 71.55744771692%;"></span>
-		<span class="boxplot-box" style="left: 61.059414121684%; width: 4.9603194201107%;"></span>
-		<span class="boxplot-median" style="left: 63.955083016789%;"></span>
-		<span class="boxplot-mean" style="left: 64.380098918151%;"></span>
+		<span class="boxplot-whisker" style="left: 58.546527830779%; width: 12.944541016968%;"></span>
+		<span class="boxplot-cap" style="left: 58.546527830779%;"></span>
+		<span class="boxplot-cap" style="left: 71.491068847747%;"></span>
+		<span class="boxplot-box" style="left: 62.586884517417%; width: 4.0482839133212%;"></span>
+		<span class="boxplot-median" style="left: 65.042451887666%;"></span>
+		<span class="boxplot-mean" style="left: 65.095845519622%;"></span>
 	</span>
-	<span class="boxplot-row-range">1.44ms – 1.56ms</span>
+	<span class="boxplot-row-range">1.51ms – 1.62ms</span>
 </div>
 
 <div class="boxplot-row">
 	<span class="boxplot-row-name">math.max</span>
 	<span class="boxplot-track">
 		<span class="boxplot-baseline"></span>
-		<span class="boxplot-whisker" style="left: 60.996304880615%; width: 6.4156484878332%;"></span>
-		<span class="boxplot-cap" style="left: 60.996304880615%;"></span>
-		<span class="boxplot-cap" style="left: 67.411953368448%;"></span>
-		<span class="boxplot-box" style="left: 63.633745795317%; width: 2.0078130476655%;"></span>
-		<span class="boxplot-median" style="left: 64.577461989927%;"></span>
-		<span class="boxplot-mean" style="left: 64.481028126957%;"></span>
+		<span class="boxplot-whisker" style="left: 59.136799872586%; width: 14.32150955174%;"></span>
+		<span class="boxplot-cap" style="left: 59.136799872586%;"></span>
+		<span class="boxplot-cap" style="left: 73.458309424326%;"></span>
+		<span class="boxplot-box" style="left: 62.886340878238%; width: 4.3719876105664%;"></span>
+		<span class="boxplot-median" style="left: 64.439735929129%;"></span>
+		<span class="boxplot-mean" style="left: 65.721834713355%;"></span>
 	</span>
-	<span class="boxplot-row-range">1.47ms – 1.53ms</span>
+	<span class="boxplot-row-range">1.52ms – 1.63ms</span>
 </div>
 
 <div class="boxplot-row">
-	<span class="boxplot-row-name">if num &gt; y then</span>
+	<span class="boxplot-row-name">num &gt; y and num or y</span>
 	<span class="boxplot-track">
 		<span class="boxplot-baseline"></span>
-		<span class="boxplot-whisker" style="left: 55.865278761772%; width: 26.392474376463%;"></span>
-		<span class="boxplot-cap" style="left: 55.865278761772%;"></span>
-		<span class="boxplot-cap" style="left: 82.257753138235%;"></span>
-		<span class="boxplot-box" style="left: 60.456225413177%; width: 11.16091096871%;"></span>
-		<span class="boxplot-median" style="left: 65.537917221198%;"></span>
-		<span class="boxplot-mean" style="left: 66.494960999224%;"></span>
+		<span class="boxplot-whisker" style="left: 59.753471769577%; width: 12.885265508634%;"></span>
+		<span class="boxplot-cap" style="left: 59.753471769577%;"></span>
+		<span class="boxplot-cap" style="left: 72.638737278211%;"></span>
+		<span class="boxplot-box" style="left: 64.090739886838%; width: 4.8715742465866%;"></span>
+		<span class="boxplot-median" style="left: 66.19517900152%;"></span>
+		<span class="boxplot-mean" style="left: 67.495563627389%;"></span>
 	</span>
-	<span class="boxplot-row-range">1.43ms – 1.65ms</span>
+	<span class="boxplot-row-range">1.52ms – 1.63ms</span>
 </div>
 
 <div class="boxplot-row">
 	<span class="boxplot-row-name">Either(num &gt; y, num, y)</span>
 	<span class="boxplot-track">
 		<span class="boxplot-baseline"></span>
-		<span class="boxplot-whisker" style="left: 65.659534761017%; width: 15.287627469933%;"></span>
-		<span class="boxplot-cap" style="left: 65.659534761017%;"></span>
-		<span class="boxplot-cap" style="left: 80.94716223095%;"></span>
-		<span class="boxplot-box" style="left: 71.70308782167%; width: 3.9335261132855%;"></span>
-		<span class="boxplot-median" style="left: 73.551245038267%;"></span>
-		<span class="boxplot-mean" style="left: 73.496367474151%;"></span>
+		<span class="boxplot-whisker" style="left: 66.759638517296%; width: 14.646577066047%;"></span>
+		<span class="boxplot-cap" style="left: 66.759638517296%;"></span>
+		<span class="boxplot-cap" style="left: 81.406215583343%;"></span>
+		<span class="boxplot-box" style="left: 71.073148508911%; width: 5.1044360505887%;"></span>
+		<span class="boxplot-median" style="left: 73.581426099042%;"></span>
+		<span class="boxplot-mean" style="left: 74.122054117727%;"></span>
 	</span>
-	<span class="boxplot-row-range">1.51ms – 1.64ms</span>
+	<span class="boxplot-row-range">1.58ms – 1.70ms</span>
 </div>
 
-				<span class="boxplot-footnote">Logarithmic scale, 1.06ms to 1.82ms per run.</span>
+				<span class="boxplot-footnote">Logarithmic scale, 1.12ms to 1.87ms per run.</span>
 			</div>
 		</section>
 
@@ -2331,7 +2331,7 @@ end</code></pre>
 <div class="definition">
 	<div class="definition-head">
 		<span class="definition-head-name">if num &gt; y then</span>
-		
+		<span class="tag tag-accent">Fastest</span>
 	</div>
 	
 	<pre><code>local function b()
@@ -2348,7 +2348,7 @@ end</code></pre>
 <div class="definition">
 	<div class="definition-head">
 		<span class="definition-head-name">num &gt; y and num or y</span>
-		<span class="tag tag-accent">Fastest</span>
+		
 	</div>
 	<p class="definition-description">The classic Lua ternary idiom - but it silently breaks if the 'true' branch value can be false or nil, since 'or' would then fall through to the other side. Safe here because the values are always numbers.</p>
 	<pre><code>local function c()
@@ -2404,11 +2404,11 @@ local y = 0</code></pre>
 			<div class="trial-hero-stats">
 				<span class="trial-hero-stat">
 					<span class="trial-hero-stat-label">Mean run</span>
-					<span class="trial-hero-stat-value">1.58ms</span>
+					<span class="trial-hero-stat-value">1.57ms</span>
 				</span>
 				<span class="trial-hero-stat">
 					<span class="trial-hero-stat-label">Per call</span>
-					<span class="trial-hero-stat-value">15.76ns</span>
+					<span class="trial-hero-stat-value">15.72ns</span>
 				</span>
 				<span class="trial-hero-stat">
 					<span class="trial-hero-stat-label">Slowest</span>
@@ -2427,14 +2427,14 @@ local y = 0</code></pre>
 	<span class="result-rank">1</span>
 	<span class="result-name">
 		<span class="result-name-value">not a</span>
-		<span class="result-name-sub">median 1.57ms &middot; min 1.55ms &middot; max 1.59ms &middot; 15.76ns / call</span>
+		<span class="result-name-sub">median 1.57ms &middot; min 1.54ms &middot; max 1.60ms &middot; 15.72ns / call</span>
 	</span>
 	<span class="result-bar">
-		<span style="width: 75.235925298563%;"></span>
+		<span style="width: 72.578196855344%;"></span>
 	</span>
 	<span class="result-pct">
 		<span class="result-pct-value">100%</span>
-		<span class="result-pct-sub">1.58ms mean</span>
+		<span class="result-pct-sub">1.57ms mean</span>
 	</span>
 </div>
 
@@ -2442,14 +2442,14 @@ local y = 0</code></pre>
 	<span class="result-rank">2</span>
 	<span class="result-name">
 		<span class="result-name-value">a or b</span>
-		<span class="result-name-sub">median 1.57ms &middot; min 1.54ms &middot; max 1.59ms &middot; 15.87ns / call</span>
+		<span class="result-name-sub">median 1.57ms &middot; min 1.55ms &middot; max 1.61ms &middot; 15.82ns / call</span>
 	</span>
 	<span class="result-bar">
-		<span style="width: 76.921413119335%;"></span>
+		<span style="width: 74.024200594921%;"></span>
 	</span>
 	<span class="result-pct">
 		<span class="result-pct-value">101%</span>
-		<span class="result-pct-sub">1.59ms mean</span>
+		<span class="result-pct-sub">1.58ms mean</span>
 	</span>
 </div>
 
@@ -2470,31 +2470,31 @@ local y = 0</code></pre>
 	<span class="boxplot-row-name">not a</span>
 	<span class="boxplot-track">
 		<span class="boxplot-baseline"></span>
-		<span class="boxplot-whisker" style="left: 72.142481565135%; width: 5.1238720673166%;"></span>
-		<span class="boxplot-cap" style="left: 72.142481565135%;"></span>
-		<span class="boxplot-cap" style="left: 77.266353632452%;"></span>
-		<span class="boxplot-box" style="left: 74.158390158659%; width: 1.5563092230199%;"></span>
-		<span class="boxplot-median" style="left: 75.004090009704%;"></span>
-		<span class="boxplot-mean" style="left: 75.235925298563%;"></span>
+		<span class="boxplot-whisker" style="left: 67.505736962736%; width: 9.0806350953512%;"></span>
+		<span class="boxplot-cap" style="left: 67.505736962736%;"></span>
+		<span class="boxplot-cap" style="left: 76.586372058087%;"></span>
+		<span class="boxplot-box" style="left: 71.090231355137%; width: 2.7202539198911%;"></span>
+		<span class="boxplot-median" style="left: 72.295664394162%;"></span>
+		<span class="boxplot-mean" style="left: 72.578196855344%;"></span>
 	</span>
-	<span class="boxplot-row-range">1.55ms – 1.59ms</span>
+	<span class="boxplot-row-range">1.54ms – 1.60ms</span>
 </div>
 
 <div class="boxplot-row">
 	<span class="boxplot-row-name">a or b</span>
 	<span class="boxplot-track">
 		<span class="boxplot-baseline"></span>
-		<span class="boxplot-whisker" style="left: 69.726648393487%; width: 8.1288741052705%;"></span>
-		<span class="boxplot-cap" style="left: 69.726648393487%;"></span>
-		<span class="boxplot-cap" style="left: 77.855522498757%;"></span>
-		<span class="boxplot-box" style="left: 72.876928155745%; width: 2.1197082490536%;"></span>
-		<span class="boxplot-median" style="left: 73.963366647091%;"></span>
-		<span class="boxplot-mean" style="left: 76.921413119335%;"></span>
+		<span class="boxplot-whisker" style="left: 69.458076159932%; width: 9.1027853210315%;"></span>
+		<span class="boxplot-cap" style="left: 69.458076159932%;"></span>
+		<span class="boxplot-cap" style="left: 78.560861480963%;"></span>
+		<span class="boxplot-box" style="left: 72.076029629765%; width: 2.6950414847109%;"></span>
+		<span class="boxplot-median" style="left: 72.937430216862%;"></span>
+		<span class="boxplot-mean" style="left: 74.024200594921%;"></span>
 	</span>
-	<span class="boxplot-row-range">1.54ms – 1.59ms</span>
+	<span class="boxplot-row-range">1.55ms – 1.61ms</span>
 </div>
 
-				<span class="boxplot-footnote">Logarithmic scale, 1.14ms to 1.75ms per run.</span>
+				<span class="boxplot-footnote">Logarithmic scale, 1.14ms to 1.78ms per run.</span>
 			</div>
 		</section>
 
@@ -2557,21 +2557,21 @@ end</code></pre>
 		<section class="trial-hero">
 			<div class="trial-hero-winner">
 				<span class="trial-hero-label">Fastest</span>
-				<span class="trial-hero-name">x ^ 2</span>
+				<span class="trial-hero-name">pow(x, 2)</span>
 				<span class="trial-hero-note">Within 1% of the next candidate — effectively a tie at this sample size.</span>
 			</div>
 			<div class="trial-hero-stats">
 				<span class="trial-hero-stat">
 					<span class="trial-hero-stat-label">Mean run</span>
-					<span class="trial-hero-stat-value">1.55ms</span>
+					<span class="trial-hero-stat-value">1.58ms</span>
 				</span>
 				<span class="trial-hero-stat">
 					<span class="trial-hero-stat-label">Per call</span>
-					<span class="trial-hero-stat-value">15.48ns</span>
+					<span class="trial-hero-stat-value">15.84ns</span>
 				</span>
 				<span class="trial-hero-stat">
 					<span class="trial-hero-stat-label">Slowest</span>
-					<span class="trial-hero-stat-value">106%</span>
+					<span class="trial-hero-stat-value">101%</span>
 				</span>
 			</div>
 		</section>
@@ -2585,45 +2585,45 @@ end</code></pre>
 				<div class="result-row sev-warn">
 	<span class="result-rank">1</span>
 	<span class="result-name">
-		<span class="result-name-value">x ^ 2</span>
-		<span class="result-name-sub">median 1.55ms &middot; min 1.51ms &middot; max 1.58ms &middot; 15.48ns / call</span>
+		<span class="result-name-value">pow(x, 2)</span>
+		<span class="result-name-sub">median 1.58ms &middot; min 1.55ms &middot; max 1.61ms &middot; 15.84ns / call</span>
 	</span>
 	<span class="result-bar">
-		<span style="width: 72.885812455289%;"></span>
+		<span style="width: 71.513360728525%;"></span>
 	</span>
 	<span class="result-pct">
 		<span class="result-pct-value">100%</span>
-		<span class="result-pct-sub">1.55ms mean</span>
+		<span class="result-pct-sub">1.58ms mean</span>
 	</span>
 </div>
 
 <div class="result-row ">
 	<span class="result-rank">2</span>
 	<span class="result-name">
-		<span class="result-name-value">x * x</span>
-		<span class="result-name-sub">median 1.56ms &middot; min 1.54ms &middot; max 1.59ms &middot; 15.64ns / call</span>
+		<span class="result-name-value">x ^ 2</span>
+		<span class="result-name-sub">median 1.59ms &middot; min 1.57ms &middot; max 1.64ms &middot; 16.00ns / call</span>
 	</span>
 	<span class="result-bar">
-		<span style="width: 75.217549395999%;"></span>
+		<span style="width: 73.761795657439%;"></span>
 	</span>
 	<span class="result-pct">
 		<span class="result-pct-value">101%</span>
-		<span class="result-pct-sub">1.56ms mean</span>
+		<span class="result-pct-sub">1.60ms mean</span>
 	</span>
 </div>
 
-<div class="result-row sev-warn">
+<div class="result-row ">
 	<span class="result-rank">3</span>
 	<span class="result-name">
-		<span class="result-name-value">pow(x, 2)</span>
-		<span class="result-name-sub">median 1.57ms &middot; min 1.54ms &middot; max 1.59ms &middot; 16.36ns / call</span>
+		<span class="result-name-value">x * x</span>
+		<span class="result-name-sub">median 1.57ms &middot; min 1.55ms &middot; max 1.62ms &middot; 16.01ns / call</span>
 	</span>
 	<span class="result-bar">
-		<span style="width: 85.331318378425%;"></span>
+		<span style="width: 73.831035519932%;"></span>
 	</span>
 	<span class="result-pct">
-		<span class="result-pct-value">106%</span>
-		<span class="result-pct-sub">1.64ms mean</span>
+		<span class="result-pct-value">101%</span>
+		<span class="result-pct-sub">1.60ms mean</span>
 	</span>
 </div>
 
@@ -2641,48 +2641,48 @@ end</code></pre>
 			</div>
 			<div class="boxplot">
 				<div class="boxplot-row">
+	<span class="boxplot-row-name">pow(x, 2)</span>
+	<span class="boxplot-track">
+		<span class="boxplot-baseline"></span>
+		<span class="boxplot-whisker" style="left: 66.841762479427%; width: 8.702816301104%;"></span>
+		<span class="boxplot-cap" style="left: 66.841762479427%;"></span>
+		<span class="boxplot-cap" style="left: 75.54457878053%;"></span>
+		<span class="boxplot-box" style="left: 69.472630965117%; width: 2.4830288448427%;"></span>
+		<span class="boxplot-median" style="left: 70.743174204324%;"></span>
+		<span class="boxplot-mean" style="left: 71.513360728525%;"></span>
+	</span>
+	<span class="boxplot-row-range">1.55ms – 1.61ms</span>
+</div>
+
+<div class="boxplot-row">
 	<span class="boxplot-row-name">x ^ 2</span>
 	<span class="boxplot-track">
 		<span class="boxplot-baseline"></span>
-		<span class="boxplot-whisker" style="left: 67.317926403857%; width: 10.09108265485%;"></span>
-		<span class="boxplot-cap" style="left: 67.317926403857%;"></span>
-		<span class="boxplot-cap" style="left: 77.409009058707%;"></span>
-		<span class="boxplot-box" style="left: 70.902615287616%; width: 2.7618943030364%;"></span>
-		<span class="boxplot-median" style="left: 72.530682841811%;"></span>
-		<span class="boxplot-mean" style="left: 72.885812455289%;"></span>
+		<span class="boxplot-whisker" style="left: 69.009104827023%; width: 9.940032919908%;"></span>
+		<span class="boxplot-cap" style="left: 69.009104827023%;"></span>
+		<span class="boxplot-cap" style="left: 78.949137746931%;"></span>
+		<span class="boxplot-box" style="left: 71.270865540084%; width: 4.05274243181%;"></span>
+		<span class="boxplot-median" style="left: 72.278780838067%;"></span>
+		<span class="boxplot-mean" style="left: 73.761795657439%;"></span>
 	</span>
-	<span class="boxplot-row-range">1.51ms – 1.58ms</span>
+	<span class="boxplot-row-range">1.57ms – 1.64ms</span>
 </div>
 
 <div class="boxplot-row">
 	<span class="boxplot-row-name">x * x</span>
 	<span class="boxplot-track">
 		<span class="boxplot-baseline"></span>
-		<span class="boxplot-whisker" style="left: 72.286360238515%; width: 6.0212072136762%;"></span>
-		<span class="boxplot-cap" style="left: 72.286360238515%;"></span>
-		<span class="boxplot-cap" style="left: 78.307567452191%;"></span>
-		<span class="boxplot-box" style="left: 74.203928540346%; width: 1.6981749661082%;"></span>
-		<span class="boxplot-median" style="left: 75.234585489613%;"></span>
-		<span class="boxplot-mean" style="left: 75.217549395999%;"></span>
+		<span class="boxplot-whisker" style="left: 66.283165661373%; width: 9.8708470595377%;"></span>
+		<span class="boxplot-cap" style="left: 66.283165661373%;"></span>
+		<span class="boxplot-cap" style="left: 76.154012720911%;"></span>
+		<span class="boxplot-box" style="left: 68.495767470157%; width: 3.2757655589351%;"></span>
+		<span class="boxplot-median" style="left: 69.83671089684%;"></span>
+		<span class="boxplot-mean" style="left: 73.831035519932%;"></span>
 	</span>
-	<span class="boxplot-row-range">1.54ms – 1.59ms</span>
+	<span class="boxplot-row-range">1.55ms – 1.62ms</span>
 </div>
 
-<div class="boxplot-row">
-	<span class="boxplot-row-name">pow(x, 2)</span>
-	<span class="boxplot-track">
-		<span class="boxplot-baseline"></span>
-		<span class="boxplot-whisker" style="left: 72.385283051685%; width: 6.2352251610723%;"></span>
-		<span class="boxplot-cap" style="left: 72.385283051685%;"></span>
-		<span class="boxplot-cap" style="left: 78.620508212757%;"></span>
-		<span class="boxplot-box" style="left: 74.334477658716%; width: 2.0717427966322%;"></span>
-		<span class="boxplot-median" style="left: 75.500857177755%;"></span>
-		<span class="boxplot-mean" style="left: 85.331318378425%;"></span>
-	</span>
-	<span class="boxplot-row-range">1.54ms – 1.59ms</span>
-</div>
-
-				<span class="boxplot-footnote">Logarithmic scale, 1.12ms to 1.75ms per run.</span>
+				<span class="boxplot-footnote">Logarithmic scale, 1.15ms to 1.80ms per run.</span>
 			</div>
 		</section>
 
@@ -2692,7 +2692,7 @@ end</code></pre>
 				<div class="definition">
 	<div class="definition-head">
 		<span class="definition-head-name">x ^ 2</span>
-		<span class="tag tag-accent">Fastest</span>
+		
 	</div>
 	<p class="definition-description">A general power operator, good for any exponent - x*x below only applies because the exponent here happens to be the literal 2.</p>
 	<pre><code>local function a()
@@ -2716,7 +2716,7 @@ end</code></pre>
 <div class="definition">
 	<div class="definition-head">
 		<span class="definition-head-name">pow(x, 2)</span>
-		
+		<span class="tag tag-accent">Fastest</span>
 	</div>
 	<p class="definition-description">math.pow isn't part of standard Lua; where present it's a plain C function call, and offers no advantage over ^ for a fixed exponent like this.</p>
 	<pre><code>local function c()
@@ -2753,21 +2753,21 @@ local pow = math.pow</code></pre>
 		<section class="trial-hero">
 			<div class="trial-hero-winner">
 				<span class="trial-hero-label">Fastest</span>
-				<span class="trial-hero-name">jit'd fmod</span>
-				<span class="trial-hero-note">Within 2% of the next candidate — effectively a tie at this sample size.</span>
+				<span class="trial-hero-name">% operator</span>
+				<span class="trial-hero-note">Within 0% of the next candidate — effectively a tie at this sample size.</span>
 			</div>
 			<div class="trial-hero-stats">
 				<span class="trial-hero-stat">
 					<span class="trial-hero-stat-label">Mean run</span>
-					<span class="trial-hero-stat-value">1.61ms</span>
+					<span class="trial-hero-stat-value">1.60ms</span>
 				</span>
 				<span class="trial-hero-stat">
 					<span class="trial-hero-stat-label">Per call</span>
-					<span class="trial-hero-stat-value">16.05ns</span>
+					<span class="trial-hero-stat-value">15.98ns</span>
 				</span>
 				<span class="trial-hero-stat">
 					<span class="trial-hero-stat-label">Slowest</span>
-					<span class="trial-hero-stat-value">168%</span>
+					<span class="trial-hero-stat-value">170%</span>
 				</span>
 			</div>
 		</section>
@@ -2781,30 +2781,30 @@ local pow = math.pow</code></pre>
 				<div class="result-row sev-warn">
 	<span class="result-rank">1</span>
 	<span class="result-name">
-		<span class="result-name-value">jit'd fmod</span>
-		<span class="result-name-sub">median 1.56ms &middot; min 1.55ms &middot; max 1.58ms &middot; 16.05ns / call</span>
+		<span class="result-name-value">% operator</span>
+		<span class="result-name-sub">median 1.60ms &middot; min 1.55ms &middot; max 1.66ms &middot; 15.98ns / call</span>
 	</span>
 	<span class="result-bar">
-		<span style="width: 34.884093339916%;"></span>
+		<span style="width: 32.835855172265%;"></span>
 	</span>
 	<span class="result-pct">
 		<span class="result-pct-value">100%</span>
-		<span class="result-pct-sub">1.61ms mean</span>
+		<span class="result-pct-sub">1.60ms mean</span>
 	</span>
 </div>
 
 <div class="result-row ">
 	<span class="result-rank">2</span>
 	<span class="result-name">
-		<span class="result-name-value">% operator</span>
-		<span class="result-name-sub">median 1.57ms &middot; min 1.55ms &middot; max 1.58ms &middot; 16.35ns / call</span>
+		<span class="result-name-value">jit'd fmod</span>
+		<span class="result-name-sub">median 1.59ms &middot; min 1.56ms &middot; max 1.64ms &middot; 15.99ns / call</span>
 	</span>
 	<span class="result-bar">
-		<span style="width: 36.7725387414%;"></span>
+		<span style="width: 32.880718223392%;"></span>
 	</span>
 	<span class="result-pct">
-		<span class="result-pct-value">102%</span>
-		<span class="result-pct-sub">1.63ms mean</span>
+		<span class="result-pct-value">100%</span>
+		<span class="result-pct-sub">1.60ms mean</span>
 	</span>
 </div>
 
@@ -2812,14 +2812,14 @@ local pow = math.pow</code></pre>
 	<span class="result-rank">3</span>
 	<span class="result-name">
 		<span class="result-name-value">math.fmod</span>
-		<span class="result-name-sub">median 2.69ms &middot; min 2.67ms &middot; max 2.74ms &middot; 27.00ns / call</span>
+		<span class="result-name-sub">median 2.72ms &middot; min 2.58ms &middot; max 2.86ms &middot; 27.24ns / call</span>
 	</span>
 	<span class="result-bar">
-		<span style="width: 88.691435477674%;"></span>
+		<span style="width: 85.813638846898%;"></span>
 	</span>
 	<span class="result-pct">
-		<span class="result-pct-value">168%</span>
-		<span class="result-pct-sub">2.70ms mean</span>
+		<span class="result-pct-value">170%</span>
+		<span class="result-pct-sub">2.72ms mean</span>
 	</span>
 </div>
 
@@ -2837,48 +2837,48 @@ local pow = math.pow</code></pre>
 			</div>
 			<div class="boxplot">
 				<div class="boxplot-row">
-	<span class="boxplot-row-name">jit'd fmod</span>
-	<span class="boxplot-track">
-		<span class="boxplot-baseline"></span>
-		<span class="boxplot-whisker" style="left: 31.049479203436%; width: 1.9391934572941%;"></span>
-		<span class="boxplot-cap" style="left: 31.049479203436%;"></span>
-		<span class="boxplot-cap" style="left: 32.988672660731%;"></span>
-		<span class="boxplot-box" style="left: 31.805714069774%; width: 0.58953862520176%;"></span>
-		<span class="boxplot-median" style="left: 32.12544924582%;"></span>
-		<span class="boxplot-mean" style="left: 34.884093339916%;"></span>
-	</span>
-	<span class="boxplot-row-range">1.55ms – 1.58ms</span>
-</div>
-
-<div class="boxplot-row">
 	<span class="boxplot-row-name">% operator</span>
 	<span class="boxplot-track">
 		<span class="boxplot-baseline"></span>
-		<span class="boxplot-whisker" style="left: 31.317762914937%; width: 1.9197457564729%;"></span>
-		<span class="boxplot-cap" style="left: 31.317762914937%;"></span>
-		<span class="boxplot-cap" style="left: 33.23750867141%;"></span>
-		<span class="boxplot-box" style="left: 31.897807597657%; width: 0.67879145387438%;"></span>
-		<span class="boxplot-median" style="left: 32.300263765666%;"></span>
-		<span class="boxplot-mean" style="left: 36.7725387414%;"></span>
+		<span class="boxplot-whisker" style="left: 29.828899341936%; width: 6.7882626854704%;"></span>
+		<span class="boxplot-cap" style="left: 29.828899341936%;"></span>
+		<span class="boxplot-cap" style="left: 36.617162027406%;"></span>
+		<span class="boxplot-box" style="left: 31.719650278415%; width: 2.0006238128997%;"></span>
+		<span class="boxplot-median" style="left: 32.764101348236%;"></span>
+		<span class="boxplot-mean" style="left: 32.835855172265%;"></span>
 	</span>
-	<span class="boxplot-row-range">1.55ms – 1.58ms</span>
+	<span class="boxplot-row-range">1.55ms – 1.66ms</span>
+</div>
+
+<div class="boxplot-row">
+	<span class="boxplot-row-name">jit'd fmod</span>
+	<span class="boxplot-track">
+		<span class="boxplot-baseline"></span>
+		<span class="boxplot-whisker" style="left: 30.318747792458%; width: 5.0331312064013%;"></span>
+		<span class="boxplot-cap" style="left: 30.318747792458%;"></span>
+		<span class="boxplot-cap" style="left: 35.351878998859%;"></span>
+		<span class="boxplot-box" style="left: 31.751750726698%; width: 1.8369021399342%;"></span>
+		<span class="boxplot-median" style="left: 32.552594884012%;"></span>
+		<span class="boxplot-mean" style="left: 32.880718223392%;"></span>
+	</span>
+	<span class="boxplot-row-range">1.56ms – 1.64ms</span>
 </div>
 
 <div class="boxplot-row">
 	<span class="boxplot-row-name">math.fmod</span>
 	<span class="boxplot-track">
 		<span class="boxplot-baseline"></span>
-		<span class="boxplot-whisker" style="left: 87.45125849599%; width: 2.6877413055543%;"></span>
-		<span class="boxplot-cap" style="left: 87.45125849599%;"></span>
-		<span class="boxplot-cap" style="left: 90.138999801545%;"></span>
-		<span class="boxplot-box" style="left: 88.070814809794%; width: 0.85122983062178%;"></span>
-		<span class="boxplot-median" style="left: 88.423262436332%;"></span>
-		<span class="boxplot-mean" style="left: 88.691435477674%;"></span>
+		<span class="boxplot-whisker" style="left: 80.437060570755%; width: 10.089583035622%;"></span>
+		<span class="boxplot-cap" style="left: 80.437060570755%;"></span>
+		<span class="boxplot-cap" style="left: 90.526643606377%;"></span>
+		<span class="boxplot-box" style="left: 84.43790890548%; width: 2.6471490587197%;"></span>
+		<span class="boxplot-median" style="left: 85.791332683422%;"></span>
+		<span class="boxplot-mean" style="left: 85.813638846898%;"></span>
 	</span>
-	<span class="boxplot-row-range">2.67ms – 2.74ms</span>
+	<span class="boxplot-row-range">2.58ms – 2.86ms</span>
 </div>
 
-				<span class="boxplot-footnote">Logarithmic scale, 1.15ms to 3.01ms per run.</span>
+				<span class="boxplot-footnote">Logarithmic scale, 1.15ms to 3.14ms per run.</span>
 			</div>
 		</section>
 
@@ -2900,7 +2900,7 @@ end</code></pre>
 <div class="definition">
 	<div class="definition-head">
 		<span class="definition-head-name">% operator</span>
-		
+		<span class="tag tag-accent">Fastest</span>
 	</div>
 	<p class="definition-description">Lua's % is a floored modulus (its result takes the sign of the divisor) - a different convention to math.fmod for negative inputs, despite both being called 'modulus'.</p>
 	<pre><code>local function b()
@@ -2912,7 +2912,7 @@ end</code></pre>
 <div class="definition">
 	<div class="definition-head">
 		<span class="definition-head-name">jit'd fmod</span>
-		<span class="tag tag-accent">Fastest</span>
+		
 	</div>
 	<p class="definition-description">A hand-written function that reproduces math.fmod's sign convention using %, avoiding fmod's call overhead - but only for negative dividends; positive ones fall straight through to plain %.</p>
 	<pre><code>local function c()
@@ -2958,20 +2958,20 @@ end</code></pre>
 			<div class="trial-hero-winner">
 				<span class="trial-hero-label">Fastest</span>
 				<span class="trial-hero-name">for i length</span>
-				<span class="trial-hero-note">Within 5% of the next candidate — effectively a tie at this sample size.</span>
+				<span class="trial-hero-note">Within 4% of the next candidate — effectively a tie at this sample size.</span>
 			</div>
 			<div class="trial-hero-stats">
 				<span class="trial-hero-stat">
 					<span class="trial-hero-stat-label">Mean run</span>
-					<span class="trial-hero-stat-value">4.08ms</span>
+					<span class="trial-hero-stat-value">4.06ms</span>
 				</span>
 				<span class="trial-hero-stat">
 					<span class="trial-hero-stat-label">Per call</span>
-					<span class="trial-hero-stat-value">40.84ns</span>
+					<span class="trial-hero-stat-value">40.59ns</span>
 				</span>
 				<span class="trial-hero-stat">
 					<span class="trial-hero-stat-label">Slowest</span>
-					<span class="trial-hero-stat-value">4132%</span>
+					<span class="trial-hero-stat-value">4172%</span>
 				</span>
 			</div>
 		</section>
@@ -2986,14 +2986,14 @@ end</code></pre>
 	<span class="result-rank">1</span>
 	<span class="result-name">
 		<span class="result-name-value">for i length</span>
-		<span class="result-name-sub">median 4.08ms &middot; min 4.02ms &middot; max 4.14ms &middot; 40.84ns / call</span>
+		<span class="result-name-sub">median 4.03ms &middot; min 3.96ms &middot; max 4.10ms &middot; 40.59ns / call</span>
 	</span>
 	<span class="result-bar">
-		<span style="width: 7.4993071803798%;"></span>
+		<span style="width: 7.7683225601362%;"></span>
 	</span>
 	<span class="result-pct">
 		<span class="result-pct-value">100%</span>
-		<span class="result-pct-sub">4.08ms mean</span>
+		<span class="result-pct-sub">4.06ms mean</span>
 	</span>
 </div>
 
@@ -3001,14 +3001,14 @@ end</code></pre>
 	<span class="result-rank">2</span>
 	<span class="result-name">
 		<span class="result-name-value">for i tab.n</span>
-		<span class="result-name-sub">median 4.26ms &middot; min 4.20ms &middot; max 4.31ms &middot; 42.72ns / call</span>
+		<span class="result-name-sub">median 4.19ms &middot; min 4.13ms &middot; max 4.31ms &middot; 42.22ns / call</span>
 	</span>
 	<span class="result-bar">
-		<span style="width: 8.564919767449%;"></span>
+		<span style="width: 8.7118727729094%;"></span>
 	</span>
 	<span class="result-pct">
-		<span class="result-pct-value">105%</span>
-		<span class="result-pct-sub">4.27ms mean</span>
+		<span class="result-pct-value">104%</span>
+		<span class="result-pct-sub">4.22ms mean</span>
 	</span>
 </div>
 
@@ -3016,13 +3016,13 @@ end</code></pre>
 	<span class="result-rank">3</span>
 	<span class="result-name">
 		<span class="result-name-value">for i tab[0]</span>
-		<span class="result-name-sub">median 4.24ms &middot; min 4.20ms &middot; max 4.29ms &middot; 43.37ns / call</span>
+		<span class="result-name-sub">median 4.29ms &middot; min 4.21ms &middot; max 4.62ms &middot; 43.37ns / call</span>
 	</span>
 	<span class="result-bar">
-		<span style="width: 8.9230457707182%;"></span>
+		<span style="width: 9.3561528246852%;"></span>
 	</span>
 	<span class="result-pct">
-		<span class="result-pct-value">106%</span>
+		<span class="result-pct-value">107%</span>
 		<span class="result-pct-sub">4.34ms mean</span>
 	</span>
 </div>
@@ -3031,14 +3031,14 @@ end</code></pre>
 	<span class="result-rank">4</span>
 	<span class="result-name">
 		<span class="result-name-value">for i fixed max</span>
-		<span class="result-name-sub">median 4.50ms &middot; min 4.38ms &middot; max 4.71ms &middot; 45.34ns / call</span>
+		<span class="result-name-sub">median 4.51ms &middot; min 4.42ms &middot; max 4.72ms &middot; 45.53ns / call</span>
 	</span>
 	<span class="result-bar">
-		<span style="width: 9.9792292817422%;"></span>
+		<span style="width: 10.518668751027%;"></span>
 	</span>
 	<span class="result-pct">
-		<span class="result-pct-value">111%</span>
-		<span class="result-pct-sub">4.53ms mean</span>
+		<span class="result-pct-value">112%</span>
+		<span class="result-pct-sub">4.55ms mean</span>
 	</span>
 </div>
 
@@ -3046,14 +3046,14 @@ end</code></pre>
 	<span class="result-rank">5</span>
 	<span class="result-name">
 		<span class="result-name-value">for i #tab</span>
-		<span class="result-name-sub">median 5.59ms &middot; min 5.52ms &middot; max 5.67ms &middot; 56.55ns / call</span>
+		<span class="result-name-sub">median 5.54ms &middot; min 5.37ms &middot; max 5.87ms &middot; 55.86ns / call</span>
 	</span>
 	<span class="result-bar">
-		<span style="width: 15.22707659487%;"></span>
+		<span style="width: 15.41365508171%;"></span>
 	</span>
 	<span class="result-pct">
 		<span class="result-pct-value">138%</span>
-		<span class="result-pct-sub">5.65ms mean</span>
+		<span class="result-pct-sub">5.59ms mean</span>
 	</span>
 </div>
 
@@ -3061,14 +3061,14 @@ end</code></pre>
 	<span class="result-rank">6</span>
 	<span class="result-name">
 		<span class="result-name-value">ipairs</span>
-		<span class="result-name-sub">median 8.61ms &middot; min 7.93ms &middot; max 9.04ms &middot; 92.89ns / call</span>
+		<span class="result-name-sub">median 8.25ms &middot; min 8.12ms &middot; max 8.45ms &middot; 82.59ns / call</span>
 	</span>
 	<span class="result-bar">
-		<span style="width: 27.017923754364%;"></span>
+		<span style="width: 24.774397653909%;"></span>
 	</span>
 	<span class="result-pct">
-		<span class="result-pct-value">227%</span>
-		<span class="result-pct-sub">9.29ms mean</span>
+		<span class="result-pct-value">203%</span>
+		<span class="result-pct-sub">8.26ms mean</span>
 	</span>
 </div>
 
@@ -3076,14 +3076,14 @@ end</code></pre>
 	<span class="result-rank">7</span>
 	<span class="result-name">
 		<span class="result-name-value">pairs</span>
-		<span class="result-name-sub">median 28.98ms &middot; min 27.36ms &middot; max 30.56ms &middot; 288.73ns / call</span>
+		<span class="result-name-sub">median 29.34ms &middot; min 27.99ms &middot; max 31.04ms &middot; 294.52ns / call</span>
 	</span>
 	<span class="result-bar">
-		<span style="width: 53.955222806657%;"></span>
+		<span style="width: 55.20774246338%;"></span>
 	</span>
 	<span class="result-pct">
-		<span class="result-pct-value">707%</span>
-		<span class="result-pct-sub">28.87ms mean</span>
+		<span class="result-pct-value">726%</span>
+		<span class="result-pct-sub">29.45ms mean</span>
 	</span>
 </div>
 
@@ -3091,14 +3091,14 @@ end</code></pre>
 	<span class="result-rank">8</span>
 	<span class="result-name">
 		<span class="result-name-value">jit pairs</span>
-		<span class="result-name-sub">median 167.97ms &middot; min 159.67ms &middot; max 182.38ms &middot; 1687.80ns / call</span>
+		<span class="result-name-sub">median 168.43ms &middot; min 164.43ms &middot; max 173.95ms &middot; 1693.25ns / call</span>
 	</span>
 	<span class="result-bar">
-		<span style="width: 95.895640341183%;"></span>
+		<span style="width: 97.073976858025%;"></span>
 	</span>
 	<span class="result-pct">
-		<span class="result-pct-value">4132%</span>
-		<span class="result-pct-sub">168.78ms mean</span>
+		<span class="result-pct-value">4172%</span>
+		<span class="result-pct-sub">169.32ms mean</span>
 	</span>
 </div>
 
@@ -3119,115 +3119,115 @@ end</code></pre>
 	<span class="boxplot-row-name">for i length</span>
 	<span class="boxplot-track">
 		<span class="boxplot-baseline"></span>
-		<span class="boxplot-whisker" style="left: 7.12842334831%; width: 0.67402512676488%;"></span>
-		<span class="boxplot-cap" style="left: 7.12842334831%;"></span>
-		<span class="boxplot-cap" style="left: 7.8024484750748%;"></span>
-		<span class="boxplot-box" style="left: 7.3382029580997%; width: 0.21378157887238%;"></span>
-		<span class="boxplot-median" style="left: 7.4576216124347%;"></span>
-		<span class="boxplot-mean" style="left: 7.4993071803798%;"></span>
+		<span class="boxplot-whisker" style="left: 7.183411784116%; width: 0.82119367757863%;"></span>
+		<span class="boxplot-cap" style="left: 7.183411784116%;"></span>
+		<span class="boxplot-cap" style="left: 8.0046054616946%;"></span>
+		<span class="boxplot-box" style="left: 7.4655496462987%; width: 0.22833484565314%;"></span>
+		<span class="boxplot-median" style="left: 7.5705659836604%;"></span>
+		<span class="boxplot-mean" style="left: 7.7683225601362%;"></span>
 	</span>
-	<span class="boxplot-row-range">4.02ms – 4.14ms</span>
+	<span class="boxplot-row-range">3.96ms – 4.10ms</span>
 </div>
 
 <div class="boxplot-row">
 	<span class="boxplot-row-name">for i tab.n</span>
 	<span class="boxplot-track">
 		<span class="boxplot-baseline"></span>
-		<span class="boxplot-whisker" style="left: 8.1872540508851%; width: 0.59839517571714%;"></span>
-		<span class="boxplot-cap" style="left: 8.1872540508851%;"></span>
-		<span class="boxplot-cap" style="left: 8.7856492266023%;"></span>
-		<span class="boxplot-box" style="left: 8.3917887515339%; width: 0.19528423214088%;"></span>
-		<span class="boxplot-median" style="left: 8.491908797106%;"></span>
-		<span class="boxplot-mean" style="left: 8.564919767449%;"></span>
+		<span class="boxplot-whisker" style="left: 8.1600184011642%; width: 1.025651111745%;"></span>
+		<span class="boxplot-cap" style="left: 8.1600184011642%;"></span>
+		<span class="boxplot-cap" style="left: 9.1856695129091%;"></span>
+		<span class="boxplot-box" style="left: 8.4086605823079%; width: 0.32621220498567%;"></span>
+		<span class="boxplot-median" style="left: 8.5493134836737%;"></span>
+		<span class="boxplot-mean" style="left: 8.7118727729094%;"></span>
 	</span>
-	<span class="boxplot-row-range">4.20ms – 4.31ms</span>
+	<span class="boxplot-row-range">4.13ms – 4.31ms</span>
 </div>
 
 <div class="boxplot-row">
 	<span class="boxplot-row-name">for i tab[0]</span>
 	<span class="boxplot-track">
 		<span class="boxplot-baseline"></span>
-		<span class="boxplot-whisker" style="left: 8.153217949151%; width: 0.50236084656414%;"></span>
-		<span class="boxplot-cap" style="left: 8.153217949151%;"></span>
-		<span class="boxplot-cap" style="left: 8.6555787957152%;"></span>
-		<span class="boxplot-box" style="left: 8.3023153555729%; width: 0.16055725987737%;"></span>
-		<span class="boxplot-median" style="left: 8.392995811403%;"></span>
-		<span class="boxplot-mean" style="left: 8.9230457707182%;"></span>
+		<span class="boxplot-whisker" style="left: 8.6531608332455%; width: 2.1939879329%;"></span>
+		<span class="boxplot-cap" style="left: 8.6531608332455%;"></span>
+		<span class="boxplot-cap" style="left: 10.847148766146%;"></span>
+		<span class="boxplot-box" style="left: 8.9060255876024%; width: 0.84431141587583%;"></span>
+		<span class="boxplot-median" style="left: 9.1208642404438%;"></span>
+		<span class="boxplot-mean" style="left: 9.3561528246852%;"></span>
 	</span>
-	<span class="boxplot-row-range">4.20ms – 4.29ms</span>
+	<span class="boxplot-row-range">4.21ms – 4.62ms</span>
 </div>
 
 <div class="boxplot-row">
 	<span class="boxplot-row-name">for i fixed max</span>
 	<span class="boxplot-track">
 		<span class="boxplot-baseline"></span>
-		<span class="boxplot-whisker" style="left: 9.1724159264937%; width: 1.6912670651399%;"></span>
-		<span class="boxplot-cap" style="left: 9.1724159264937%;"></span>
-		<span class="boxplot-cap" style="left: 10.863682991634%;"></span>
-		<span class="boxplot-box" style="left: 9.5200194589957%; width: 0.5805942757225%;"></span>
-		<span class="boxplot-median" style="left: 9.7890168438291%;"></span>
-		<span class="boxplot-mean" style="left: 9.9792292817422%;"></span>
+		<span class="boxplot-whisker" style="left: 9.7933062239829%; width: 1.5934530373294%;"></span>
+		<span class="boxplot-cap" style="left: 9.7933062239829%;"></span>
+		<span class="boxplot-cap" style="left: 11.386759261312%;"></span>
+		<span class="boxplot-box" style="left: 10.034312255497%; width: 0.67433725865299%;"></span>
+		<span class="boxplot-median" style="left: 10.312245651166%;"></span>
+		<span class="boxplot-mean" style="left: 10.518668751027%;"></span>
 	</span>
-	<span class="boxplot-row-range">4.38ms – 4.71ms</span>
+	<span class="boxplot-row-range">4.42ms – 4.72ms</span>
 </div>
 
 <div class="boxplot-row">
 	<span class="boxplot-row-name">for i #tab</span>
 	<span class="boxplot-track">
 		<span class="boxplot-baseline"></span>
-		<span class="boxplot-whisker" style="left: 14.647682622925%; width: 0.64116678054898%;"></span>
-		<span class="boxplot-cap" style="left: 14.647682622925%;"></span>
-		<span class="boxplot-cap" style="left: 15.288849403474%;"></span>
-		<span class="boxplot-box" style="left: 14.871906407533%; width: 0.22134333108444%;"></span>
-		<span class="boxplot-median" style="left: 14.973666903804%;"></span>
-		<span class="boxplot-mean" style="left: 15.22707659487%;"></span>
+		<span class="boxplot-whisker" style="left: 14.470531193275%; width: 2.1172010029206%;"></span>
+		<span class="boxplot-cap" style="left: 14.470531193275%;"></span>
+		<span class="boxplot-cap" style="left: 16.587732196196%;"></span>
+		<span class="boxplot-box" style="left: 14.896709137528%; width: 0.76295342061344%;"></span>
+		<span class="boxplot-median" style="left: 15.232119993278%;"></span>
+		<span class="boxplot-mean" style="left: 15.41365508171%;"></span>
 	</span>
-	<span class="boxplot-row-range">5.52ms – 5.67ms</span>
+	<span class="boxplot-row-range">5.37ms – 5.87ms</span>
 </div>
 
 <div class="boxplot-row">
 	<span class="boxplot-row-name">ipairs</span>
 	<span class="boxplot-track">
 		<span class="boxplot-baseline"></span>
-		<span class="boxplot-whisker" style="left: 23.258860683692%; width: 3.1102545227377%;"></span>
-		<span class="boxplot-cap" style="left: 23.258860683692%;"></span>
-		<span class="boxplot-cap" style="left: 26.36911520643%;"></span>
-		<span class="boxplot-box" style="left: 24.56288070203%; width: 1.0111861496178%;"></span>
-		<span class="boxplot-median" style="left: 25.211716529062%;"></span>
-		<span class="boxplot-mean" style="left: 27.017923754364%;"></span>
+		<span class="boxplot-whisker" style="left: 24.376609363307%; width: 0.93629335568313%;"></span>
+		<span class="boxplot-cap" style="left: 24.376609363307%;"></span>
+		<span class="boxplot-cap" style="left: 25.31290271899%;"></span>
+		<span class="boxplot-box" style="left: 24.598289176408%; width: 0.29432150910285%;"></span>
+		<span class="boxplot-median" style="left: 24.733243633484%;"></span>
+		<span class="boxplot-mean" style="left: 24.774397653909%;"></span>
 	</span>
-	<span class="boxplot-row-range">7.93ms – 9.04ms</span>
+	<span class="boxplot-row-range">8.12ms – 8.45ms</span>
 </div>
 
 <div class="boxplot-row">
 	<span class="boxplot-row-name">pairs</span>
 	<span class="boxplot-track">
 		<span class="boxplot-baseline"></span>
-		<span class="boxplot-whisker" style="left: 52.675270693227%; width: 2.6282120399539%;"></span>
-		<span class="boxplot-cap" style="left: 52.675270693227%;"></span>
-		<span class="boxplot-cap" style="left: 55.303482733181%;"></span>
-		<span class="boxplot-box" style="left: 53.402241580007%; width: 1.0721918631797%;"></span>
-		<span class="boxplot-median" style="left: 54.039328392764%;"></span>
-		<span class="boxplot-mean" style="left: 53.955222806657%;"></span>
+		<span class="boxplot-whisker" style="left: 53.989008909136%; width: 2.4777893744884%;"></span>
+		<span class="boxplot-cap" style="left: 53.989008909136%;"></span>
+		<span class="boxplot-cap" style="left: 56.466798283624%;"></span>
+		<span class="boxplot-box" style="left: 54.883776575754%; width: 0.65335291791704%;"></span>
+		<span class="boxplot-median" style="left: 55.120266777003%;"></span>
+		<span class="boxplot-mean" style="left: 55.20774246338%;"></span>
 	</span>
-	<span class="boxplot-row-range">27.36ms – 30.56ms</span>
+	<span class="boxplot-row-range">27.99ms – 31.04ms</span>
 </div>
 
 <div class="boxplot-row">
 	<span class="boxplot-row-name">jit pairs</span>
 	<span class="boxplot-track">
 		<span class="boxplot-baseline"></span>
-		<span class="boxplot-whisker" style="left: 94.577512419986%; width: 3.1585725046013%;"></span>
-		<span class="boxplot-cap" style="left: 94.577512419986%;"></span>
-		<span class="boxplot-cap" style="left: 97.736084924588%;"></span>
-		<span class="boxplot-box" style="left: 95.352879449968%; width: 0.99958999209409%;"></span>
-		<span class="boxplot-median" style="left: 95.781112206025%;"></span>
-		<span class="boxplot-mean" style="left: 95.895640341183%;"></span>
+		<span class="boxplot-whisker" style="left: 96.371147996521%; width: 1.347473157649%;"></span>
+		<span class="boxplot-cap" style="left: 96.371147996521%;"></span>
+		<span class="boxplot-cap" style="left: 97.71862115417%;"></span>
+		<span class="boxplot-box" style="left: 96.821514783466%; width: 0.36438712651838%;"></span>
+		<span class="boxplot-median" style="left: 96.947530288594%;"></span>
+		<span class="boxplot-mean" style="left: 97.073976858025%;"></span>
 	</span>
-	<span class="boxplot-row-range">159.67ms – 182.38ms</span>
+	<span class="boxplot-row-range">164.43ms – 173.95ms</span>
 </div>
 
-				<span class="boxplot-footnote">Logarithmic scale, 2.98ms to 200.61ms per run.</span>
+				<span class="boxplot-footnote">Logarithmic scale, 2.93ms to 191.34ms per run.</span>
 			</div>
 		</section>
 
@@ -3384,20 +3384,20 @@ local length = 100</code></pre>
 			<div class="trial-hero-winner">
 				<span class="trial-hero-label">Fastest</span>
 				<span class="trial-hero-name">tab[i]</span>
-				<span class="trial-hero-note">Beats the next candidate by 13%, and the slowest by 481%.</span>
+				<span class="trial-hero-note">Beats the next candidate by 10%, and the slowest by 437%.</span>
 			</div>
 			<div class="trial-hero-stats">
 				<span class="trial-hero-stat">
 					<span class="trial-hero-stat-label">Mean run</span>
-					<span class="trial-hero-stat-value">398.08µs</span>
+					<span class="trial-hero-stat-value">429.02µs</span>
 				</span>
 				<span class="trial-hero-stat">
 					<span class="trial-hero-stat-label">Per call</span>
-					<span class="trial-hero-stat-value">3.98ns</span>
+					<span class="trial-hero-stat-value">4.29ns</span>
 				</span>
 				<span class="trial-hero-stat">
 					<span class="trial-hero-stat-label">Slowest</span>
-					<span class="trial-hero-stat-value">581%</span>
+					<span class="trial-hero-stat-value">537%</span>
 				</span>
 			</div>
 		</section>
@@ -3412,14 +3412,14 @@ local length = 100</code></pre>
 	<span class="result-rank">1</span>
 	<span class="result-name">
 		<span class="result-name-value">tab[i]</span>
-		<span class="result-name-sub">median 0.40ms &middot; min 0.37ms &middot; max 0.42ms &middot; 3.98ns / call</span>
+		<span class="result-name-sub">median 0.43ms &middot; min 0.41ms &middot; max 0.45ms &middot; 4.29ns / call</span>
 	</span>
 	<span class="result-bar">
-		<span style="width: 16.299519861987%;"></span>
+		<span style="width: 16.152883364687%;"></span>
 	</span>
 	<span class="result-pct">
 		<span class="result-pct-value">100%</span>
-		<span class="result-pct-sub">0.40ms mean</span>
+		<span class="result-pct-sub">0.43ms mean</span>
 	</span>
 </div>
 
@@ -3427,14 +3427,14 @@ local length = 100</code></pre>
 	<span class="result-rank">2</span>
 	<span class="result-name">
 		<span class="result-name-value">tab[count]</span>
-		<span class="result-name-sub">median 0.45ms &middot; min 0.43ms &middot; max 0.49ms &middot; 4.50ns / call</span>
+		<span class="result-name-sub">median 0.47ms &middot; min 0.46ms &middot; max 0.50ms &middot; 4.73ns / call</span>
 	</span>
 	<span class="result-bar">
-		<span style="width: 21.779218741591%;"></span>
+		<span style="width: 20.704049229561%;"></span>
 	</span>
 	<span class="result-pct">
-		<span class="result-pct-value">113%</span>
-		<span class="result-pct-sub">0.45ms mean</span>
+		<span class="result-pct-value">110%</span>
+		<span class="result-pct-sub">0.47ms mean</span>
 	</span>
 </div>
 
@@ -3442,14 +3442,14 @@ local length = 100</code></pre>
 	<span class="result-rank">3</span>
 	<span class="result-name">
 		<span class="result-name-value">tab[tab.n]</span>
-		<span class="result-name-sub">median 1.30ms &middot; min 1.24ms &middot; max 1.37ms &middot; 12.99ns / call</span>
+		<span class="result-name-sub">median 1.33ms &middot; min 1.28ms &middot; max 1.39ms &middot; 13.36ns / call</span>
 	</span>
 	<span class="result-bar">
-		<span style="width: 69.065054950793%;"></span>
+		<span style="width: 68.569395933467%;"></span>
 	</span>
 	<span class="result-pct">
-		<span class="result-pct-value">326%</span>
-		<span class="result-pct-sub">1.30ms mean</span>
+		<span class="result-pct-value">311%</span>
+		<span class="result-pct-sub">1.34ms mean</span>
 	</span>
 </div>
 
@@ -3457,44 +3457,44 @@ local length = 100</code></pre>
 	<span class="result-rank">4</span>
 	<span class="result-name">
 		<span class="result-name-value">tab[0]</span>
-		<span class="result-name-sub">median 1.37ms &middot; min 1.30ms &middot; max 1.48ms &middot; 13.82ns / call</span>
+		<span class="result-name-sub">median 1.43ms &middot; min 1.34ms &middot; max 1.49ms &middot; 14.38ns / call</span>
 	</span>
 	<span class="result-bar">
-		<span style="width: 71.803744023418%;"></span>
+		<span style="width: 71.962576328994%;"></span>
 	</span>
 	<span class="result-pct">
-		<span class="result-pct-value">347%</span>
-		<span class="result-pct-sub">1.38ms mean</span>
+		<span class="result-pct-value">335%</span>
+		<span class="result-pct-sub">1.44ms mean</span>
 	</span>
 </div>
 
 <div class="result-row sev-critical">
 	<span class="result-rank">5</span>
 	<span class="result-name">
-		<span class="result-name-value">table.insert</span>
-		<span class="result-name-sub">median 2.24ms &middot; min 2.16ms &middot; max 2.31ms &middot; 22.27ns / call</span>
+		<span class="result-name-value">tab[#tab + 1]</span>
+		<span class="result-name-sub">median 2.26ms &middot; min 2.19ms &middot; max 2.38ms &middot; 22.90ns / call</span>
 	</span>
 	<span class="result-bar">
-		<span style="width: 93.098345996812%;"></span>
+		<span style="width: 93.446845539115%;"></span>
 	</span>
 	<span class="result-pct">
-		<span class="result-pct-value">559%</span>
-		<span class="result-pct-sub">2.23ms mean</span>
+		<span class="result-pct-value">534%</span>
+		<span class="result-pct-sub">2.29ms mean</span>
 	</span>
 </div>
 
 <div class="result-row sev-critical">
 	<span class="result-rank">6</span>
 	<span class="result-name">
-		<span class="result-name-value">tab[#tab + 1]</span>
-		<span class="result-name-sub">median 2.31ms &middot; min 2.25ms &middot; max 2.36ms &middot; 23.12ns / call</span>
+		<span class="result-name-value">table.insert</span>
+		<span class="result-name-sub">median 2.29ms &middot; min 2.20ms &middot; max 2.40ms &middot; 23.02ns / call</span>
 	</span>
 	<span class="result-bar">
-		<span style="width: 94.75895418287%;"></span>
+		<span style="width: 93.688618245734%;"></span>
 	</span>
 	<span class="result-pct">
-		<span class="result-pct-value">581%</span>
-		<span class="result-pct-sub">2.31ms mean</span>
+		<span class="result-pct-value">537%</span>
+		<span class="result-pct-sub">2.30ms mean</span>
 	</span>
 </div>
 
@@ -3515,87 +3515,87 @@ local length = 100</code></pre>
 	<span class="boxplot-row-name">tab[i]</span>
 	<span class="boxplot-track">
 		<span class="boxplot-baseline"></span>
-		<span class="boxplot-whisker" style="left: 13.385336185817%; width: 5.4432679508856%;"></span>
-		<span class="boxplot-cap" style="left: 13.385336185817%;"></span>
-		<span class="boxplot-cap" style="left: 18.828604136702%;"></span>
-		<span class="boxplot-box" style="left: 14.971525656955%; width: 2.0674141235408%;"></span>
-		<span class="boxplot-median" style="left: 16.538969659043%;"></span>
-		<span class="boxplot-mean" style="left: 16.299519861987%;"></span>
+		<span class="boxplot-whisker" style="left: 13.849879277281%; width: 4.829704306491%;"></span>
+		<span class="boxplot-cap" style="left: 13.849879277281%;"></span>
+		<span class="boxplot-cap" style="left: 18.679583583772%;"></span>
+		<span class="boxplot-box" style="left: 15.454148323998%; width: 1.3404258768704%;"></span>
+		<span class="boxplot-median" style="left: 16.086345322211%;"></span>
+		<span class="boxplot-mean" style="left: 16.152883364687%;"></span>
 	</span>
-	<span class="boxplot-row-range">372.90µs – 421.30µs</span>
+	<span class="boxplot-row-range">408.13µs – 453.16µs</span>
 </div>
 
 <div class="boxplot-row">
 	<span class="boxplot-row-name">tab[count]</span>
 	<span class="boxplot-track">
 		<span class="boxplot-baseline"></span>
-		<span class="boxplot-whisker" style="left: 19.388087027759%; width: 5.838878204427%;"></span>
-		<span class="boxplot-cap" style="left: 19.388087027759%;"></span>
-		<span class="boxplot-cap" style="left: 25.226965232186%;"></span>
-		<span class="boxplot-box" style="left: 20.701497733026%; width: 2.0063101366339%;"></span>
-		<span class="boxplot-median" style="left: 21.905064175574%;"></span>
-		<span class="boxplot-mean" style="left: 21.779218741591%;"></span>
+		<span class="boxplot-whisker" style="left: 18.982580845211%; width: 4.2660740061487%;"></span>
+		<span class="boxplot-cap" style="left: 18.982580845211%;"></span>
+		<span class="boxplot-cap" style="left: 23.24865485136%;"></span>
+		<span class="boxplot-box" style="left: 20.008630537798%; width: 1.3823902205513%;"></span>
+		<span class="boxplot-median" style="left: 20.685503841394%;"></span>
+		<span class="boxplot-mean" style="left: 20.704049229561%;"></span>
 	</span>
-	<span class="boxplot-row-range">426.62µs – 486.29µs</span>
+	<span class="boxplot-row-range">456.15µs – 500.32µs</span>
 </div>
 
 <div class="boxplot-row">
 	<span class="boxplot-row-name">tab[tab.n]</span>
 	<span class="boxplot-track">
 		<span class="boxplot-baseline"></span>
-		<span class="boxplot-whisker" style="left: 67.086496466488%; width: 4.407026787536%;"></span>
-		<span class="boxplot-cap" style="left: 67.086496466488%;"></span>
-		<span class="boxplot-cap" style="left: 71.493523254024%;"></span>
-		<span class="boxplot-box" style="left: 68.277326741685%; width: 1.4736231065906%;"></span>
-		<span class="boxplot-median" style="left: 69.096565458351%;"></span>
-		<span class="boxplot-mean" style="left: 69.065054950793%;"></span>
+		<span class="boxplot-whisker" style="left: 66.780114146255%; width: 3.4769676691224%;"></span>
+		<span class="boxplot-cap" style="left: 66.780114146255%;"></span>
+		<span class="boxplot-cap" style="left: 70.257081815377%;"></span>
+		<span class="boxplot-box" style="left: 67.976993984127%; width: 1.0281366107344%;"></span>
+		<span class="boxplot-median" style="left: 68.452241529652%;"></span>
+		<span class="boxplot-mean" style="left: 68.569395933467%;"></span>
 	</span>
-	<span class="boxplot-row-range">1.24ms – 1.37ms</span>
+	<span class="boxplot-row-range">1.28ms – 1.39ms</span>
 </div>
 
 <div class="boxplot-row">
 	<span class="boxplot-row-name">tab[0]</span>
 	<span class="boxplot-track">
 		<span class="boxplot-baseline"></span>
-		<span class="boxplot-whisker" style="left: 69.185606939301%; width: 5.7894709363196%;"></span>
-		<span class="boxplot-cap" style="left: 69.185606939301%;"></span>
-		<span class="boxplot-cap" style="left: 74.97507787562%;"></span>
-		<span class="boxplot-box" style="left: 70.739200452026%; width: 2.4005981657835%;"></span>
-		<span class="boxplot-median" style="left: 71.420520013626%;"></span>
-		<span class="boxplot-mean" style="left: 71.803744023418%;"></span>
+		<span class="boxplot-whisker" style="left: 68.806803233289%; width: 4.8899056161923%;"></span>
+		<span class="boxplot-cap" style="left: 68.806803233289%;"></span>
+		<span class="boxplot-cap" style="left: 73.696708849481%;"></span>
+		<span class="boxplot-box" style="left: 70.830455241983%; width: 1.3858094863885%;"></span>
+		<span class="boxplot-median" style="left: 71.625175632464%;"></span>
+		<span class="boxplot-mean" style="left: 71.962576328994%;"></span>
 	</span>
-	<span class="boxplot-row-range">1.30ms – 1.48ms</span>
-</div>
-
-<div class="boxplot-row">
-	<span class="boxplot-row-name">table.insert</span>
-	<span class="boxplot-track">
-		<span class="boxplot-baseline"></span>
-		<span class="boxplot-whisker" style="left: 91.639629116023%; width: 3.0420877376157%;"></span>
-		<span class="boxplot-cap" style="left: 91.639629116023%;"></span>
-		<span class="boxplot-cap" style="left: 94.681716853639%;"></span>
-		<span class="boxplot-box" style="left: 92.352886986725%; width: 1.3265989399104%;"></span>
-		<span class="boxplot-median" style="left: 93.2955767713%;"></span>
-		<span class="boxplot-mean" style="left: 93.098345996812%;"></span>
-	</span>
-	<span class="boxplot-row-range">2.16ms – 2.31ms</span>
+	<span class="boxplot-row-range">1.34ms – 1.49ms</span>
 </div>
 
 <div class="boxplot-row">
 	<span class="boxplot-row-name">tab[#tab + 1]</span>
 	<span class="boxplot-track">
 		<span class="boxplot-baseline"></span>
-		<span class="boxplot-whisker" style="left: 93.510703811994%; width: 2.238248950791%;"></span>
-		<span class="boxplot-cap" style="left: 93.510703811994%;"></span>
-		<span class="boxplot-cap" style="left: 95.748952762785%;"></span>
-		<span class="boxplot-box" style="left: 94.412143135046%; width: 0.75051073271972%;"></span>
-		<span class="boxplot-median" style="left: 94.769609683629%;"></span>
-		<span class="boxplot-mean" style="left: 94.75895418287%;"></span>
+		<span class="boxplot-whisker" style="left: 91.444156437258%; width: 3.8348485012207%;"></span>
+		<span class="boxplot-cap" style="left: 91.444156437258%;"></span>
+		<span class="boxplot-cap" style="left: 95.279004938479%;"></span>
+		<span class="boxplot-box" style="left: 92.092350215568%; width: 1.793088346757%;"></span>
+		<span class="boxplot-median" style="left: 92.845825451002%;"></span>
+		<span class="boxplot-mean" style="left: 93.446845539115%;"></span>
 	</span>
-	<span class="boxplot-row-range">2.25ms – 2.36ms</span>
+	<span class="boxplot-row-range">2.19ms – 2.38ms</span>
 </div>
 
-				<span class="boxplot-footnote">Logarithmic scale, 276.22µs to 2.60ms per run.</span>
+<div class="boxplot-row">
+	<span class="boxplot-row-name">table.insert</span>
+	<span class="boxplot-track">
+		<span class="boxplot-baseline"></span>
+		<span class="boxplot-whisker" style="left: 91.610373840824%; width: 3.9910447399184%;"></span>
+		<span class="boxplot-cap" style="left: 91.610373840824%;"></span>
+		<span class="boxplot-cap" style="left: 95.601418580743%;"></span>
+		<span class="boxplot-box" style="left: 92.743486439206%; width: 1.2155523176009%;"></span>
+		<span class="boxplot-median" style="left: 93.443804041934%;"></span>
+		<span class="boxplot-mean" style="left: 93.688618245734%;"></span>
+	</span>
+	<span class="boxplot-row-range">2.20ms – 2.40ms</span>
+</div>
+
+				<span class="boxplot-footnote">Logarithmic scale, 302.32µs to 2.64ms per run.</span>
 			</div>
 		</section>
 
@@ -3715,11 +3715,11 @@ local count = 1</code></pre>
 			<div class="trial-hero-stats">
 				<span class="trial-hero-stat">
 					<span class="trial-hero-stat-label">Mean run</span>
-					<span class="trial-hero-stat-value">7.30ms</span>
+					<span class="trial-hero-stat-value">7.26ms</span>
 				</span>
 				<span class="trial-hero-stat">
 					<span class="trial-hero-stat-label">Per call</span>
-					<span class="trial-hero-stat-value">72.96ns</span>
+					<span class="trial-hero-stat-value">72.55ns</span>
 				</span>
 				<span class="trial-hero-stat">
 					<span class="trial-hero-stat-label">Slowest</span>
@@ -3738,14 +3738,14 @@ local count = 1</code></pre>
 	<span class="result-rank">1</span>
 	<span class="result-name">
 		<span class="result-name-value">DistToSqr</span>
-		<span class="result-name-sub">median 7.26ms &middot; min 6.91ms &middot; max 7.89ms &middot; 72.96ns / call</span>
+		<span class="result-name-sub">median 7.28ms &middot; min 7.04ms &middot; max 7.49ms &middot; 72.55ns / call</span>
 	</span>
 	<span class="result-bar">
-		<span style="width: 65.885470194053%;"></span>
+		<span style="width: 67.055829874237%;"></span>
 	</span>
 	<span class="result-pct">
 		<span class="result-pct-value">100%</span>
-		<span class="result-pct-sub">7.30ms mean</span>
+		<span class="result-pct-sub">7.26ms mean</span>
 	</span>
 </div>
 
@@ -3753,14 +3753,14 @@ local count = 1</code></pre>
 	<span class="result-rank">2</span>
 	<span class="result-name">
 		<span class="result-name-value">Distance</span>
-		<span class="result-name-sub">median 7.50ms &middot; min 7.16ms &middot; max 7.97ms &middot; 75.23ns / call</span>
+		<span class="result-name-sub">median 7.48ms &middot; min 7.20ms &middot; max 7.76ms &middot; 74.70ns / call</span>
 	</span>
 	<span class="result-bar">
-		<span style="width: 71.564956995231%;"></span>
+		<span style="width: 72.996904023848%;"></span>
 	</span>
 	<span class="result-pct">
 		<span class="result-pct-value">103%</span>
-		<span class="result-pct-sub">7.52ms mean</span>
+		<span class="result-pct-sub">7.47ms mean</span>
 	</span>
 </div>
 
@@ -3781,31 +3781,31 @@ local count = 1</code></pre>
 	<span class="boxplot-row-name">DistToSqr</span>
 	<span class="boxplot-track">
 		<span class="boxplot-baseline"></span>
-		<span class="boxplot-whisker" style="left: 55.765113641175%; width: 24.736031053892%;"></span>
-		<span class="boxplot-cap" style="left: 55.765113641175%;"></span>
-		<span class="boxplot-cap" style="left: 80.501144695067%;"></span>
-		<span class="boxplot-box" style="left: 61.041373632507%; width: 9.0554534486371%;"></span>
-		<span class="boxplot-median" style="left: 64.966155708857%;"></span>
-		<span class="boxplot-mean" style="left: 65.885470194053%;"></span>
+		<span class="boxplot-whisker" style="left: 61.027681781439%; width: 12.398232501342%;"></span>
+		<span class="boxplot-cap" style="left: 61.027681781439%;"></span>
+		<span class="boxplot-cap" style="left: 73.42591428278%;"></span>
+		<span class="boxplot-box" style="left: 65.732840776909%; width: 3.2050570180881%;"></span>
+		<span class="boxplot-median" style="left: 67.746688281626%;"></span>
+		<span class="boxplot-mean" style="left: 67.055829874237%;"></span>
 	</span>
-	<span class="boxplot-row-range">6.91ms – 7.89ms</span>
+	<span class="boxplot-row-range">7.04ms – 7.49ms</span>
 </div>
 
 <div class="boxplot-row">
 	<span class="boxplot-row-name">Distance</span>
 	<span class="boxplot-track">
 		<span class="boxplot-baseline"></span>
-		<span class="boxplot-whisker" style="left: 62.440286065354%; width: 19.849278500945%;"></span>
-		<span class="boxplot-cap" style="left: 62.440286065354%;"></span>
-		<span class="boxplot-cap" style="left: 82.289564566299%;"></span>
-		<span class="boxplot-box" style="left: 68.003292807837%; width: 6.1084971169565%;"></span>
-		<span class="boxplot-median" style="left: 70.982306832799%;"></span>
-		<span class="boxplot-mean" style="left: 71.564956995231%;"></span>
+		<span class="boxplot-whisker" style="left: 65.401546564654%; width: 15.216679647287%;"></span>
+		<span class="boxplot-cap" style="left: 65.401546564654%;"></span>
+		<span class="boxplot-cap" style="left: 80.618226211941%;"></span>
+		<span class="boxplot-box" style="left: 69.570903988867%; width: 5.4576226083565%;"></span>
+		<span class="boxplot-median" style="left: 73.231989053049%;"></span>
+		<span class="boxplot-mean" style="left: 72.996904023848%;"></span>
 	</span>
-	<span class="boxplot-row-range">7.16ms – 7.97ms</span>
+	<span class="boxplot-row-range">7.20ms – 7.76ms</span>
 </div>
 
-				<span class="boxplot-footnote">Logarithmic scale, 5.12ms to 8.77ms per run.</span>
+				<span class="boxplot-footnote">Logarithmic scale, 5.22ms to 8.53ms per run.</span>
 			</div>
 		</section>
 
@@ -3864,20 +3864,20 @@ local count = 1</code></pre>
 			<div class="trial-hero-winner">
 				<span class="trial-hero-label">Fastest</span>
 				<span class="trial-hero-name">string sub</span>
-				<span class="trial-hero-note">Beats the next candidate by 20%, and the slowest by 29%.</span>
+				<span class="trial-hero-note">Beats the next candidate by 28%, and the slowest by 42%.</span>
 			</div>
 			<div class="trial-hero-stats">
 				<span class="trial-hero-stat">
 					<span class="trial-hero-stat-label">Mean run</span>
-					<span class="trial-hero-stat-value">62.69ms</span>
+					<span class="trial-hero-stat-value">61.60ms</span>
 				</span>
 				<span class="trial-hero-stat">
 					<span class="trial-hero-stat-label">Per call</span>
-					<span class="trial-hero-stat-value">626.87ns</span>
+					<span class="trial-hero-stat-value">615.97ns</span>
 				</span>
 				<span class="trial-hero-stat">
 					<span class="trial-hero-stat-label">Slowest</span>
-					<span class="trial-hero-stat-value">129%</span>
+					<span class="trial-hero-stat-value">142%</span>
 				</span>
 			</div>
 		</section>
@@ -3892,14 +3892,14 @@ local count = 1</code></pre>
 	<span class="result-rank">1</span>
 	<span class="result-name">
 		<span class="result-name-value">string sub</span>
-		<span class="result-name-sub">median 62.52ms &middot; min 57.61ms &middot; max 67.65ms &middot; 626.87ns / call</span>
+		<span class="result-name-sub">median 61.27ms &middot; min 58.47ms &middot; max 64.07ms &middot; 615.97ns / call</span>
 	</span>
 	<span class="result-bar">
-		<span style="width: 48.443904410031%;"></span>
+		<span style="width: 41.541381251173%;"></span>
 	</span>
 	<span class="result-pct">
 		<span class="result-pct-value">100%</span>
-		<span class="result-pct-sub">62.69ms mean</span>
+		<span class="result-pct-sub">61.60ms mean</span>
 	</span>
 </div>
 
@@ -3907,14 +3907,14 @@ local count = 1</code></pre>
 	<span class="result-rank">2</span>
 	<span class="result-name">
 		<span class="result-name-value">concating capture group</span>
-		<span class="result-name-sub">median 74.69ms &middot; min 69.39ms &middot; max 79.91ms &middot; 750.66ns / call</span>
+		<span class="result-name-sub">median 78.84ms &middot; min 75.65ms &middot; max 82.41ms &middot; 788.56ns / call</span>
 	</span>
 	<span class="result-bar">
-		<span style="width: 71.150193493186%;"></span>
+		<span style="width: 70.670730952372%;"></span>
 	</span>
 	<span class="result-pct">
-		<span class="result-pct-value">120%</span>
-		<span class="result-pct-sub">75.07ms mean</span>
+		<span class="result-pct-value">128%</span>
+		<span class="result-pct-sub">78.86ms mean</span>
 	</span>
 </div>
 
@@ -3922,14 +3922,14 @@ local count = 1</code></pre>
 	<span class="result-rank">3</span>
 	<span class="result-name">
 		<span class="result-name-value">capture group</span>
-		<span class="result-name-sub">median 80.95ms &middot; min 75.86ms &middot; max 85.80ms &middot; 810.56ns / call</span>
+		<span class="result-name-sub">median 87.32ms &middot; min 83.70ms &middot; max 91.93ms &middot; 873.50ns / call</span>
 	</span>
 	<span class="result-bar">
-		<span style="width: 80.823804365287%;"></span>
+		<span style="width: 82.734517686372%;"></span>
 	</span>
 	<span class="result-pct">
-		<span class="result-pct-value">129%</span>
-		<span class="result-pct-sub">81.06ms mean</span>
+		<span class="result-pct-value">142%</span>
+		<span class="result-pct-sub">87.35ms mean</span>
 	</span>
 </div>
 
@@ -3950,45 +3950,45 @@ local count = 1</code></pre>
 	<span class="boxplot-row-name">string sub</span>
 	<span class="boxplot-track">
 		<span class="boxplot-baseline"></span>
-		<span class="boxplot-whisker" style="left: 37.812582294492%; width: 20.232478773011%;"></span>
-		<span class="boxplot-cap" style="left: 37.812582294492%;"></span>
-		<span class="boxplot-cap" style="left: 58.045061067503%;"></span>
-		<span class="boxplot-box" style="left: 44.597282301334%; width: 7.9284506996692%;"></span>
-		<span class="boxplot-median" style="left: 48.104348836403%;"></span>
-		<span class="boxplot-mean" style="left: 48.443904410031%;"></span>
+		<span class="boxplot-whisker" style="left: 35.390860247719%; width: 10.791304547593%;"></span>
+		<span class="boxplot-cap" style="left: 35.390860247719%;"></span>
+		<span class="boxplot-cap" style="left: 46.182164795312%;"></span>
+		<span class="boxplot-box" style="left: 39.784075641554%; width: 2.9922889785564%;"></span>
+		<span class="boxplot-median" style="left: 40.910548635148%;"></span>
+		<span class="boxplot-mean" style="left: 41.541381251173%;"></span>
 	</span>
-	<span class="boxplot-row-range">57.61ms – 67.65ms</span>
+	<span class="boxplot-row-range">58.47ms – 64.07ms</span>
 </div>
 
 <div class="boxplot-row">
 	<span class="boxplot-row-name">concating capture group</span>
 	<span class="boxplot-track">
 		<span class="boxplot-baseline"></span>
-		<span class="boxplot-whisker" style="left: 61.239241024926%; width: 17.784543842256%;"></span>
-		<span class="boxplot-cap" style="left: 61.239241024926%;"></span>
-		<span class="boxplot-cap" style="left: 79.023784867183%;"></span>
-		<span class="boxplot-box" style="left: 67.998843542792%; width: 4.6780497623961%;"></span>
-		<span class="boxplot-median" style="left: 70.510623884247%;"></span>
-		<span class="boxplot-mean" style="left: 71.150193493186%;"></span>
+		<span class="boxplot-whisker" style="left: 65.773325050501%; width: 10.089466138596%;"></span>
+		<span class="boxplot-cap" style="left: 65.773325050501%;"></span>
+		<span class="boxplot-cap" style="left: 75.862791189097%;"></span>
+		<span class="boxplot-box" style="left: 69.229633521512%; width: 2.8053401234987%;"></span>
+		<span class="boxplot-median" style="left: 70.643619365579%;"></span>
+		<span class="boxplot-mean" style="left: 70.670730952372%;"></span>
 	</span>
-	<span class="boxplot-row-range">69.39ms – 79.91ms</span>
+	<span class="boxplot-row-range">75.65ms – 82.41ms</span>
 </div>
 
 <div class="boxplot-row">
 	<span class="boxplot-row-name">capture group</span>
 	<span class="boxplot-track">
 		<span class="boxplot-baseline"></span>
-		<span class="boxplot-whisker" style="left: 72.474128007419%; width: 15.516978733307%;"></span>
-		<span class="boxplot-cap" style="left: 72.474128007419%;"></span>
-		<span class="boxplot-cap" style="left: 87.991106740726%;"></span>
-		<span class="boxplot-box" style="left: 78.495088005146%; width: 3.9842564854421%;"></span>
-		<span class="boxplot-median" style="left: 80.664425443688%;"></span>
-		<span class="boxplot-mean" style="left: 80.823804365287%;"></span>
+		<span class="boxplot-whisker" style="left: 77.695671112457%; width: 11.064550028784%;"></span>
+		<span class="boxplot-cap" style="left: 77.695671112457%;"></span>
+		<span class="boxplot-cap" style="left: 88.760221141241%;"></span>
+		<span class="boxplot-box" style="left: 80.808474621359%; width: 3.6083743474734%;"></span>
+		<span class="boxplot-median" style="left: 82.700390764529%;"></span>
+		<span class="boxplot-mean" style="left: 82.734517686372%;"></span>
 	</span>
-	<span class="boxplot-row-range">75.86ms – 85.80ms</span>
+	<span class="boxplot-row-range">83.70ms – 91.93ms</span>
 </div>
 
-				<span class="boxplot-footnote">Logarithmic scale, 42.68ms to 94.38ms per run.</span>
+				<span class="boxplot-footnote">Logarithmic scale, 43.31ms to 101.12ms per run.</span>
 			</div>
 		</section>
 
@@ -4069,7 +4069,7 @@ end</code></pre>
 			<div class="trial-hero-winner">
 				<span class="trial-hero-label">Fastest</span>
 				<span class="trial-hero-name">not val</span>
-				<span class="trial-hero-note">Within 2% of the next candidate — effectively a tie at this sample size.</span>
+				<span class="trial-hero-note">Within 1% of the next candidate — effectively a tie at this sample size.</span>
 			</div>
 			<div class="trial-hero-stats">
 				<span class="trial-hero-stat">
@@ -4078,11 +4078,11 @@ end</code></pre>
 				</span>
 				<span class="trial-hero-stat">
 					<span class="trial-hero-stat-label">Per call</span>
-					<span class="trial-hero-stat-value">14.95ns</span>
+					<span class="trial-hero-stat-value">15.01ns</span>
 				</span>
 				<span class="trial-hero-stat">
 					<span class="trial-hero-stat-label">Slowest</span>
-					<span class="trial-hero-stat-value">102%</span>
+					<span class="trial-hero-stat-value">101%</span>
 				</span>
 			</div>
 		</section>
@@ -4097,10 +4097,10 @@ end</code></pre>
 	<span class="result-rank">1</span>
 	<span class="result-name">
 		<span class="result-name-value">not val</span>
-		<span class="result-name-sub">median 1.50ms &middot; min 1.44ms &middot; max 1.55ms &middot; 14.95ns / call</span>
+		<span class="result-name-sub">median 1.49ms &middot; min 1.48ms &middot; max 1.52ms &middot; 15.01ns / call</span>
 	</span>
 	<span class="result-bar">
-		<span style="width: 67.731245841184%;"></span>
+		<span style="width: 66.79868778183%;"></span>
 	</span>
 	<span class="result-pct">
 		<span class="result-pct-value">100%</span>
@@ -4112,14 +4112,14 @@ end</code></pre>
 	<span class="result-rank">2</span>
 	<span class="result-name">
 		<span class="result-name-value">== false</span>
-		<span class="result-name-sub">median 1.53ms &middot; min 1.44ms &middot; max 1.60ms &middot; 15.26ns / call</span>
+		<span class="result-name-sub">median 1.50ms &middot; min 1.47ms &middot; max 1.60ms &middot; 15.09ns / call</span>
 	</span>
 	<span class="result-bar">
-		<span style="width: 71.738257927234%;"></span>
+		<span style="width: 68.014378090726%;"></span>
 	</span>
 	<span class="result-pct">
-		<span class="result-pct-value">102%</span>
-		<span class="result-pct-sub">1.53ms mean</span>
+		<span class="result-pct-value">101%</span>
+		<span class="result-pct-sub">1.51ms mean</span>
 	</span>
 </div>
 
@@ -4140,31 +4140,31 @@ end</code></pre>
 	<span class="boxplot-row-name">not val</span>
 	<span class="boxplot-track">
 		<span class="boxplot-baseline"></span>
-		<span class="boxplot-whisker" style="left: 59.641509863149%; width: 15.138018605838%;"></span>
-		<span class="boxplot-cap" style="left: 59.641509863149%;"></span>
-		<span class="boxplot-cap" style="left: 74.779528468987%;"></span>
-		<span class="boxplot-box" style="left: 64.857557542368%; width: 5.2548638887369%;"></span>
-		<span class="boxplot-median" style="left: 68.815441079833%;"></span>
-		<span class="boxplot-mean" style="left: 67.731245841184%;"></span>
+		<span class="boxplot-whisker" style="left: 63.959975422678%; width: 5.2735999908154%;"></span>
+		<span class="boxplot-cap" style="left: 63.959975422678%;"></span>
+		<span class="boxplot-cap" style="left: 69.233575413493%;"></span>
+		<span class="boxplot-box" style="left: 65.399509369796%; width: 1.7250060620797%;"></span>
+		<span class="boxplot-median" style="left: 66.023478735424%;"></span>
+		<span class="boxplot-mean" style="left: 66.79868778183%;"></span>
 	</span>
-	<span class="boxplot-row-range">1.44ms – 1.55ms</span>
+	<span class="boxplot-row-range">1.48ms – 1.52ms</span>
 </div>
 
 <div class="boxplot-row">
 	<span class="boxplot-row-name">== false</span>
 	<span class="boxplot-track">
 		<span class="boxplot-baseline"></span>
-		<span class="boxplot-whisker" style="left: 59.645662270989%; width: 21.412798106291%;"></span>
-		<span class="boxplot-cap" style="left: 59.645662270989%;"></span>
-		<span class="boxplot-cap" style="left: 81.058460377281%;"></span>
-		<span class="boxplot-box" style="left: 65.566505537625%; width: 12.646934328746%;"></span>
-		<span class="boxplot-median" style="left: 72.588299525164%;"></span>
-		<span class="boxplot-mean" style="left: 71.738257927234%;"></span>
+		<span class="boxplot-whisker" style="left: 62.638263454599%; width: 17.468458326153%;"></span>
+		<span class="boxplot-cap" style="left: 62.638263454599%;"></span>
+		<span class="boxplot-cap" style="left: 80.106721780752%;"></span>
+		<span class="boxplot-box" style="left: 64.787924737795%; width: 6.4988315535852%;"></span>
+		<span class="boxplot-median" style="left: 66.126211026197%;"></span>
+		<span class="boxplot-mean" style="left: 68.014378090726%;"></span>
 	</span>
-	<span class="boxplot-row-range">1.44ms – 1.60ms</span>
+	<span class="boxplot-row-range">1.47ms – 1.60ms</span>
 </div>
 
-				<span class="boxplot-footnote">Logarithmic scale, 1.06ms to 1.76ms per run.</span>
+				<span class="boxplot-footnote">Logarithmic scale, 1.09ms to 1.76ms per run.</span>
 			</div>
 		</section>
 
@@ -4228,20 +4228,20 @@ local setVal</code></pre>
 			<div class="trial-hero-winner">
 				<span class="trial-hero-label">Fastest</span>
 				<span class="trial-hero-name">Constructed Key Lookup</span>
-				<span class="trial-hero-note">Beats the next candidate by 11%, and the slowest by 296%.</span>
+				<span class="trial-hero-note">Beats the next candidate by 10%, and the slowest by 332%.</span>
 			</div>
 			<div class="trial-hero-stats">
 				<span class="trial-hero-stat">
 					<span class="trial-hero-stat-label">Mean run</span>
-					<span class="trial-hero-stat-value">1.53ms</span>
+					<span class="trial-hero-stat-value">1.66ms</span>
 				</span>
 				<span class="trial-hero-stat">
 					<span class="trial-hero-stat-label">Per call</span>
-					<span class="trial-hero-stat-value">15.34ns</span>
+					<span class="trial-hero-stat-value">16.59ns</span>
 				</span>
 				<span class="trial-hero-stat">
 					<span class="trial-hero-stat-label">Slowest</span>
-					<span class="trial-hero-stat-value">396%</span>
+					<span class="trial-hero-stat-value">432%</span>
 				</span>
 			</div>
 		</section>
@@ -4256,14 +4256,14 @@ local setVal</code></pre>
 	<span class="result-rank">1</span>
 	<span class="result-name">
 		<span class="result-name-value">Constructed Key Lookup</span>
-		<span class="result-name-sub">median 1.54ms &middot; min 1.47ms &middot; max 1.58ms &middot; 15.34ns / call</span>
+		<span class="result-name-sub">median 1.65ms &middot; min 1.63ms &middot; max 1.67ms &middot; 16.59ns / call</span>
 	</span>
 	<span class="result-bar">
-		<span style="width: 18.38231754067%;"></span>
+		<span style="width: 15.604971802267%;"></span>
 	</span>
 	<span class="result-pct">
 		<span class="result-pct-value">100%</span>
-		<span class="result-pct-sub">1.53ms mean</span>
+		<span class="result-pct-sub">1.66ms mean</span>
 	</span>
 </div>
 
@@ -4271,14 +4271,14 @@ local setVal</code></pre>
 	<span class="result-rank">2</span>
 	<span class="result-name">
 		<span class="result-name-value">UpValue Key Lookup</span>
-		<span class="result-name-sub">median 1.70ms &middot; min 1.59ms &middot; max 1.76ms &middot; 16.97ns / call</span>
+		<span class="result-name-sub">median 1.76ms &middot; min 1.74ms &middot; max 1.81ms &middot; 18.31ns / call</span>
 	</span>
 	<span class="result-bar">
-		<span style="width: 23.797008798434%;"></span>
+		<span style="width: 20.434513233303%;"></span>
 	</span>
 	<span class="result-pct">
-		<span class="result-pct-value">111%</span>
-		<span class="result-pct-sub">1.70ms mean</span>
+		<span class="result-pct-value">110%</span>
+		<span class="result-pct-sub">1.83ms mean</span>
 	</span>
 </div>
 
@@ -4286,14 +4286,14 @@ local setVal</code></pre>
 	<span class="result-rank">3</span>
 	<span class="result-name">
 		<span class="result-name-value">UpValue HasValue</span>
-		<span class="result-name-sub">median 4.50ms &middot; min 4.39ms &middot; max 4.64ms &middot; 45.78ns / call</span>
+		<span class="result-name-sub">median 4.49ms &middot; min 4.44ms &middot; max 4.59ms &middot; 45.02ns / call</span>
 	</span>
 	<span class="result-bar">
-		<span style="width: 77.130411575337%;"></span>
+		<span style="width: 64.391500354788%;"></span>
 	</span>
 	<span class="result-pct">
-		<span class="result-pct-value">298%</span>
-		<span class="result-pct-sub">4.58ms mean</span>
+		<span class="result-pct-value">271%</span>
+		<span class="result-pct-sub">4.50ms mean</span>
 	</span>
 </div>
 
@@ -4301,14 +4301,14 @@ local setVal</code></pre>
 	<span class="result-rank">4</span>
 	<span class="result-name">
 		<span class="result-name-value">Constructed HasValue</span>
-		<span class="result-name-sub">median 6.06ms &middot; min 5.72ms &middot; max 6.37ms &middot; 60.75ns / call</span>
+		<span class="result-name-sub">median 6.59ms &middot; min 6.27ms &middot; max 8.48ms &middot; 71.64ns / call</span>
 	</span>
 	<span class="result-bar">
-		<span style="width: 92.327983809639%;"></span>
+		<span style="width: 87.084411066917%;"></span>
 	</span>
 	<span class="result-pct">
-		<span class="result-pct-value">396%</span>
-		<span class="result-pct-sub">6.07ms mean</span>
+		<span class="result-pct-value">432%</span>
+		<span class="result-pct-sub">7.16ms mean</span>
 	</span>
 </div>
 
@@ -4329,59 +4329,59 @@ local setVal</code></pre>
 	<span class="boxplot-row-name">Constructed Key Lookup</span>
 	<span class="boxplot-track">
 		<span class="boxplot-baseline"></span>
-		<span class="boxplot-whisker" style="left: 16.127625045334%; width: 3.9672159550623%;"></span>
-		<span class="boxplot-cap" style="left: 16.127625045334%;"></span>
-		<span class="boxplot-cap" style="left: 20.094841000396%;"></span>
-		<span class="boxplot-box" style="left: 17.751111529723%; width: 1.2729280419288%;"></span>
-		<span class="boxplot-median" style="left: 18.487792295547%;"></span>
-		<span class="boxplot-mean" style="left: 18.38231754067%;"></span>
+		<span class="boxplot-whisker" style="left: 14.663204097936%; width: 1.2637811111436%;"></span>
+		<span class="boxplot-cap" style="left: 14.663204097936%;"></span>
+		<span class="boxplot-cap" style="left: 15.92698520908%;"></span>
+		<span class="boxplot-box" style="left: 15.124599350735%; width: 0.38252361272128%;"></span>
+		<span class="boxplot-median" style="left: 15.32173153169%;"></span>
+		<span class="boxplot-mean" style="left: 15.604971802267%;"></span>
 	</span>
-	<span class="boxplot-row-range">1.47ms – 1.58ms</span>
+	<span class="boxplot-row-range">1.63ms – 1.67ms</span>
 </div>
 
 <div class="boxplot-row">
 	<span class="boxplot-row-name">UpValue Key Lookup</span>
 	<span class="boxplot-track">
 		<span class="boxplot-baseline"></span>
-		<span class="boxplot-whisker" style="left: 20.154617327152%; width: 5.455427881304%;"></span>
-		<span class="boxplot-cap" style="left: 20.154617327152%;"></span>
-		<span class="boxplot-cap" style="left: 25.610045208456%;"></span>
-		<span class="boxplot-box" style="left: 22.163566877351%; width: 2.2747842700278%;"></span>
-		<span class="boxplot-median" style="left: 23.903583303168%;"></span>
-		<span class="boxplot-mean" style="left: 23.797008798434%;"></span>
+		<span class="boxplot-whisker" style="left: 17.886672763507%; width: 2.0450508864314%;"></span>
+		<span class="boxplot-cap" style="left: 17.886672763507%;"></span>
+		<span class="boxplot-cap" style="left: 19.931723649938%;"></span>
+		<span class="boxplot-box" style="left: 18.357678771928%; width: 0.68472148786622%;"></span>
+		<span class="boxplot-median" style="left: 18.553444850147%;"></span>
+		<span class="boxplot-mean" style="left: 20.434513233303%;"></span>
 	</span>
-	<span class="boxplot-row-range">1.59ms – 1.76ms</span>
+	<span class="boxplot-row-range">1.74ms – 1.81ms</span>
 </div>
 
 <div class="boxplot-row">
 	<span class="boxplot-row-name">UpValue HasValue</span>
 	<span class="boxplot-track">
 		<span class="boxplot-baseline"></span>
-		<span class="boxplot-whisker" style="left: 74.816253194039%; width: 3.036948934446%;"></span>
-		<span class="boxplot-cap" style="left: 74.816253194039%;"></span>
-		<span class="boxplot-cap" style="left: 77.853202128485%;"></span>
-		<span class="boxplot-box" style="left: 75.898175172047%; width: 0.82188097864783%;"></span>
-		<span class="boxplot-median" style="left: 76.182662585956%;"></span>
-		<span class="boxplot-mean" style="left: 77.130411575337%;"></span>
+		<span class="boxplot-whisker" style="left: 63.715771039881%; width: 1.5700963335352%;"></span>
+		<span class="boxplot-cap" style="left: 63.715771039881%;"></span>
+		<span class="boxplot-cap" style="left: 65.285867373416%;"></span>
+		<span class="boxplot-box" style="left: 64.048596674079%; width: 0.53925130083803%;"></span>
+		<span class="boxplot-median" style="left: 64.234268067722%;"></span>
+		<span class="boxplot-mean" style="left: 64.391500354788%;"></span>
 	</span>
-	<span class="boxplot-row-range">4.39ms – 4.64ms</span>
+	<span class="boxplot-row-range">4.44ms – 4.59ms</span>
 </div>
 
 <div class="boxplot-row">
 	<span class="boxplot-row-name">Constructed HasValue</span>
 	<span class="boxplot-track">
 		<span class="boxplot-baseline"></span>
-		<span class="boxplot-whisker" style="left: 89.082736860411%; width: 5.7952927280833%;"></span>
-		<span class="boxplot-cap" style="left: 89.082736860411%;"></span>
-		<span class="boxplot-cap" style="left: 94.878029588495%;"></span>
-		<span class="boxplot-box" style="left: 91.214196117258%; width: 1.5691602248113%;"></span>
-		<span class="boxplot-median" style="left: 92.215797268123%;"></span>
-		<span class="boxplot-mean" style="left: 92.327983809639%;"></span>
+		<span class="boxplot-whisker" style="left: 80.566409245145%; width: 14.77670560801%;"></span>
+		<span class="boxplot-cap" style="left: 80.566409245145%;"></span>
+		<span class="boxplot-cap" style="left: 95.343114853156%;"></span>
+		<span class="boxplot-box" style="left: 81.625471131245%; width: 6.0510455291384%;"></span>
+		<span class="boxplot-median" style="left: 83.009744960955%;"></span>
+		<span class="boxplot-mean" style="left: 87.084411066917%;"></span>
 	</span>
-	<span class="boxplot-row-range">5.72ms – 6.37ms</span>
+	<span class="boxplot-row-range">6.27ms – 8.48ms</span>
 </div>
 
-				<span class="boxplot-footnote">Logarithmic scale, 1.09ms to 7.01ms per run.</span>
+				<span class="boxplot-footnote">Logarithmic scale, 1.21ms to 9.33ms per run.</span>
 			</div>
 		</section>
 

@@ -2,7 +2,7 @@ Internet's Benchmark Suite: Environment Statement
 
 Suite Version: 3.2.1
 Suite Build: dev
-Generated: 2026-10-05 07:41:41 UTC
+Generated: 2026-10-12 16:38:06 UTC
 Realm: Server
 Hosting: Dedicated Server
 Operating System: Linux
@@ -18,14 +18,14 @@ System Info Module: gm_sysinfo 3.1.0
 OS Version: Linux
 Kernel: 6.17.0-1022-azure
 Distribution: linux
-CPU Model: AMD EPYC 9V45 96-Core Processor
+CPU Model: AMD EPYC 7763 64-Core Processor
 CPU Architecture: x86_64
 Physical Cores: 2
 Total Memory: 15.61 GiB
-Available Memory: 14.48 GiB
+Available Memory: 14.45 GiB
 Total Swap: 3.00 GiB
-Load Average: 0.72 / 0.38 / 0.15 (1/5/15 min)
-Host Uptime: 0d 0h 4m
+Load Average: 0.78 / 0.44 / 0.19 (1/5/15 min)
+Host Uptime: 0d 0h 3m
 
 Host details above are provided by the gm_sysinfo binary module.
 CPU clock speed and GPU are not exposed by plain GLua or the
